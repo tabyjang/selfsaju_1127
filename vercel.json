@@ -1,4 +1,8 @@
 {
+  "version": 2,
+  "name": "selfsaju",
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
   "functions": {
     "api/**/*.ts": {
       "runtime": "@vercel/node@3"
