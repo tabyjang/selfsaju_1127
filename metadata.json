@@ -1,0 +1,5 @@
+{
+  "name": "AI Saju Analysis",
+  "description": "An AI-powered application that provides a detailed Saju (Four Pillars of Destiny) analysis using your birth information and the Gemini API.",
+  "requestFramePermissions": []
+}

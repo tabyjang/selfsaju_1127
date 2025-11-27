@@ -1,0 +1,109 @@
+● Explore(사주 분석 프로젝트 구조 파악)
+  ⎿  Done (24 tool uses · 70.0k tokens · 2m 59s)
+
+● 프로젝트 구조를 완전히 파악했습니다! 상세한 분석 결과를 정리해드리겠습니다.
+
+  📊 프로젝트 개요
+
+  AI 사주 분석 프로그램 - Google Gemini API를 활용한 사주팔자 분석 웹 애플리케이션입니다.
+
+  📁 전체 파일 구조
+
+  ai-saju-1127/
+  ├── 설정 파일
+  │   ├── .env.local              # API 키 (현재 Mock 모드)
+  │   ├── package.json            # React 19, Gemini API, Vite
+  │   ├── tsconfig.json           # TypeScript 설정
+  │   └── vite.config.ts          # 빌드 설정
+  │
+  ├── 메인 앱
+  │   ├── index.html/tsx/css      # 진입점
+  │   ├── App.tsx                 # 핵심 로직 & 상태 관리
+  │   ├── LandingPage.tsx         # 랜딩 페이지
+  │   └── types.ts                # 타입 정의
+  │
+  ├── components/                 # UI 컴포넌트
+  │   ├── SajuInputForm.tsx       # 생년월일시 입력
+  │   ├── AnalysisResult.tsx      # 사주 명반 & 분석 결과
+  │   ├── InteractiveChat.tsx     # AI 채팅
+  │   ├── InteractionsDisplay.tsx # 형충회합 표시
+  │   ├── SinsalDisplay.tsx       # 신살 표시
+  │   └── OhaengLoading.tsx       # 로딩 애니메이션
+  │
+  ├── services/
+  │   └── geminiService.ts        # Gemini API (현재 Mock)
+  │
+  └── utils/                      # 사주 계산 엔진
+      ├── manse.ts                # 만세력 계산 (핵심!)
+      ├── interactions.ts         # 형충회합 분석
+      ├── sinsal.ts               # 신살 분석
+      ├── solarTerms.ts           # 24절기 데이터
+      ├── ilganDescriptions.ts    # 10천간 성격 분석
+      ├── iljuDescriptions.ts     # 60일주 분석
+      └── sinsalDescriptions.ts   # 신살 설명
+
+  ⚙️ 현재 구현된 기능
+
+  1. 정확한 사주 계산
+
+  - 생년월일시 → 사주팔자 자동 계산
+  - 절기 기반 월주 계산
+  - 출생 지역별 시간대 보정 (13개 지역)
+  - 야자시 적용 옵션
+
+  2. 사주 명반 표시
+
+  - 4기둥 (년월일시) 천간/지지
+  - 십신, 십이운성, 지장간
+  - 오행 분포 통계
+  - 월령, 천을귀인
+
+  3. 고급 명리 분석
+
+  - 형충회합: 지지 간 상호작용 (충·형·삼합·반합·육합·방합)
+  - 신살: 15종 이상 (천을귀인, 도화살, 양인살 등)
+  - 대운: 10년 단위 흐름 (순행/역행)
+  - 세운: 향후 10년 흐름
+
+  4. AI 심층 분석 (3단계 구조)
+
+  1. 일주/오행 분석 + 핵심 진단 + 개운법
+  2. 재물운, 건강운, 애정운
+  3. 대운 흐름 + 미래 예측
+
+  5. 대화형 AI 채팅
+
+  - 사주 분석 결과 기반 추가 질문
+  - 스트리밍 응답
+
+  6. UI/UX
+
+  - 오행별 색상 코드 (木/火/土/金/水)
+  - 유리 효과 카드 디자인
+  - 반응형 디자인
+  - 토글 가능한 섹션
+
+  🔧 기술 스택
+
+  - React 19.2.0 + TypeScript 5.8.2
+  - Vite 6.2.0 (빌드 도구)
+  - Google Gemini API (@google/genai)
+  - Tailwind CSS + 커스텀 CSS
+  - Pretendard 폰트
+
+  📌 현재 상태
+
+  ⚠️ Mock 모드 활성화 중 - geminiService.ts의 모든 API 호출이 Mock 데이터를 반환합니다.
+
+  실제 API 사용하려면:
+  1. .env.local에 유효한 GEMINI_API_KEY 입력
+  2. geminiService.ts의 Mock 코드 제거 필요
+
+  💡 프로젝트의 강점
+
+  - 정확한 명리 계산: 절기, 시간대 보정, 지장간, 십이운성 등 전문적
+  - 풍부한 데이터: 60일간 성격, 60일주 분석, 신살 DB
+  - 구조화된 AI 분석: 3단계 체계적 프롬프트
+  - 깔끔한 아키텍처: 컴포넌트 분리, 타입 안전성
+
+  궁금한 점이나 특정 기능에 대해 더 자세히 알고 싶으신가요?
