@@ -84,7 +84,7 @@ const App: React.FC = () => {
     const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
     const [isChatLoading, setIsChatLoading] = useState<boolean>(false);
     const [chatError, setChatError] = useState<string | null>(null);
-    
+
     const handleStart = () => {
         setShowLanding(false);
     }
