@@ -16,7 +16,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onStart }) => {
         {/* Left Content */}
         <div className="flex flex-col items-center lg:items-start max-w-lg animate-fade-in">
           <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 leading-tight">
-            가장 정확한 사주
+            진심을 담은 사주
             <br />
             <span className="text-yellow-500">운명의 사주분석</span>
           </h1>
