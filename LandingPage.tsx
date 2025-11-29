@@ -1,82 +1,119 @@
-import React from 'react';
-import { ArrowRightIcon, DownloadIcon, DesktopIcon } from './components/icons';
+import React, { useEffect, useRef } from 'react';
+import './LandingPage.css';
 
 interface LandingPageProps {
   onStart: () => void;
 }
 
 const LandingPage: React.FC<LandingPageProps> = ({ onStart }) => {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    let particlesArray: Particle[] = [];
+    let animationFrameId: number;
+
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    class Particle {
+      x: number;
+      y: number;
+      size: number;
+      speedX: number;
+      speedY: number;
+      color: string;
+
+      constructor() {
+        this.x = Math.random() * (canvas?.width || 0);
+        this.y = Math.random() * (canvas?.height || 0);
+        this.size = Math.random() * 5 + 1;
+        this.speedX = Math.random() * 1 - 0.5;
+        this.speedY = Math.random() * 1 - 0.5;
+        // Soft pastel colors
+        const colors = ['rgba(255, 183, 178, 0.5)', 'rgba(255, 218, 193, 0.5)', 'rgba(226, 240, 203, 0.5)', 'rgba(255, 255, 255, 0.8)'];
+        this.color = colors[Math.floor(Math.random() * colors.length)];
+      }
+
+      update() {
+        this.x += this.speedX;
+        this.y += this.speedY;
+
+        if (!canvas) return;
+
+        // Wrap around screen
+        if (this.x > canvas.width) this.x = 0;
+        if (this.x < 0) this.x = canvas.width;
+        if (this.y > canvas.height) this.y = 0;
+        if (this.y < 0) this.y = canvas.height;
+      }
+
+      draw() {
+        if (!ctx) return;
+        ctx.fillStyle = this.color;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    function init() {
+      particlesArray = [];
+      const numberOfParticles = 100;
+      for (let i = 0; i < numberOfParticles; i++) {
+        particlesArray.push(new Particle());
+      }
+    }
+
+    function animate() {
+      if (!canvas || !ctx) return;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (let i = 0; i < particlesArray.length; i++) {
+        particlesArray[i].update();
+        particlesArray[i].draw();
+      }
+      animationFrameId = requestAnimationFrame(animate);
+    }
+
+    init();
+    animate();
+
+    const handleResize = () => {
+      if (!canvas) return;
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      init();
+    };
+
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      cancelAnimationFrame(animationFrameId);
+    };
+  }, []);
+
   return (
-    <div className="min-h-screen w-full flex flex-col items-center justify-center font-sans p-4 overflow-hidden relative">
-      
-      <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-yellow-100/50 via-lime-100/50 to-white z-0"></div>
-      
-      <div className="relative z-10 w-full max-w-6xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-12 text-center lg:text-left">
-        
-        {/* Left Content */}
-        <div className="flex flex-col items-center lg:items-start max-w-lg animate-fade-in">
-          <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 leading-tight">
-            진심을 담은 사주
-            <br />
-            <span className="text-yellow-500">운명의 사주분석</span>
-          </h1>
-          <p className="mt-6 text-lg text-gray-600">
-            당신의 생년월일에 담긴 우주의 코드를 실시간으로 분석합니다.
-            단순한 운세 풀이를 넘어, 당신의 잠재력과 인생의 흐름을 입체적으로 조명하는 새로운 차원의 사주를 경험해보세요.
-          </p>
-          <button
-            onClick={onStart}
-            className="mt-10 flex items-center justify-center gap-2 px-8 py-4 bg-yellow-400 text-gray-900 font-bold text-lg rounded-full shadow-lg hover:bg-yellow-500 transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-yellow-400/50"
-          >
-            <DesktopIcon className="w-6 h-6" />
-            <span>무료 사주 보기</span>
-          </button>
+    <div className="landing-page-wrapper">
+      <canvas ref={canvasRef} id="particles-canvas"></canvas>
+      <main className="landing-container">
+        <h1 className="landing-title fade-in">운명의 나침반</h1>
+        <p className="landing-subtitle fade-in delay-1">당신의 운명을 읽고 미래를 준비하세요.</p>
+        <p className="landing-description fade-in delay-2">
+          고대부터 전해져 온 지혜로 당신의 삶을 명확하게 비춰드립니다.<br />
+          지금 바로 당신의 사주를 확인해보세요.
+        </p>
+        <div className="cta-container fade-in delay-3">
+          <button onClick={onStart} className="glow-button">무료 사주 분석하기</button>
         </div>
-
-        {/* Right Content - 3D Monitor Effect */}
-        <div className="w-full max-w-xl lg:w-1/2 flex items-center justify-center perspective-1000 animate-fade-in" style={{ animationDelay: '0.2s' }}>
-            <div className="relative w-full aspect-[4/3] transform rotate-y-[-25deg] rotate-x-[10deg] transform-style-3d shadow-2xl">
-                {/* Monitor Screen */}
-                <div className="absolute inset-0 bg-white rounded-lg border-8 border-gray-800 p-4 overflow-hidden">
-                    <div className="w-full h-full bg-gray-100 flex items-center justify-center">
-                       <p className="text-gray-400 font-semibold text-lg"> 분석 결과 예시</p>
-                    </div>
-                </div>
-                {/* Monitor Stand */}
-                <div className="absolute bottom-[-20px] left-1/2 -translate-x-1/2 w-1/3 h-[20px] bg-gray-700 transform translate-z-[-50px]"></div>
-                <div className="absolute bottom-[-30px] left-1/2 -translate-x-1/2 w-1/2 h-[10px] bg-gray-600 rounded-b-md transform translate-z-[-70px]"></div>
-            </div>
-        </div>
-
-      </div>
-
-      {/* Floating Icons */}
-      <div className="absolute bottom-10 right-10">
-        <button
-            onClick={onStart}
-            className="w-16 h-16 bg-yellow-400 rounded-full flex items-center justify-center shadow-lg hover:bg-yellow-500 transition-all duration-300 transform hover:scale-110 focus:outline-none focus:ring-4 focus:ring-yellow-400/50"
-            aria-label="무료 사주 보기"
-        >
-            <DownloadIcon className="w-8 h-8 text-white"/>
-        </button>
-      </div>
-
-       <div className="absolute top-20 left-20 w-24 h-24 bg-lime-200/50 rounded-full filter blur-2xl animate-pulse"></div>
-       <div className="absolute bottom-20 right-1/4 w-32 h-32 bg-yellow-200/50 rounded-full filter blur-2xl animate-pulse" style={{animationDelay: '1s'}}></div>
+      </main>
     </div>
   );
 };
 
 export default LandingPage;
-
-// Add some CSS for the 3D effect
-const style = document.createElement('style');
-style.textContent = `
-  .perspective-1000 { perspective: 1000px; }
-  .transform-style-3d { transform-style: preserve-3d; }
-  .rotate-y-\\[-25deg\\] { transform: rotateY(-25deg); }
-  .rotate-x-\\[10deg\\] { transform: rotateX(10deg); }
-  .translate-z-\\[-50px\\] { transform: translateZ(-50px); }
-  .translate-z-\\[-70px\\] { transform: translateZ(-70px); }
-`;
-document.head.appendChild(style);
