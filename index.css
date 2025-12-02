@@ -60,6 +60,12 @@ body {
 @keyframes fade-in-fast { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } } /* 위에서 아래로 살짝 내려오며 빠르게 나타나는 효과 */
 .animate-fade-in-fast { animation: fade-in-fast 0.3s ease-in-out forwards; } /* fade-in-fast 효과를 0.3초 동안 실행 */
 
+@keyframes fade-in-slow { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } } /* 작은 크기에서 커지며 나타나는 효과 */
+.animate-fade-in-slow { animation: fade-in-slow 1s ease-out forwards; animation-delay: 0.2s; opacity: 0; } /* 0.2초 후 1초 동안 실행 */
+
+@keyframes fade-in-slower { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } } /* 아래에서 위로 부드럽게 떠오르는 효과 */
+.animate-fade-in-slower { animation: fade-in-slower 1.2s ease-out forwards; animation-delay: 0.5s; opacity: 0; } /* 0.5초 후 1.2초 동안 실행 */
+
 /*
  * Glassmorphism Card Effect
  * '유리 카드' 효과를 정의하는 부분입니다. 반투명하고 흐릿한 배경을 가진 카드 스타일입니다.

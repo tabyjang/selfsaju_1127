@@ -9,7 +9,7 @@ const handleApiError = (error: unknown, context: string): never => {
         throw error;
     }
     console.error(`Error during Gemini ${context}:`, error);
-    throw new Error(`AI ${context} 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.`);
+    throw new Error(` ${context} 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.`);
 };
 
 const raceWithAbort = <T>(promise: Promise<T>, signal: AbortSignal, errorMessage: string): Promise<T> => {
@@ -81,6 +81,9 @@ export const analyzeSaju = async (
     prompts: { stage1: string, stage2: string, stage3: string },
     signal: AbortSignal
 ): Promise<SajuAnalysisResult> => {
+    console.log('=== AI에게 전달되는 sajuInfo 객체 ===');
+    console.log(JSON.stringify(sajuInfo, null, 2));
+
     const interactions = analyzeInteractions(sajuInfo.pillars);
     const sewoonPillars = getSewoonPillars(new Date().getFullYear(), 10, sajuInfo.pillars.day.cheonGan.char);
 
@@ -90,16 +93,23 @@ You are an expert in Saju (Four Pillars of Destiny). Analyze the provided inform
 ---
 ### 분석 대상 사주 정보
 
-**사주 원국 (四柱 原局)**
-- 년주(年柱): ${sajuInfo.pillars.year.ganji} (십이운성: ${sajuInfo.pillars.year.jiJi.unseong.name})
-- 월주(月柱): ${sajuInfo.pillars.month.ganji} (십이운성: ${sajuInfo.pillars.month.jiJi.unseong.name})
-- 일주(日柱): ${sajuInfo.pillars.day.ganji} (십이운성: ${sajuInfo.pillars.day.jiJi.unseong.name})
-- 시주(時柱): ${sajuInfo.pillars.hour.ganji} (십이운성: ${sajuInfo.pillars.hour.jiJi.unseong.name})
-
-**기본 정보**
+**생년월일시 및 기본 정보**
+- 생년월일시: ${sajuInfo.birthDate.year}년 ${sajuInfo.birthDate.month}월 ${sajuInfo.birthDate.day}일 ${sajuInfo.birthDate.hour}시 ${sajuInfo.birthDate.minute}분
 - 성별: ${sajuInfo.gender === 'male' ? '남성' : '여성'}
 - 대운 방향: ${sajuInfo.daewoon === 'sunhaeng' ? '순행' : '역행'}
 - 대운수: ${sajuInfo.daewoonNumber}
+
+**사주 8글자 (四柱 八字)**
+- 년주(年柱): ${sajuInfo.pillars.year.ganji} [천간: ${sajuInfo.pillars.year.cheonGan.char}, 지지: ${sajuInfo.pillars.year.jiJi.char}]
+- 월주(月柱): ${sajuInfo.pillars.month.ganji} [천간: ${sajuInfo.pillars.month.cheonGan.char}, 지지: ${sajuInfo.pillars.month.jiJi.char}]
+- 일주(日柱): ${sajuInfo.pillars.day.ganji} [천간: ${sajuInfo.pillars.day.cheonGan.char}, 지지: ${sajuInfo.pillars.day.jiJi.char}]
+- 시주(時柱): ${sajuInfo.pillars.hour.ganji} [천간: ${sajuInfo.pillars.hour.cheonGan.char}, 지지: ${sajuInfo.pillars.hour.jiJi.char}]
+
+**십이운성 정보**
+- 년주 십이운성: ${sajuInfo.pillars.year.jiJi.unseong.name}
+- 월주 십이운성: ${sajuInfo.pillars.month.jiJi.unseong.name}
+- 일주 십이운성: ${sajuInfo.pillars.day.jiJi.unseong.name}
+- 시주 십이운성: ${sajuInfo.pillars.hour.jiJi.unseong.name}
 
 **대운 (大運)의 흐름**
 ${sajuInfo.daewoonPillars.map(p => `- ${p.age}세 대운: ${p.ganji}`).join('\n')}
@@ -115,6 +125,10 @@ ${sewoonPillars.map(p => `- ${p.year}년 세운: ${p.ganji}`).join('\n')}
 ---
 아래 지시사항에 따라 위의 사주 정보를 상세하고 정확하게 분석해주세요.
 `;
+
+    console.log('=== AI에게 전달되는 최종 텍스트 ===');
+    console.log(detailedSajuDataString);
+    console.log('==================');
 
     const promptStep1 = `${detailedSajuDataString}\n${prompts.stage1}`;
     const promptStep2 = `${detailedSajuDataString}\n${prompts.stage2}`;

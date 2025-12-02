@@ -263,7 +263,76 @@ const SajuPillarsDisplay: React.FC<{ sajuInfo: SajuInfo }> = ({ sajuInfo }) => {
   );
 };
 
-const DaewoonDisplay: React.FC<{ sajuInfo: SajuInfo }> = ({ sajuInfo }) => {
+const DaewoonDisplay: React.FC<{ sajuInfo: SajuInfo; onShowDaewoon: (show: boolean) => void }> = ({ sajuInfo, onShowDaewoon }) => {
+  const [typedText, setTypedText] = useState("");
+  const [showButton, setShowButton] = useState(false);
+
+  const fullText = "인생을 10년 단위로 나누어 각 시기의 흐름과 방향성을 보여주는 운명의 큰 물결입니다. 대운의 변화는 인생의 전환점이 되며, 각 시기마다 다른 기운이 작용합니다.";
+
+  React.useEffect(() => {
+    let index = 0;
+    let isMounted = true;
+
+    const typingInterval = setInterval(() => {
+      if (!isMounted) {
+        clearInterval(typingInterval);
+        return;
+      }
+
+      if (index <= fullText.length) {
+        setTypedText(fullText.slice(0, index));
+        index++;
+      } else {
+        clearInterval(typingInterval);
+        setShowButton(true);
+      }
+    }, 50); // 50ms마다 한 글자씩
+
+    return () => {
+      isMounted = false;
+      clearInterval(typingInterval);
+    };
+  }, [fullText]);
+
+  return (
+    <div className="mt-8">
+      {/* 대운 설명 섹션 */}
+      <div className="p-6 bg-gradient-to-br from-purple-50 via-pink-50 to-yellow-50 rounded-2xl border-2 border-purple-200 shadow-lg animate-fade-in glass-card">
+        <div className="text-center">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-purple-400 to-pink-400 rounded-full mb-4 animate-pulse shadow-lg">
+            <span className="text-4xl">🌊</span>
+          </div>
+          <h4 className="text-3xl md:text-4xl font-extrabold bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500 bg-clip-text text-transparent mb-5">
+            대운(大運)이란?
+          </h4>
+          <div className="min-h-[120px] flex items-center justify-center">
+            <p className="text-lg md:text-xl text-gray-700 leading-relaxed font-medium max-w-3xl mx-auto">
+              {typedText}
+              {typedText.length < fullText.length && (
+                <span className="inline-block w-0.5 h-6 bg-purple-600 ml-1 animate-pulse"></span>
+              )}
+            </p>
+          </div>
+
+          {showButton && (
+            <div className="mt-6 animate-fade-in">
+              <button
+                onClick={() => onShowDaewoon(true)}
+                className="btn-primary flex items-center gap-3 py-4 px-8 rounded-full shadow-xl transform hover:scale-105 transition-all duration-300 mx-auto"
+              >
+                <span className="text-4xl">🌊</span>
+                <span className="text-lg font-bold">대운·세운의 흐름 보기</span>
+                <ChevronDownIcon className="w-5 h-5" />
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const DaewoonFlowDisplay: React.FC<{ sajuInfo: SajuInfo }> = ({ sajuInfo }) => {
   const { daewoonPillars, daewoon, birthDate } = sajuInfo;
   const currentYear = new Date().getFullYear();
   const koreanAge = currentYear - birthDate.year + 1;
@@ -326,7 +395,7 @@ const DaewoonDisplay: React.FC<{ sajuInfo: SajuInfo }> = ({ sajuInfo }) => {
   };
 
   return (
-    <div className="mt-8 p-4 md:p-6 glass-card">
+    <div className="mt-6 p-4 md:p-6 glass-card animate-fade-in">
       <h3 className="text-xl font-bold text-gray-800 mb-4 text-center">
         대운의 흐름{" "}
         <span className="text-base font-medium text-gray-500">
@@ -979,6 +1048,7 @@ export const AnalysisResult: React.FC<AnalysisResultProps> = ({
   const ilganChar = sajuData.pillars.day.cheonGan.char;
   const iljuGanji = sajuData.pillars.day.ganji; // e.g., "甲子"
   const [showAiDetails, setShowAiDetails] = useState(false);
+  const [showDaewoon, setShowDaewoon] = useState(false);
 
   const stageInfo = useMemo(
     () =>
@@ -1066,8 +1136,14 @@ export const AnalysisResult: React.FC<AnalysisResultProps> = ({
         <InteractionsDisplay sajuInfo={sajuData} />
         <SinsalDisplay sajuInfo={sajuData} />
 
-        <DaewoonDisplay sajuInfo={sajuData} />
-        <SewoonDisplay sajuInfo={sajuData} />
+        <DaewoonDisplay sajuInfo={sajuData} onShowDaewoon={setShowDaewoon} />
+
+        {showDaewoon && (
+          <>
+            <DaewoonFlowDisplay sajuInfo={sajuData} />
+            <SewoonDisplay sajuInfo={sajuData} />
+          </>
+        )}
 
         {/* 일간 성격 확인 섹션 (세운 아래에 배치) */}
         <IlganPersonalityDisplay ilganChar={ilganChar} />
