@@ -706,6 +706,13 @@ const IljuAnalysisDisplay: React.FC<{ iljuGanji: string }> = ({
   );
 };
 
+// [성격] 이전 부분만 추출하는 함수
+const getSibsinDescriptionBeforePersonality = (description: string): string => {
+  const personalityIndex = description.indexOf('[성격]');
+  if (personalityIndex === -1) return description;
+  return description.substring(0, personalityIndex).trim();
+};
+
 const SibsinPositionDisplay: React.FC<{ sajuInfo: SajuInfo }> = ({
   sajuInfo,
 }) => {
@@ -774,9 +781,6 @@ const SibsinPositionDisplay: React.FC<{ sajuInfo: SajuInfo }> = ({
                   </h4>
                   <CharBox char={wollyeongChar} />
                 </div>
-                <div className="text-sm text-blue-700 font-medium bg-blue-100 px-3 py-1 rounded-full">
-                  직업·사회생활 (20~40세)
-                </div>
               </div>
 
               {/* 십신 기본 정보 */}
@@ -785,20 +789,8 @@ const SibsinPositionDisplay: React.FC<{ sajuInfo: SajuInfo }> = ({
                   <h5 className="font-bold text-blue-800 mb-3 flex items-center gap-2 text-lg">
                     <span>📘</span> {sibsinDescriptions[wollyeongSibsin].title}
                   </h5>
-                  <div className="flex flex-wrap gap-2 mb-4">
-                    {sibsinDescriptions[wollyeongSibsin].keywords.map(
-                      (kw, idx) => (
-                        <span
-                          key={idx}
-                          className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium"
-                        >
-                          #{kw}
-                        </span>
-                      )
-                    )}
-                  </div>
                   <p className="text-gray-700 leading-relaxed whitespace-pre-line word-keep-all">
-                    {sibsinDescriptions[wollyeongSibsin].description}
+                    {getSibsinDescriptionBeforePersonality(sibsinDescriptions[wollyeongSibsin].description)}
                   </p>
                 </div>
               )}
@@ -853,9 +845,6 @@ const SibsinPositionDisplay: React.FC<{ sajuInfo: SajuInfo }> = ({
                   </h4>
                   <CharBox char={iljiChar} />
                 </div>
-                <div className="text-sm text-pink-700 font-medium bg-pink-100 px-3 py-1 rounded-full">
-                  배우자·가정 (40~60세)
-                </div>
               </div>
 
               {/* 십신 기본 정보 */}
@@ -864,18 +853,8 @@ const SibsinPositionDisplay: React.FC<{ sajuInfo: SajuInfo }> = ({
                   <h5 className="font-bold text-pink-800 mb-3 flex items-center gap-2 text-lg">
                     <span>📕</span> {sibsinDescriptions[iljiSibsin].title}
                   </h5>
-                  <div className="flex flex-wrap gap-2 mb-4">
-                    {sibsinDescriptions[iljiSibsin].keywords.map((kw, idx) => (
-                      <span
-                        key={idx}
-                        className="px-3 py-1 bg-pink-100 text-pink-800 rounded-full text-sm font-medium"
-                      >
-                        #{kw}
-                      </span>
-                    ))}
-                  </div>
                   <p className="text-gray-700 leading-relaxed whitespace-pre-line word-keep-all">
-                    {sibsinDescriptions[iljiSibsin].description}
+                    {getSibsinDescriptionBeforePersonality(sibsinDescriptions[iljiSibsin].description)}
                   </p>
                 </div>
               )}
