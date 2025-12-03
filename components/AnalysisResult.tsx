@@ -263,7 +263,7 @@ const SajuPillarsDisplay: React.FC<{ sajuInfo: SajuInfo }> = ({ sajuInfo }) => {
   );
 };
 
-const DaewoonDisplay: React.FC<{ sajuInfo: SajuInfo; onShowDaewoon: (show: boolean) => void }> = ({ sajuInfo, onShowDaewoon }) => {
+const DaewoonDisplay: React.FC<{ sajuInfo: SajuInfo; onShowDaewoon: (show: boolean) => void; showDaewoon: boolean }> = ({ sajuInfo, onShowDaewoon, showDaewoon }) => {
   const [typedText, setTypedText] = useState("");
   const [showButton, setShowButton] = useState(false);
 
@@ -314,7 +314,7 @@ const DaewoonDisplay: React.FC<{ sajuInfo: SajuInfo; onShowDaewoon: (show: boole
             </p>
           </div>
 
-          {showButton && (
+          {showButton && !showDaewoon && (
             <div className="mt-6 animate-fade-in">
               <button
                 onClick={() => onShowDaewoon(true)}
@@ -501,6 +501,8 @@ const IlganPersonalityDisplay: React.FC<{ ilganChar: string }> = ({
   ilganChar,
 }) => {
   const [showInfo, setShowInfo] = useState(false);
+  const [typedText, setTypedText] = useState("");
+  const [showButton, setShowButton] = useState(false);
   const data = ilganDescriptions[ilganChar];
 
   // 일간 오행 정보 가져오기
@@ -514,20 +516,72 @@ const IlganPersonalityDisplay: React.FC<{ ilganChar: string }> = ({
         border: "border border-gray-200",
       };
 
+  const fullText = "사주 팔자는 네 개의 기둥으로 이루어져 있습니다. 年柱(년주)는 조상의 기운과 뿌리를, 月柱(월주)는 부모와 사회의 영향을, 日柱(일주)는 바로 나 자신의 본질을, 時柱(시주)는 자식과 내 미래의 방향을 담고 있습니다. 그 중심에 나를 나타내는 日干(일간)이 있습니다.";
+
+  React.useEffect(() => {
+    if (showInfo) return;
+
+    let index = 0;
+    let isMounted = true;
+
+    const typingInterval = setInterval(() => {
+      if (!isMounted) {
+        clearInterval(typingInterval);
+        return;
+      }
+
+      if (index <= fullText.length) {
+        setTypedText(fullText.slice(0, index));
+        index++;
+      } else {
+        clearInterval(typingInterval);
+        setShowButton(true);
+      }
+    }, 50);
+
+    return () => {
+      isMounted = false;
+      clearInterval(typingInterval);
+    };
+  }, [fullText, showInfo]);
+
   if (!data) return null;
 
   return (
-    <div className="mt-10 flex flex-col items-center animate-fade-in">
-      {!showInfo ? (
-        <button
-          onClick={() => setShowInfo(true)}
-          className="btn-primary flex items-center gap-3 py-4 px-8 rounded-full shadow-xl transform hover:scale-105 transition-all duration-300"
-        >
-          <UserIcon className="w-6 h-6" />
-          <span className="text-lg font-bold">일간(나)의 성격 확인하기</span>
-        </button>
-      ) : (
-        <div className="glass-card p-6 md:p-8 w-full max-w-3xl border-t-4 border-yellow-400 animate-fade-in-fast">
+    <div className="mt-8">
+      <div className="p-6 bg-gradient-to-br from-amber-50 via-yellow-50 to-orange-50 rounded-2xl border-2 border-amber-200 shadow-lg animate-fade-in glass-card">
+        <div className="text-center">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-amber-400 to-yellow-400 rounded-full mb-4 animate-pulse shadow-lg">
+            <span className="text-4xl">✨</span>
+          </div>
+          <h4 className="text-3xl md:text-4xl font-extrabold bg-gradient-to-r from-amber-600 via-yellow-600 to-orange-500 bg-clip-text text-transparent mb-5">
+            일간(日干) - 나의 본질
+          </h4>
+          <div className="min-h-[160px] flex items-center justify-center">
+            <p className="text-lg md:text-xl text-gray-700 leading-relaxed font-medium max-w-3xl mx-auto">
+              {typedText}
+              {typedText.length < fullText.length && (
+                <span className="inline-block w-0.5 h-6 bg-amber-600 ml-1 animate-pulse"></span>
+              )}
+            </p>
+          </div>
+
+          {showButton && !showInfo && (
+            <div className="mt-6 animate-fade-in">
+              <button
+                onClick={() => setShowInfo(true)}
+                className="btn-primary flex items-center gap-3 py-4 px-8 rounded-full shadow-xl transform hover:scale-105 transition-all duration-300 mx-auto"
+              >
+                <UserIcon className="w-6 h-6" />
+                <span className="text-lg font-bold">일간(나)의 성격 확인하기</span>
+                <ChevronDownIcon className="w-5 h-5" />
+              </button>
+            </div>
+          )}
+        </div>
+
+        {showInfo && (
+          <div className="mt-8 pt-8 border-t-2 border-amber-300 animate-fade-in-fast">
           <div className="text-center mb-6">
             <div className="inline-block px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm font-semibold mb-2">
               나를 나타내는 글자 (일간)
@@ -590,8 +644,9 @@ const IlganPersonalityDisplay: React.FC<{ ilganChar: string }> = ({
               {data.advice}
             </p>
           </div>
-        </div>
-      )}
+          </div>
+        )}
+      </div>
     </div>
   );
 };
@@ -600,7 +655,38 @@ const IljuAnalysisDisplay: React.FC<{ iljuGanji: string }> = ({
   iljuGanji,
 }) => {
   const [showInfo, setShowInfo] = useState(false);
+  const [typedText, setTypedText] = useState("");
+  const [showButton, setShowButton] = useState(false);
   const data = iljuDescriptions[iljuGanji];
+
+  const fullText = "日柱(일주)는 나 자신의 핵심이자 배우자의 궁입니다. 일간은 내 영혼을, 일지는 내 몸과 배우자를 상징합니다. 일주를 통해 나의 본성과 배우자와의 인연, 그리고 인생의 안정감을 읽어낼 수 있습니다.";
+
+  React.useEffect(() => {
+    if (showInfo) return;
+
+    let index = 0;
+    let isMounted = true;
+
+    const typingInterval = setInterval(() => {
+      if (!isMounted) {
+        clearInterval(typingInterval);
+        return;
+      }
+
+      if (index <= fullText.length) {
+        setTypedText(fullText.slice(0, index));
+        index++;
+      } else {
+        clearInterval(typingInterval);
+        setShowButton(true);
+      }
+    }, 50);
+
+    return () => {
+      isMounted = false;
+      clearInterval(typingInterval);
+    };
+  }, [fullText, showInfo]);
 
   if (!data) return null;
 
@@ -617,23 +703,41 @@ const IljuAnalysisDisplay: React.FC<{ iljuGanji: string }> = ({
     : { bg: "bg-gray-200", text: "text-gray-800", border: "border-gray-300" };
 
   return (
-    <div className="mt-10 flex flex-col items-center animate-fade-in">
-      <div className="text-center mb-6">
-        <p className="text-gray-500 text-sm">나와 배우자, 나의 영역</p>
-        <h3 className="text-xl font-bold text-gray-800 mt-1">일주 (日柱)</h3>
-      </div>
+    <div className="mt-8">
+      <div className="p-6 bg-gradient-to-br from-emerald-50 via-green-50 to-teal-50 rounded-2xl border-2 border-emerald-200 shadow-lg animate-fade-in glass-card">
+        <div className="text-center">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-emerald-400 to-green-400 rounded-full mb-4 animate-pulse shadow-lg">
+            <span className="text-4xl">🏠</span>
+          </div>
+          <h4 className="text-3xl md:text-4xl font-extrabold bg-gradient-to-r from-emerald-600 via-green-600 to-teal-500 bg-clip-text text-transparent mb-5">
+            일주(日柱) - 나와 배우자
+          </h4>
+          <div className="min-h-[140px] flex items-center justify-center">
+            <p className="text-lg md:text-xl text-gray-700 leading-relaxed font-medium max-w-3xl mx-auto">
+              {typedText}
+              {typedText.length < fullText.length && (
+                <span className="inline-block w-0.5 h-6 bg-emerald-600 ml-1 animate-pulse"></span>
+              )}
+            </p>
+          </div>
 
-      {!showInfo ? (
-        <button
-          onClick={() => setShowInfo(true)}
-          className="btn-primary flex items-center gap-3 py-4 px-8 rounded-full shadow-xl transform hover:scale-105 transition-all duration-300 bg-emerald-400 hover:bg-emerald-500 text-white focus:ring-emerald-400/50"
-          style={{ backgroundColor: "#10b981", color: "white" }}
-        >
-          <HomeIcon className="w-6 h-6" />
-          <span className="text-lg font-bold">일주(나와 배우자) 분석 보기</span>
-        </button>
-      ) : (
-        <div className="glass-card p-6 md:p-8 w-full max-w-3xl border-t-4 border-emerald-400 animate-fade-in-fast">
+          {showButton && !showInfo && (
+            <div className="mt-6 animate-fade-in">
+              <button
+                onClick={() => setShowInfo(true)}
+                className="btn-primary flex items-center gap-3 py-4 px-8 rounded-full shadow-xl transform hover:scale-105 transition-all duration-300 mx-auto bg-emerald-500 hover:bg-emerald-600"
+                style={{ backgroundColor: "#10b981" }}
+              >
+                <HomeIcon className="w-6 h-6" />
+                <span className="text-lg font-bold">일주(나와 배우자) 분석 보기</span>
+                <ChevronDownIcon className="w-5 h-5" />
+              </button>
+            </div>
+          )}
+        </div>
+
+        {showInfo && (
+          <div className="mt-8 pt-8 border-t-2 border-emerald-300 animate-fade-in-fast">
           <div className="text-center mb-6">
             <div className="inline-block px-3 py-1 bg-emerald-100 text-emerald-800 rounded-full text-sm font-semibold mb-2">
               나의 일주 (Day Pillar)
@@ -700,8 +804,9 @@ const IljuAnalysisDisplay: React.FC<{ iljuGanji: string }> = ({
               </p>
             </div>
           </div>
-        </div>
-      )}
+          </div>
+        )}
+      </div>
     </div>
   );
 };
@@ -717,6 +822,8 @@ const SibsinPositionDisplay: React.FC<{ sajuInfo: SajuInfo }> = ({
   sajuInfo,
 }) => {
   const [showInfo, setShowInfo] = useState(false);
+  const [typedText, setTypedText] = useState("");
+  const [showButton, setShowButton] = useState(false);
   const { pillars } = sajuInfo;
 
   // 월령(월주 지지)과 일지(일주 지지)의 십신
@@ -725,37 +832,82 @@ const SibsinPositionDisplay: React.FC<{ sajuInfo: SajuInfo }> = ({
   const wollyeongChar = pillars.month.jiJi.char; // 월령 글자
   const iljiChar = pillars.day.jiJi.char; // 일지 글자
 
-  return (
-    <div className="mt-10 flex flex-col items-center animate-fade-in">
-      <div className="text-center mb-6">
-        <p className="text-gray-500 text-sm">사주에서 가장 중요한 두 가지</p>
-        <h3 className="text-xl font-bold text-gray-800 mt-1">
-          월령과 일지 십신
-        </h3>
-      </div>
+  const fullText = "사주에서 가장 중요한 두 자리는 月令(월령)과 日支(일지)입니다. 월령은 내가 태어난 달의 기운으로 사회적 성공과 직업운을, 일지는 나의 뿌리이자 배우자의 자리로 가정의 행복과 안정을 결정합니다. 이 두 곳의 십신을 이해하면 인생의 큰 방향이 보입니다.";
 
-      {!showInfo ? (
-        <button
-          onClick={() => setShowInfo(true)}
-          className="btn-primary flex items-center gap-3 py-4 px-8 rounded-full shadow-xl transform hover:scale-105 transition-all duration-300 bg-purple-500 hover:bg-purple-600 text-white focus:ring-purple-400/50"
-        >
-          <svg
-            className="w-6 h-6"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"
-            />
-          </svg>
-          <span className="text-lg font-bold">월령과 일지 십신 보기</span>
-        </button>
-      ) : (
-        <div className="glass-card p-6 md:p-8 w-full max-w-4xl border-t-4 border-purple-400 animate-fade-in-fast">
+  React.useEffect(() => {
+    if (showInfo) return;
+
+    let index = 0;
+    let isMounted = true;
+
+    const typingInterval = setInterval(() => {
+      if (!isMounted) {
+        clearInterval(typingInterval);
+        return;
+      }
+
+      if (index <= fullText.length) {
+        setTypedText(fullText.slice(0, index));
+        index++;
+      } else {
+        clearInterval(typingInterval);
+        setShowButton(true);
+      }
+    }, 50);
+
+    return () => {
+      isMounted = false;
+      clearInterval(typingInterval);
+    };
+  }, [fullText, showInfo]);
+
+  return (
+    <div className="mt-8">
+      <div className="p-6 bg-gradient-to-br from-purple-50 via-violet-50 to-indigo-50 rounded-2xl border-2 border-purple-200 shadow-lg animate-fade-in glass-card">
+        <div className="text-center">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-purple-400 to-indigo-400 rounded-full mb-4 animate-pulse shadow-lg">
+            <span className="text-4xl">📋</span>
+          </div>
+          <h4 className="text-3xl md:text-4xl font-extrabold bg-gradient-to-r from-purple-600 via-violet-600 to-indigo-500 bg-clip-text text-transparent mb-5">
+            월령(月令)과 일지(日支)
+          </h4>
+          <div className="min-h-[160px] flex items-center justify-center">
+            <p className="text-lg md:text-xl text-gray-700 leading-relaxed font-medium max-w-3xl mx-auto">
+              {typedText}
+              {typedText.length < fullText.length && (
+                <span className="inline-block w-0.5 h-6 bg-purple-600 ml-1 animate-pulse"></span>
+              )}
+            </p>
+          </div>
+
+          {showButton && !showInfo && (
+            <div className="mt-6 animate-fade-in">
+              <button
+                onClick={() => setShowInfo(true)}
+                className="btn-primary flex items-center gap-3 py-4 px-8 rounded-full shadow-xl transform hover:scale-105 transition-all duration-300 mx-auto bg-purple-500 hover:bg-purple-600"
+              >
+                <svg
+                  className="w-6 h-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"
+                  />
+                </svg>
+                <span className="text-lg font-bold">월령과 일지 십신 보기</span>
+                <ChevronDownIcon className="w-5 h-5" />
+              </button>
+            </div>
+          )}
+        </div>
+
+        {showInfo && (
+          <div className="mt-8 pt-8 border-t-2 border-purple-300 animate-fade-in-fast">
           <div className="text-center mb-8">
             <div className="inline-block px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm font-semibold mb-2">
               핵심 십신 분석
@@ -822,7 +974,7 @@ const SibsinPositionDisplay: React.FC<{ sajuInfo: SajuInfo }> = ({
                         ))}
                       </div>
                     </div>
-                    <div className="text-gray-700 text-sm leading-relaxed whitespace-pre-line word-keep-all bg-white/70 p-4 rounded-lg">
+                    <div className="text-gray-700 text-base leading-relaxed whitespace-pre-line word-keep-all bg-white/70 p-4 rounded-lg">
                       {
                         sibsinPositionDescriptions[wollyeongSibsin]["월주"]
                           .detail
@@ -883,7 +1035,7 @@ const SibsinPositionDisplay: React.FC<{ sajuInfo: SajuInfo }> = ({
                         ))}
                       </div>
                     </div>
-                    <div className="text-gray-700 text-sm leading-relaxed whitespace-pre-line word-keep-all bg-white/70 p-4 rounded-lg">
+                    <div className="text-gray-700 text-base leading-relaxed whitespace-pre-line word-keep-all bg-white/70 p-4 rounded-lg">
                       {sibsinPositionDescriptions[iljiSibsin]["일주"].detail}
                     </div>
                   </div>
@@ -891,20 +1043,9 @@ const SibsinPositionDisplay: React.FC<{ sajuInfo: SajuInfo }> = ({
               )}
             </div>
           </div>
-
-          <div className="mt-8 p-5 bg-gradient-to-r from-purple-50 to-blue-50 rounded-xl border-2 border-purple-200 text-center">
-            <p className="text-purple-900 font-bold text-base mb-2">
-              💡 왜 월령과 일지가 중요한가?
-            </p>
-            <p className="text-purple-800 text-sm leading-relaxed">
-              <strong>월령(月令)</strong>은 사회적 성공과 직업운을,{" "}
-              <strong>일지(日支)</strong>는 배우자와의 관계 및 가정의 행복을
-              결정짓는 핵심 요소입니다. 이 두 가지를 이해하면 인생의 큰 그림을
-              볼 수 있습니다.
-            </p>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };
@@ -1124,7 +1265,7 @@ export const AnalysisResult: React.FC<AnalysisResultProps> = ({
         {/* 십신 위치별 해석 섹션 (월령과 일지) */}
         <SibsinPositionDisplay sajuInfo={sajuData} />
 
-        <DaewoonDisplay sajuInfo={sajuData} onShowDaewoon={setShowDaewoon} />
+        <DaewoonDisplay sajuInfo={sajuData} onShowDaewoon={setShowDaewoon} showDaewoon={showDaewoon} />
 
         {showDaewoon && (
           <>
