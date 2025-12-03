@@ -12,11 +12,6 @@ export const OhaengLoading: React.FC = () => {
             <div className="ohaeng-orb water"></div>
         </div>
       </div>
-      <p className="relative mt-40 text-center text-xl font-semibold text-gray-800 bg-white/70 backdrop-blur-sm p-4 rounded-xl shadow-lg pointer-events-auto">
-        오행의 기운을 모아
-        <br />
-        사주를 분석하고 있습니다...
-      </p>
     </div>
   );
 };

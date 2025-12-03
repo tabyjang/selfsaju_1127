@@ -1115,6 +1115,15 @@ export const AnalysisResult: React.FC<AnalysisResultProps> = ({
         <InteractionsDisplay sajuInfo={sajuData} />
         <SinsalDisplay sajuInfo={sajuData} />
 
+        {/* 일간 성격 확인 섹션 */}
+        <IlganPersonalityDisplay ilganChar={ilganChar} />
+
+        {/* 일주 분석 섹션 */}
+        <IljuAnalysisDisplay iljuGanji={iljuGanji} />
+
+        {/* 십신 위치별 해석 섹션 (월령과 일지) */}
+        <SibsinPositionDisplay sajuInfo={sajuData} />
+
         <DaewoonDisplay sajuInfo={sajuData} onShowDaewoon={setShowDaewoon} />
 
         {showDaewoon && (
@@ -1123,15 +1132,6 @@ export const AnalysisResult: React.FC<AnalysisResultProps> = ({
             <SewoonDisplay sajuInfo={sajuData} />
           </>
         )}
-
-        {/* 일간 성격 확인 섹션 (세운 아래에 배치) */}
-        <IlganPersonalityDisplay ilganChar={ilganChar} />
-
-        {/* 일주 분석 섹션 (일간 아래에 배치) */}
-        <IljuAnalysisDisplay iljuGanji={iljuGanji} />
-
-        {/* 십신 위치별 해석 섹션 (일주 아래에 배치) */}
-        <SibsinPositionDisplay sajuInfo={sajuData} />
 
         {/*  상세 분석 결과 토글 버튼 */}
         {result && !showAiDetails && (

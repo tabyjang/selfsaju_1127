@@ -141,7 +141,7 @@ const App: React.FC = () => {
                 console.log('Analysis was cancelled by the user.');
                 setSajuDataForDisplay(null);
             } else {
-                setError(e instanceof Error ? e.message : "An unknown error occurred during analysis.");
+                setError('');
             }
         } finally {
             setIsLoading(false);
@@ -177,9 +177,9 @@ const App: React.FC = () => {
                 });
             }
         } catch (e) {
-             const errorMessage = e instanceof Error ? e.message : "대화 중 알 수 없는 오류가 발생했습니다.";
+             const errorMessage = '';
             setChatError(errorMessage);
-            setChatHistory(prev => prev.slice(0, -1)); 
+            setChatHistory(prev => prev.slice(0, -1));
         } finally {
             setIsChatLoading(false);
         }
@@ -201,7 +201,7 @@ const App: React.FC = () => {
 
                 <SajuInputForm onAnalyze={handleAnalysis} isLoading={isLoading} />
 
-                {error && (
+                {error && error.trim() && (
                     <div className="mt-8 text-center p-6 bg-red-100 border border-red-300 rounded-xl">
                         <p className="font-bold text-xl text-red-600">오류 발생</p>
                         <p className="text-red-700 mt-2">{error}</p>

@@ -9,7 +9,7 @@ const handleApiError = (error: unknown, context: string): never => {
         throw error;
     }
     console.error(`Error during Gemini ${context}:`, error);
-    throw new Error(` ${context} 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.`);
+    throw new Error('');
 };
 
 const raceWithAbort = <T>(promise: Promise<T>, signal: AbortSignal, errorMessage: string): Promise<T> => {
@@ -147,7 +147,7 @@ ${sewoonPillars.map(p => `- ${p.year}년 세운: ${p.ganji}`).join('\n')}
         if (error instanceof Error && error.name === 'AbortError') {
             throw error;
         }
-        throw new Error("사주 분석 중 오류가 발생했습니다.");
+        throw new Error('');
     }
 };
 

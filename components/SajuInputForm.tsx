@@ -130,9 +130,11 @@ export const SajuInputForm: React.FC<SajuInputFormProps> = ({ onAnalyze, isLoadi
             onAnalyze(sajuInfo);
 
         } catch (err) {
-            const errorMessage = err instanceof Error ? err.message : "사주 계산 중 오류가 발생했습니다.";
+            const errorMessage = err instanceof Error ? err.message : "";
             setDateError(errorMessage);
-            alert(errorMessage);
+            if (errorMessage) {
+                alert(errorMessage);
+            }
         }
     };
 
@@ -217,7 +219,7 @@ export const SajuInputForm: React.FC<SajuInputFormProps> = ({ onAnalyze, isLoadi
                 className="btn-primary mt-10 w-full flex items-center justify-center gap-3 py-4 px-4 rounded-xl duration-300 disabled:opacity-60 disabled:cursor-not-allowed transform focus:outline-none focus:ring-4 focus:ring-yellow-400/50"
             >
                 <WandIcon className="w-6 h-6" />
-                <span className="text-lg">{isLoading ? '분석 중...' : 'AI 분석 시작하기'}</span>
+                <span className="text-lg">{isLoading ? '분석 중...' : '분석 시작하기'}</span>
             </button>
 
             {isYajasiInfoOpen && (
