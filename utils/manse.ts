@@ -59,6 +59,93 @@ const jijangganData: { [key: string]: string[] } = {
     '酉': ['庚', '辛'], '戌': ['辛', '丁', '戊'], '亥': ['戊', '甲', '壬'],
 };
 
+// 천간 5합 (Heavenly Stem Combinations)
+// 甲己合土, 乙庚合金, 丙辛合水, 丁壬合木, 戊癸合火
+export const cheonganHab: { [key: string]: { partner: string; resultOhaeng: Ohaeng } } = {
+    '甲': { partner: '己', resultOhaeng: 'earth' },
+    '己': { partner: '甲', resultOhaeng: 'earth' },
+    '乙': { partner: '庚', resultOhaeng: 'metal' },
+    '庚': { partner: '乙', resultOhaeng: 'metal' },
+    '丙': { partner: '辛', resultOhaeng: 'water' },
+    '辛': { partner: '丙', resultOhaeng: 'water' },
+    '丁': { partner: '壬', resultOhaeng: 'wood' },
+    '壬': { partner: '丁', resultOhaeng: 'wood' },
+    '戊': { partner: '癸', resultOhaeng: 'fire' },
+    '癸': { partner: '戊', resultOhaeng: 'fire' },
+};
+
+// 지장간 월령일수 (Hidden Stems Command Days)
+export interface JijangganDetail {
+    yeoGi?: { char: string; days: number };  // 여기 (residual energy)
+    jungGi?: { char: string; days: number }; // 중기 (middle energy)
+    bonGi: { char: string; days: number };   // 본기 (primary energy)
+}
+
+export const jijangganDetails: { [key: string]: JijangganDetail } = {
+    // 사왕지 (Four Peak Branches) - 자·묘·유: 10+20, 오: 10+9+11
+    '子': {
+        yeoGi: { char: '壬', days: 10 },
+        bonGi: { char: '癸', days: 20 }
+    },
+    '卯': {
+        yeoGi: { char: '甲', days: 10 },
+        bonGi: { char: '乙', days: 20 }
+    },
+    '酉': {
+        yeoGi: { char: '庚', days: 10 },
+        bonGi: { char: '辛', days: 20 }
+    },
+    '午': {
+        yeoGi: { char: '丙', days: 10 },
+        jungGi: { char: '己', days: 9 },
+        bonGi: { char: '丁', days: 11 }
+    },
+
+    // 사생지 (Four Growth Branches) - 7-7-16
+    '寅': {
+        yeoGi: { char: '戊', days: 7 },
+        jungGi: { char: '丙', days: 7 },
+        bonGi: { char: '甲', days: 16 }
+    },
+    '申': {
+        yeoGi: { char: '戊', days: 7 },
+        jungGi: { char: '壬', days: 7 },
+        bonGi: { char: '庚', days: 16 }
+    },
+    '巳': {
+        yeoGi: { char: '戊', days: 7 },
+        jungGi: { char: '庚', days: 7 },
+        bonGi: { char: '丙', days: 16 }
+    },
+    '亥': {
+        yeoGi: { char: '戊', days: 7 },
+        jungGi: { char: '甲', days: 7 },
+        bonGi: { char: '壬', days: 16 }
+    },
+
+    // 사고지 (Four Tomb Branches) - 9-3-18
+    '辰': {
+        yeoGi: { char: '乙', days: 9 },
+        jungGi: { char: '癸', days: 3 },
+        bonGi: { char: '戊', days: 18 }
+    },
+    '未': {
+        yeoGi: { char: '丁', days: 9 },
+        jungGi: { char: '乙', days: 3 },
+        bonGi: { char: '己', days: 18 }
+    },
+    '戌': {
+        yeoGi: { char: '辛', days: 9 },
+        jungGi: { char: '丁', days: 3 },
+        bonGi: { char: '戊', days: 18 }
+    },
+    '丑': {
+        yeoGi: { char: '癸', days: 9 },
+        jungGi: { char: '辛', days: 3 },
+        bonGi: { char: '己', days: 18 }
+    },
+};
+
 const sibsinMap: { name: string, hanja: string }[] = [
     { name: '비견', hanja: '比肩' }, { name: '겁재', hanja: '劫財' },
     { name: '식신', hanja: '食神' }, { name: '상관', hanja: '傷官' },

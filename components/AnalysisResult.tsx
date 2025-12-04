@@ -15,6 +15,8 @@ import { sibsinDescriptions } from "../utils/sibsinDescriptions";
 import { sibsinPositionDescriptions } from "../utils/sibsinPositionDescriptions";
 import { InteractionsDisplay } from "./InteractionsDisplay";
 import { SinsalDisplay } from "./SinsalDisplay";
+import { GyeokgukDisplay } from "./GyeokgukDisplay";
+import { analyze격국 } from "../utils/gyeokguk";
 import {
   DiagnosisIcon,
   PrescriptionIcon,
@@ -1154,6 +1156,21 @@ export const AnalysisResult: React.FC<AnalysisResultProps> = ({
   const [showAiDetails, setShowAiDetails] = useState(false);
   const [showDaewoon, setShowDaewoon] = useState(false);
 
+  // 격국 판단
+  const 격국결과 = useMemo(() => {
+    const 사주8글자 = [
+      sajuData.pillars.hour.cheonGan.char,
+      sajuData.pillars.hour.jiJi.char,
+      sajuData.pillars.day.cheonGan.char,
+      sajuData.pillars.day.jiJi.char,
+      sajuData.pillars.month.cheonGan.char,
+      sajuData.pillars.month.jiJi.char,
+      sajuData.pillars.year.cheonGan.char,
+      sajuData.pillars.year.jiJi.char,
+    ];
+    return analyze격국(사주8글자);
+  }, [sajuData]);
+
   const stageInfo = useMemo(
     () =>
       result
@@ -1238,6 +1255,9 @@ export const AnalysisResult: React.FC<AnalysisResultProps> = ({
 
         <InteractionsDisplay sajuInfo={sajuData} />
         <SinsalDisplay sajuInfo={sajuData} />
+
+        {/* 격국 분석 섹션 */}
+        <GyeokgukDisplay result={격국결과} />
 
         {/* 일간 성격 확인 섹션 */}
         <IlganPersonalityDisplay ilganChar={ilganChar} />
