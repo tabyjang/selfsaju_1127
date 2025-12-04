@@ -14,13 +14,13 @@ export interface SajuData {
 // --- New Rich Saju Info Types ---
 
 export interface Sibsin {
-    name: string;
-    hanja: string;
+  name: string;
+  hanja: string;
 }
 
 export interface Unseong {
-    name:string;
-    hanja: string;
+  name: string;
+  hanja: string;
 }
 
 export interface Gan {
@@ -37,8 +37,8 @@ export interface Ji extends Gan {
 export interface Pillar {
   cheonGan: Gan;
   jiJi: Ji;
-  label: string; 
-  ganji: string; 
+  label: string;
+  ganji: string;
 }
 
 export interface DaewoonPillar {

@@ -22,8 +22,8 @@ export const birthLocations = [
     { name: '중국 연길', offsetMinutes: 22 },
 ];
 
-const unseongCycleNames = [ '장생', '목욕', '관대', '건록', '제왕', '쇠', '병', '사', '묘', '절', '태', '양' ];
-const unseongCycleHanja = [ '長生', '沐浴', '冠帶', '建祿', '帝旺', '衰', '病', '死', '墓', '絶', '胎', '養' ];
+const unseongCycleNames = ['장생', '목욕', '관대', '건록', '제왕', '쇠', '병', '사', '묘', '절', '태', '양'];
+const unseongCycleHanja = ['長生', '沐浴', '冠帶', '建祿', '帝旺', '衰', '病', '死', '墓', '絶', '胎', '養'];
 
 const ganjiCycle: string[] = [];
 for (let i = 0; i < 60; i++) {
@@ -68,8 +68,8 @@ const sibsinMap: { name: string, hanja: string }[] = [
 ];
 
 const ohaengRelation: { [key in Ohaeng]: { [key in Ohaeng]: number } } = {
-    wood:  { wood: 0, fire: 2, earth: 4, metal: 6, water: 8 },
-    fire:  { fire: 0, earth: 2, metal: 4, water: 6, wood: 8 },
+    wood: { wood: 0, fire: 2, earth: 4, metal: 6, water: 8 },
+    fire: { fire: 0, earth: 2, metal: 4, water: 6, wood: 8 },
     earth: { earth: 0, metal: 2, water: 4, wood: 6, fire: 8 },
     metal: { metal: 0, water: 2, wood: 4, fire: 6, earth: 8 },
     water: { water: 0, wood: 2, fire: 4, earth: 6, metal: 8 },
@@ -82,12 +82,12 @@ const getSibsin = (ilgan: string, targetGan: string): Sibsin => {
 
     const relationIndex = ohaengRelation[ilganInfo.ohaeng][targetInfo.ohaeng];
     const yinYangIndex = ilganInfo.yinYang === targetInfo.yinYang ? 0 : 1;
-    
+
     return sibsinMap[relationIndex + yinYangIndex];
 };
 
-const yangUnseongStartIndex: { [key:string]: number } = { '甲':11, '丙':2, '戊':2, '庚':5, '壬':8 };
-const yinUnseongStartIndex: { [key:string]: number } = { '乙':6, '丁':9, '己':9, '辛':0, '癸':3 };
+const yangUnseongStartIndex: { [key: string]: number } = { '甲': 11, '丙': 2, '戊': 2, '庚': 5, '壬': 8 };
+const yinUnseongStartIndex: { [key: string]: number } = { '乙': 6, '丁': 9, '己': 9, '辛': 0, '癸': 3 };
 
 const getUnseong = (ilgan: string, targetJiji: string) => {
     const ilganIsYang = earthlyBranchGanInfo[ilgan].yinYang === 'yang';
@@ -98,7 +98,7 @@ const getUnseong = (ilgan: string, targetJiji: string) => {
 
     let diff = targetIndex - startIndex;
     if (!ilganIsYang) diff = -diff;
-    
+
     const unseongIndex = (diff + 12) % 12;
 
     return { name: unseongCycleNames[unseongIndex], hanja: unseongCycleHanja[unseongIndex] };
@@ -121,11 +121,11 @@ const getDaewoonPillars = (
         } else {
             pillarIndex = (startIndex - 1 - i + 120) % 60;
         }
-        
+
         const ganji = ganjiCycle[pillarIndex];
         const gan = ganji[0];
         const ji = ganji[1];
-        
+
         const cheonGan: Gan = {
             char: gan,
             ohaeng: earthlyBranchGanInfo[gan].ohaeng,
@@ -156,12 +156,12 @@ const getDaewoonPillars = (
 };
 
 export const getSajuInfoFromCharacters = (
-  characters: string[],
-  gender: Gender,
-  daewoon: Daewoon,
-  daewoonNumber: number,
-  birthDate: { year: number; month: number; day: number; hour: number; minute: number; },
-  birthRegion: string,
+    characters: string[],
+    gender: Gender,
+    daewoon: Daewoon,
+    daewoonNumber: number,
+    birthDate: { year: number; month: number; day: number; hour: number; minute: number; },
+    birthRegion: string,
 ): SajuInfo => {
     const [siGan, siJi, ilGan, ilJi, wolGan, wolJi, nyeonGan, nyeonJi] = characters;
 
@@ -184,7 +184,7 @@ export const getSajuInfoFromCharacters = (
             })),
             unseong: getUnseong(ilGan, ji),
         };
-        
+
         return {
             label,
             ganji: `${gan}${ji}`,
@@ -192,7 +192,7 @@ export const getSajuInfoFromCharacters = (
             jiJi
         };
     };
-    
+
     const wolJuGanji = `${wolGan}${wolJi}`;
     const daewoonPillars = getDaewoonPillars(wolJuGanji, daewoon, daewoonNumber, ilGan);
 
@@ -213,22 +213,22 @@ export const getSajuInfoFromCharacters = (
 };
 
 const parseSolarTermDate = (year: number, termStr: string): Date => {
-  const [monthDay, time] = termStr.split(' ');
-  const [month, day] = monthDay.split('-').map(Number);
-  const [hour, minute] = time.split(':').map(Number);
-  const isoStr = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}T${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}:00+09:00`;
-  return new Date(isoStr);
+    const [monthDay, time] = termStr.split(' ');
+    const [month, day] = monthDay.split('-').map(Number);
+    const [hour, minute] = time.split(':').map(Number);
+    const isoStr = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}T${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}:00+09:00`;
+    return new Date(isoStr);
 };
 
 export const getSajuFromDate = (
-  birthDate: Date,
-  gender: Gender,
-  timeOffsetMinutes: number,
-  isYajasi: boolean
+    birthDate: Date,
+    gender: Gender,
+    timeOffsetMinutes: number,
+    isYajasi: boolean
 ): { characters: string[]; daewoon: Daewoon; daewoonNumber: number } => {
     // Adjust birth date from KST to Local Mean Time based on longitude
     const adjustedBirthDate = new Date(birthDate.getTime() - timeOffsetMinutes * 60 * 1000);
-    
+
     if (isNaN(adjustedBirthDate.getTime())) {
         throw new Error("유효하지 않은 날짜입니다. 입력값을 확인해주세요.");
     }
@@ -246,13 +246,13 @@ export const getSajuFromDate = (
     // 사주 상의 연도는 입춘(Ipchun)을 기준으로 바뀜
     const ipchun = parseSolarTermDate(year, yearTerms[2]);
     const sajuYear = adjustedBirthDate < ipchun ? year - 1 : year;
-    
+
     const yearGapjaIndex = (sajuYear - 4 + 60) % 60;
     const yearStemIndex = yearGapjaIndex % 10;
     const yearBranchIndex = yearGapjaIndex % 12;
     const yearStem = heavenlyStems[yearStemIndex];
     const yearBranch = earthlyBranches[yearBranchIndex];
-  
+
     // --- 2. 월주 (Month Pillar) 계산 ---
     // 각 사주 월의 시작이 되는 절기(Jeolgi) 인덱스: 2(입춘), 4(경칩), ..., 0(소한)
     const jeolgiIndices = [2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 0];
@@ -284,11 +284,11 @@ export const getSajuFromDate = (
 
     // 생일이 어느 절기 사이에 있는지 찾아 월지를 결정
     for (let i = 0; i < 12; i++) {
-        if (adjustedBirthDate >= jeolgiDates[i] && adjustedBirthDate < jeolgiDates[i+1]) {
+        if (adjustedBirthDate >= jeolgiDates[i] && adjustedBirthDate < jeolgiDates[i + 1]) {
             monthBranch = sajuMonthBranches[i];
             monthBranchIndexInCycle = i;
             currentTermDate = jeolgiDates[i];
-            nextTermDate = jeolgiDates[i+1];
+            nextTermDate = jeolgiDates[i + 1];
             break;
         }
     }
@@ -296,7 +296,7 @@ export const getSajuFromDate = (
     if (monthBranch === '') {
         throw new Error("월주를 계산할 수 없습니다. 날짜를 확인해주세요.");
     }
-    
+
     // 월두법(月頭法)으로 월간 계산
     let monthStemStartForInWol: number;
     if (yearStemIndex === 0 || yearStemIndex === 5) monthStemStartForInWol = 2; // 갑기 -> 병
@@ -304,19 +304,19 @@ export const getSajuFromDate = (
     else if (yearStemIndex === 2 || yearStemIndex === 7) monthStemStartForInWol = 6; // 병신 -> 경
     else if (yearStemIndex === 3 || yearStemIndex === 8) monthStemStartForInWol = 8; // 정임 -> 임
     else monthStemStartForInWol = 0; // 무계 -> 갑
-    
+
     const monthStemIndex = (monthStemStartForInWol + monthBranchIndexInCycle) % 10;
     const monthStem = heavenlyStems[monthStemIndex];
-    
+
     // --- 3. 일주 (Day Pillar) 계산 ---
     const dayPillarDate = new Date(adjustedBirthDate.getTime());
     const isYajasiTimeWindow = originalHour === 23 && originalMinute >= 30;
 
     // 야자시 적용이 아니고, 보정된 시간이 23시 이후일 때만 날짜를 하루 더함.
     if (!isYajasi || !isYajasiTimeWindow) {
-      if (adjustedBirthDate.getHours() >= 23) {
-        dayPillarDate.setDate(dayPillarDate.getDate() + 1);
-      }
+        if (adjustedBirthDate.getHours() >= 23) {
+            dayPillarDate.setDate(dayPillarDate.getDate() + 1);
+        }
     }
     // 야자시 적용 대상(isYajasi && isYajasiTimeWindow)인 경우, 날짜를 변경하지 않음.
 
@@ -328,10 +328,10 @@ export const getSajuFromDate = (
     );
 
     const daysDiff = Math.floor((birthDateUTC - refDateUTC) / (1000 * 60 * 60 * 24));
-    
-    const dayGapjaIndex = (54 + daysDiff) % 60; 
+
+    const dayGapjaIndex = (54 + daysDiff) % 60;
     const finalDayGapjaIndex = dayGapjaIndex < 0 ? dayGapjaIndex + 60 : dayGapjaIndex;
-    
+
     const dayStemIndex = finalDayGapjaIndex % 10;
     const dayBranch = earthlyBranches[finalDayGapjaIndex % 12];
     const dayStem = heavenlyStems[dayStemIndex];
@@ -340,7 +340,7 @@ export const getSajuFromDate = (
     // 시주 계산 시 야자시 적용 여부와 관계 없이 KST 23:00~00:59는 자시(子時)로 처리
     const timeBranchIndex = originalHour === 23 ? 0 : Math.floor((originalHour + 1) / 2) % 12;
     const timeBranch = earthlyBranches[timeBranchIndex];
-  
+
     // 시두법(時頭法)으로 시간(時干) 계산
     // 일간(日干)에 따라 자시(子時)의 천간이 정해지고, 이후 시간의 흐름에 따라 순행합니다.
     // (예: 甲己일에는 甲子시, 乙丑시, 丙寅시... 순서로 시간이 정해짐)
@@ -351,17 +351,17 @@ export const getSajuFromDate = (
         3: 6, 8: 6, // 丁(3), 壬(8)일 -> 庚子(6)시 부터 시작
         4: 8, 9: 8, // 戊(4), 癸(9)일 -> 壬子(8)시 부터 시작
     };
-    
+
     const timeStemStartForJaSi = hourStemStartMap[dayStemIndex];
     if (timeStemStartForJaSi === undefined) {
-         throw new Error(`Could not determine hour stem start for day stem index: ${dayStemIndex}`);
+        throw new Error(`Could not determine hour stem start for day stem index: ${dayStemIndex}`);
     }
-    
+
     const timeStemIndex = (timeStemStartForJaSi + timeBranchIndex) % 10;
     const timeStem = heavenlyStems[timeStemIndex];
 
     const characters = [timeStem, timeBranch, dayStem, dayBranch, monthStem, monthBranch, yearStem, yearBranch];
-    
+
     // --- 5. 대운 (Daewoon) 정보 계산 ---
     const isYearStemYang = yearStemIndex % 2 === 0;
     let daewoon: Daewoon;
@@ -371,13 +371,13 @@ export const getSajuFromDate = (
     } else {
         daewoon = 'yeokhaeng';
     }
-  
+
     // 대운수 계산 (생일과 가까운 절기 사이의 날짜를 3으로 나눔)
     let diff;
     if (daewoon === 'sunhaeng') {
         if (!nextTermDate) throw new Error("대운 계산을 위한 다음 절기를 찾을 수 없습니다.");
         diff = nextTermDate.getTime() - adjustedBirthDate.getTime();
-    } else { 
+    } else {
         if (!currentTermDate) throw new Error("대운 계산을 위한 이전 절기를 찾을 수 없습니다.");
         diff = adjustedBirthDate.getTime() - currentTermDate.getTime();
     }

@@ -80,9 +80,8 @@ const CharBox: React.FC<{ char: string }> = ({ char }) => {
 
   return (
     <div
-      className={`inline-flex items-center justify-center w-10 h-10 md:w-12 md:h-12 text-2xl font-bold rounded shadow-md ${
-        color.bg
-      } ${color.text} ${color.border ?? ""} saju-char-outline-small`}
+      className={`inline-flex items-center justify-center w-10 h-10 md:w-12 md:h-12 text-2xl font-bold rounded shadow-md ${color.bg
+        } ${color.text} ${color.border ?? ""} saju-char-outline-small`}
     >
       {char}
     </div>
@@ -100,9 +99,8 @@ const OhaengDisplayItem: React.FC<{ char: string; count: number }> = ({
   return (
     <div className="flex items-center gap-1.5">
       <div
-        className={`inline-flex items-center justify-center w-10 h-10 md:w-12 md:h-12 text-2xl font-bold rounded shadow-md ${
-          color.bg
-        } ${color.text} ${color.border ?? ""} saju-char-outline-small`}
+        className={`inline-flex items-center justify-center w-10 h-10 md:w-12 md:h-12 text-2xl font-bold rounded shadow-md ${color.bg
+          } ${color.text} ${color.border ?? ""} saju-char-outline-small`}
       >
         {char}
       </div>
@@ -191,11 +189,10 @@ const SajuPillarsDisplay: React.FC<{ sajuInfo: SajuInfo }> = ({ sajuInfo }) => {
 
         <div className="py-2 h-14 flex items-center justify-center border-t border-gray-200">
           <span
-            className={`font-semibold text-base saju-text-outline ${
-              pillar.cheonGan.sibsin.name === "일간"
+            className={`font-semibold text-base saju-text-outline ${pillar.cheonGan.sibsin.name === "일간"
                 ? "text-amber-600"
                 : "text-gray-700"
-            }`}
+              }`}
           >
             {pillar.cheonGan.sibsin.name === "일간"
               ? "일간(日干)"
@@ -205,9 +202,8 @@ const SajuPillarsDisplay: React.FC<{ sajuInfo: SajuInfo }> = ({ sajuInfo }) => {
 
         <div className="flex justify-center py-1.5 px-2">
           <div
-            className={`saju-char-outline w-16 h-16 md:w-20 md:h-20 flex items-center justify-center text-4xl md:text-5xl font-bold rounded-lg shadow-lg ${
-              ganColor.bg
-            } ${ganColor.text} ${ganColor.border ?? ""}`}
+            className={`saju-char-outline w-16 h-16 md:w-20 md:h-20 flex items-center justify-center text-4xl md:text-5xl font-bold rounded-lg shadow-lg ${ganColor.bg
+              } ${ganColor.text} ${ganColor.border ?? ""}`}
           >
             {pillar.cheonGan.char}
           </div>
@@ -215,9 +211,8 @@ const SajuPillarsDisplay: React.FC<{ sajuInfo: SajuInfo }> = ({ sajuInfo }) => {
 
         <div className="flex justify-center py-1.5 px-2">
           <div
-            className={`saju-char-outline w-16 h-16 md:w-20 md:h-20 flex items-center justify-center text-4xl md:text-5xl font-bold rounded-lg shadow-lg ${
-              jiColor.bg
-            } ${jiColor.text} ${jiColor.border ?? ""}`}
+            className={`saju-char-outline w-16 h-16 md:w-20 md:h-20 flex items-center justify-center text-4xl md:text-5xl font-bold rounded-lg shadow-lg ${jiColor.bg
+              } ${jiColor.text} ${jiColor.border ?? ""}`}
           >
             {pillar.jiJi.char}
           </div>
@@ -345,14 +340,12 @@ const DaewoonFlowDisplay: React.FC<{ sajuInfo: SajuInfo }> = ({ sajuInfo }) => {
     return (
       <div
         key={pillar.age}
-        className={`flex flex-col text-center text-xs md:text-sm p-1.5 bg-gray-900/5 rounded-lg border-2 shadow-md flex-shrink-0 w-[80px] md:w-[90px] ${
-          isActive ? "border-yellow-500" : "border-gray-200"
-        }`}
+        className={`flex flex-col text-center text-xs md:text-sm p-1.5 bg-gray-900/5 rounded-lg border-2 shadow-md flex-shrink-0 w-[80px] md:w-[90px] ${isActive ? "border-yellow-500" : "border-gray-200"
+          }`}
       >
         <div
-          className={`font-bold py-1 saju-text-outline ${
-            isActive ? "text-yellow-600" : "text-gray-800"
-          }`}
+          className={`font-bold py-1 saju-text-outline ${isActive ? "text-yellow-600" : "text-gray-800"
+            }`}
         >
           {pillar.age}세
           <span className="block text-xs font-normal text-gray-800">
@@ -366,9 +359,8 @@ const DaewoonFlowDisplay: React.FC<{ sajuInfo: SajuInfo }> = ({ sajuInfo }) => {
 
         <div className="flex justify-center py-0.5">
           <div
-            className={`saju-char-outline-small w-10 h-10 md:w-12 md:h-12 flex items-center justify-center text-2xl md:text-3xl font-bold rounded-md shadow-md ${
-              ganColor.bg
-            } ${ganColor.text} ${ganColor.border ?? ""}`}
+            className={`saju-char-outline-small w-10 h-10 md:w-12 md:h-12 flex items-center justify-center text-2xl md:text-3xl font-bold rounded-md shadow-md ${ganColor.bg
+              } ${ganColor.text} ${ganColor.border ?? ""}`}
           >
             {pillar.cheonGan.char}
           </div>
@@ -376,9 +368,8 @@ const DaewoonFlowDisplay: React.FC<{ sajuInfo: SajuInfo }> = ({ sajuInfo }) => {
 
         <div className="flex justify-center py-0.5">
           <div
-            className={`saju-char-outline-small w-10 h-10 md:w-12 md:h-12 flex items-center justify-center text-2xl md:text-3xl font-bold rounded-md shadow-md ${
-              jiColor.bg
-            } ${jiColor.text} ${jiColor.border ?? ""}`}
+            className={`saju-char-outline-small w-10 h-10 md:w-12 md:h-12 flex items-center justify-center text-2xl md:text-3xl font-bold rounded-md shadow-md ${jiColor.bg
+              } ${jiColor.text} ${jiColor.border ?? ""}`}
           >
             {pillar.jiJi.char}
           </div>
@@ -432,14 +423,12 @@ const SewoonDisplay: React.FC<{ sajuInfo: SajuInfo }> = ({ sajuInfo }) => {
     return (
       <div
         key={pillar.year}
-        className={`flex flex-col text-center text-xs md:text-sm p-1.5 bg-gray-900/5 rounded-lg border-2 flex-shrink-0 w-[80px] md:w-[90px] shadow-md ${
-          pillar.year === currentYear ? "border-yellow-500" : "border-gray-200"
-        }`}
+        className={`flex flex-col text-center text-xs md:text-sm p-1.5 bg-gray-900/5 rounded-lg border-2 flex-shrink-0 w-[80px] md:w-[90px] shadow-md ${pillar.year === currentYear ? "border-yellow-500" : "border-gray-200"
+          }`}
       >
         <div
-          className={`font-bold py-1 saju-text-outline ${
-            pillar.year === currentYear ? "text-yellow-600" : "text-gray-800"
-          }`}
+          className={`font-bold py-1 saju-text-outline ${pillar.year === currentYear ? "text-yellow-600" : "text-gray-800"
+            }`}
         >
           {pillar.year}년
           <span className="block text-xs font-normal text-gray-800">
@@ -453,9 +442,8 @@ const SewoonDisplay: React.FC<{ sajuInfo: SajuInfo }> = ({ sajuInfo }) => {
 
         <div className="flex justify-center py-0.5">
           <div
-            className={`saju-char-outline-small w-10 h-10 md:w-12 md:h-12 flex items-center justify-center text-2xl md:text-3xl font-bold rounded-md shadow-md ${
-              ganColor.bg
-            } ${ganColor.text} ${ganColor.border ?? ""}`}
+            className={`saju-char-outline-small w-10 h-10 md:w-12 md:h-12 flex items-center justify-center text-2xl md:text-3xl font-bold rounded-md shadow-md ${ganColor.bg
+              } ${ganColor.text} ${ganColor.border ?? ""}`}
           >
             {pillar.cheonGan.char}
           </div>
@@ -463,9 +451,8 @@ const SewoonDisplay: React.FC<{ sajuInfo: SajuInfo }> = ({ sajuInfo }) => {
 
         <div className="flex justify-center py-0.5">
           <div
-            className={`saju-char-outline-small w-10 h-10 md:w-12 md:h-12 flex items-center justify-center text-2xl md:text-3xl font-bold rounded-md shadow-md ${
-              jiColor.bg
-            } ${jiColor.text} ${jiColor.border ?? ""}`}
+            className={`saju-char-outline-small w-10 h-10 md:w-12 md:h-12 flex items-center justify-center text-2xl md:text-3xl font-bold rounded-md shadow-md ${jiColor.bg
+              } ${jiColor.text} ${jiColor.border ?? ""}`}
           >
             {pillar.jiJi.char}
           </div>
@@ -511,10 +498,10 @@ const IlganPersonalityDisplay: React.FC<{ ilganChar: string }> = ({
   const ganColor = ganInfo
     ? ohaengColorMap[ganInfo.ohaeng]
     : {
-        bg: "bg-white",
-        text: "text-gray-900",
-        border: "border border-gray-200",
-      };
+      bg: "bg-white",
+      text: "text-gray-900",
+      border: "border border-gray-200",
+    };
 
   const fullText = "사주 팔자는 네 개의 기둥으로 이루어져 있습니다. 年柱(년주)는 조상의 기운과 뿌리를, 月柱(월주)는 부모와 사회의 영향을, 日柱(일주)는 바로 나 자신의 본질을, 時柱(시주)는 자식과 내 미래의 방향을 담고 있습니다. 그 중심에 나를 나타내는 日干(일간)이 있습니다.";
 
@@ -582,68 +569,67 @@ const IlganPersonalityDisplay: React.FC<{ ilganChar: string }> = ({
 
         {showInfo && (
           <div className="mt-8 pt-8 border-t-2 border-amber-300 animate-fade-in-fast">
-          <div className="text-center mb-6">
-            <div className="inline-block px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm font-semibold mb-2">
-              나를 나타내는 글자 (일간)
-            </div>
-            <h3 className="text-3xl font-extrabold text-gray-800 flex items-center justify-center gap-3">
-              {/* 오행 색상 적용된 박스 */}
-              <div
-                className={`saju-char-outline w-12 h-12 flex items-center justify-center text-3xl rounded shadow-sm ${
-                  ganColor.bg
-                } ${ganColor.text} ${ganColor.border ?? ""}`}
-              >
-                {data.char}
+            <div className="text-center mb-6">
+              <div className="inline-block px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm font-semibold mb-2">
+                나를 나타내는 글자 (일간)
               </div>
-              <span>{data.name}</span>
-            </h3>
-            <p className="text-lg text-gray-600 mt-2 font-medium">
-              "{data.nature}"
-            </p>
-          </div>
-
-          <div className="mb-6 bg-white/50 p-4 rounded-xl border border-gray-100">
-            <h4 className="text-xl font-bold text-center text-amber-600 mb-3">
-              "{data.title}"
-            </h4>
-            <p className="text-gray-700 leading-relaxed text-center word-keep-all">
-              {data.description}
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-            <div className="bg-blue-50 p-4 rounded-xl border border-blue-100">
-              <h5 className="font-bold text-blue-700 mb-2 flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-blue-500"></span> 장점
-              </h5>
-              <ul className="space-y-1">
-                {data.pros.map((item, idx) => (
-                  <li key={idx} className="text-gray-700 text-sm">
-                    • {item}
-                  </li>
-                ))}
-              </ul>
+              <h3 className="text-3xl font-extrabold text-gray-800 flex items-center justify-center gap-3">
+                {/* 오행 색상 적용된 박스 */}
+                <div
+                  className={`saju-char-outline w-12 h-12 flex items-center justify-center text-3xl rounded shadow-sm ${ganColor.bg
+                    } ${ganColor.text} ${ganColor.border ?? ""}`}
+                >
+                  {data.char}
+                </div>
+                <span>{data.name}</span>
+              </h3>
+              <p className="text-lg text-gray-600 mt-2 font-medium">
+                "{data.nature}"
+              </p>
             </div>
-            <div className="bg-red-50 p-4 rounded-xl border border-red-100">
-              <h5 className="font-bold text-red-700 mb-2 flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-red-500"></span> 단점
-              </h5>
-              <ul className="space-y-1">
-                {data.cons.map((item, idx) => (
-                  <li key={idx} className="text-gray-700 text-sm">
-                    • {item}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
 
-          <div className="bg-yellow-50 p-4 rounded-xl border border-yellow-200 text-center">
-            <h5 className="font-bold text-yellow-800 mb-2">💡 족집게 조언</h5>
-            <p className="text-gray-800 font-medium word-keep-all">
-              {data.advice}
-            </p>
-          </div>
+            <div className="mb-6 bg-white/50 p-4 rounded-xl border border-gray-100">
+              <h4 className="text-xl font-bold text-center text-amber-600 mb-3">
+                "{data.title}"
+              </h4>
+              <p className="text-gray-700 leading-relaxed text-center word-keep-all">
+                {data.description}
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+              <div className="bg-blue-50 p-4 rounded-xl border border-blue-100">
+                <h5 className="font-bold text-blue-700 mb-2 flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-blue-500"></span> 장점
+                </h5>
+                <ul className="space-y-1">
+                  {data.pros.map((item, idx) => (
+                    <li key={idx} className="text-gray-700 text-sm">
+                      • {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div className="bg-red-50 p-4 rounded-xl border border-red-100">
+                <h5 className="font-bold text-red-700 mb-2 flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-red-500"></span> 단점
+                </h5>
+                <ul className="space-y-1">
+                  {data.cons.map((item, idx) => (
+                    <li key={idx} className="text-gray-700 text-sm">
+                      • {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+
+            <div className="bg-yellow-50 p-4 rounded-xl border border-yellow-200 text-center">
+              <h5 className="font-bold text-yellow-800 mb-2">💡 족집게 조언</h5>
+              <p className="text-gray-800 font-medium word-keep-all">
+                {data.advice}
+              </p>
+            </div>
           </div>
         )}
       </div>
@@ -738,72 +724,70 @@ const IljuAnalysisDisplay: React.FC<{ iljuGanji: string }> = ({
 
         {showInfo && (
           <div className="mt-8 pt-8 border-t-2 border-emerald-300 animate-fade-in-fast">
-          <div className="text-center mb-6">
-            <div className="inline-block px-3 py-1 bg-emerald-100 text-emerald-800 rounded-full text-sm font-semibold mb-2">
-              나의 일주 (Day Pillar)
-            </div>
-            <h3 className="text-3xl font-extrabold text-gray-800 flex items-center justify-center gap-3">
-              <div className="flex gap-1">
-                <div
-                  className={`saju-char-outline w-10 h-10 flex items-center justify-center text-2xl rounded shadow-sm ${
-                    ganColor.bg
-                  } ${ganColor.text} ${ganColor.border ?? ""}`}
-                >
-                  {gan}
-                </div>
-                <div
-                  className={`saju-char-outline w-10 h-10 flex items-center justify-center text-2xl rounded shadow-sm ${
-                    jiColor.bg
-                  } ${jiColor.text} ${jiColor.border ?? ""}`}
-                >
-                  {ji}
-                </div>
+            <div className="text-center mb-6">
+              <div className="inline-block px-3 py-1 bg-emerald-100 text-emerald-800 rounded-full text-sm font-semibold mb-2">
+                나의 일주 (Day Pillar)
               </div>
-              <span>{data.name}</span>
-            </h3>
-            <p className="text-lg text-gray-600 mt-2 font-medium">
-              "{data.nature}"
-            </p>
-          </div>
-
-          <div className="space-y-6">
-            <div className="bg-white/60 p-5 rounded-xl border border-gray-200">
-              <h4 className="text-lg font-bold text-emerald-700 mb-2 flex items-center gap-2">
-                💎 핵심 특징
-              </h4>
-              <p className="text-gray-700 leading-relaxed word-keep-all">
-                {data.characteristic}
+              <h3 className="text-3xl font-extrabold text-gray-800 flex items-center justify-center gap-3">
+                <div className="flex gap-1">
+                  <div
+                    className={`saju-char-outline w-10 h-10 flex items-center justify-center text-2xl rounded shadow-sm ${ganColor.bg
+                      } ${ganColor.text} ${ganColor.border ?? ""}`}
+                  >
+                    {gan}
+                  </div>
+                  <div
+                    className={`saju-char-outline w-10 h-10 flex items-center justify-center text-2xl rounded shadow-sm ${jiColor.bg
+                      } ${jiColor.text} ${jiColor.border ?? ""}`}
+                  >
+                    {ji}
+                  </div>
+                </div>
+                <span>{data.name}</span>
+              </h3>
+              <p className="text-lg text-gray-600 mt-2 font-medium">
+                "{data.nature}"
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="bg-pink-50 p-5 rounded-xl border border-pink-100">
-                <h4 className="text-lg font-bold text-pink-600 mb-2 flex items-center gap-2">
-                  ❤️ 배우자운
+            <div className="space-y-6">
+              <div className="bg-white/60 p-5 rounded-xl border border-gray-200">
+                <h4 className="text-lg font-bold text-emerald-700 mb-2 flex items-center gap-2">
+                  💎 핵심 특징
                 </h4>
-                <p className="text-gray-700 text-sm leading-relaxed word-keep-all">
-                  {data.spouse}
+                <p className="text-gray-700 leading-relaxed word-keep-all">
+                  {data.characteristic}
                 </p>
               </div>
-              <div className="bg-blue-50 p-5 rounded-xl border border-blue-100">
-                <h4 className="text-lg font-bold text-blue-600 mb-2 flex items-center gap-2">
-                  💼 직업 & 재물
-                </h4>
-                <p className="text-gray-700 text-sm leading-relaxed word-keep-all">
-                  {data.jobWealth}
-                </p>
-              </div>
-            </div>
 
-            <div className="bg-emerald-50 p-4 rounded-xl border border-emerald-200 text-center">
-              <h5 className="font-bold text-emerald-800 mb-2">
-                🍀 족집게 조언
-              </h5>
-              <p className="text-gray-800 font-medium word-keep-all">
-                {data.advice}
-              </p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="bg-pink-50 p-5 rounded-xl border border-pink-100">
+                  <h4 className="text-lg font-bold text-pink-600 mb-2 flex items-center gap-2">
+                    ❤️ 배우자운
+                  </h4>
+                  <p className="text-gray-700 text-sm leading-relaxed word-keep-all">
+                    {data.spouse}
+                  </p>
+                </div>
+                <div className="bg-blue-50 p-5 rounded-xl border border-blue-100">
+                  <h4 className="text-lg font-bold text-blue-600 mb-2 flex items-center gap-2">
+                    💼 직업 & 재물
+                  </h4>
+                  <p className="text-gray-700 text-sm leading-relaxed word-keep-all">
+                    {data.jobWealth}
+                  </p>
+                </div>
+              </div>
+
+              <div className="bg-emerald-50 p-4 rounded-xl border border-emerald-200 text-center">
+                <h5 className="font-bold text-emerald-800 mb-2">
+                  🍀 족집게 조언
+                </h5>
+                <p className="text-gray-800 font-medium word-keep-all">
+                  {data.advice}
+                </p>
+              </div>
             </div>
-          </div>
           </div>
         )}
       </div>
@@ -908,141 +892,141 @@ const SibsinPositionDisplay: React.FC<{ sajuInfo: SajuInfo }> = ({
 
         {showInfo && (
           <div className="mt-8 pt-8 border-t-2 border-purple-300 animate-fade-in-fast">
-          <div className="text-center mb-8">
-            <div className="inline-block px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm font-semibold mb-2">
-              핵심 십신 분석
-            </div>
-            <h3 className="text-2xl font-extrabold text-gray-800">
-              월령과 일지 - 사주의 양대 산맥
-            </h3>
-            <p className="text-gray-600 mt-2">
-              월령은 직업과 사회생활을, 일지는 배우자와 가정을 나타냅니다
-            </p>
-          </div>
-
-          <div className="space-y-10">
-            {/* 월령 십신 */}
-            <div className="bg-gradient-to-br from-blue-50 via-white to-blue-50 p-6 rounded-2xl border-2 border-blue-300 shadow-lg">
-              <div className="flex items-center justify-between mb-6 pb-4 border-b-2 border-blue-200">
-                <div className="flex items-center gap-3">
-                  <div className="bg-blue-500 text-white px-3 py-1.5 rounded-lg font-bold text-sm">
-                    월령 (月令)
-                  </div>
-                  <h4 className="text-2xl font-bold text-blue-900">
-                    {wollyeongSibsin}
-                  </h4>
-                  <CharBox char={wollyeongChar} />
-                </div>
+            <div className="text-center mb-8">
+              <div className="inline-block px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm font-semibold mb-2">
+                핵심 십신 분석
               </div>
+              <h3 className="text-2xl font-extrabold text-gray-800">
+                월령과 일지 - 사주의 양대 산맥
+              </h3>
+              <p className="text-gray-600 mt-2">
+                월령은 직업과 사회생활을, 일지는 배우자와 가정을 나타냅니다
+              </p>
+            </div>
 
-              {/* 십신 기본 정보 */}
-              {sibsinDescriptions[wollyeongSibsin] && (
-                <div className="bg-white/80 p-5 rounded-xl mb-5 border border-blue-200">
-                  <h5 className="font-bold text-blue-800 mb-3 flex items-center gap-2 text-lg">
-                    <span>📘</span> {sibsinDescriptions[wollyeongSibsin].title}
-                  </h5>
-                  <p className="text-gray-700 leading-relaxed whitespace-pre-line word-keep-all">
-                    {getSibsinDescriptionBeforePersonality(sibsinDescriptions[wollyeongSibsin].description)}
-                  </p>
+            <div className="space-y-10">
+              {/* 월령 십신 */}
+              <div className="bg-gradient-to-br from-blue-50 via-white to-blue-50 p-6 rounded-2xl border-2 border-blue-300 shadow-lg">
+                <div className="flex items-center justify-between mb-6 pb-4 border-b-2 border-blue-200">
+                  <div className="flex items-center gap-3">
+                    <div className="bg-blue-500 text-white px-3 py-1.5 rounded-lg font-bold text-sm">
+                      월령 (月令)
+                    </div>
+                    <h4 className="text-2xl font-bold text-blue-900">
+                      {wollyeongSibsin}
+                    </h4>
+                    <CharBox char={wollyeongChar} />
+                  </div>
                 </div>
-              )}
 
-              {/* 월주 위치별 해석 */}
-              {sibsinPositionDescriptions[wollyeongSibsin] && (
-                <div className="bg-gradient-to-r from-blue-100/50 to-white p-5 rounded-xl border border-blue-300">
-                  <h5 className="font-bold text-blue-900 mb-3 flex items-center gap-2 text-lg">
-                    <span>🎯</span> 월주에 위치한 의미
-                  </h5>
-                  <div className="space-y-3">
-                    <div>
-                      <p className="font-bold text-blue-800 text-base mb-2">
+                {/* 십신 기본 정보 */}
+                {sibsinDescriptions[wollyeongSibsin] && (
+                  <div className="bg-white/80 p-5 rounded-xl mb-5 border border-blue-200">
+                    <h5 className="font-bold text-blue-800 mb-3 flex items-center gap-2 text-lg">
+                      <span>📘</span> {sibsinDescriptions[wollyeongSibsin].title}
+                    </h5>
+                    <p className="text-gray-700 leading-relaxed whitespace-pre-line word-keep-all">
+                      {getSibsinDescriptionBeforePersonality(sibsinDescriptions[wollyeongSibsin].description)}
+                    </p>
+                  </div>
+                )}
+
+                {/* 월주 위치별 해석 */}
+                {sibsinPositionDescriptions[wollyeongSibsin] && (
+                  <div className="bg-gradient-to-r from-blue-100/50 to-white p-5 rounded-xl border border-blue-300">
+                    <h5 className="font-bold text-blue-900 mb-3 flex items-center gap-2 text-lg">
+                      <span>🎯</span> 월주에 위치한 의미
+                    </h5>
+                    <div className="space-y-3">
+                      <div>
+                        <p className="font-bold text-blue-800 text-base mb-2">
+                          {
+                            sibsinPositionDescriptions[wollyeongSibsin]["월주"]
+                              .meaning
+                          }
+                        </p>
+                        <div className="flex flex-wrap gap-1.5 mb-3">
+                          {sibsinPositionDescriptions[wollyeongSibsin][
+                            "월주"
+                          ].keywords.map((kw, idx) => (
+                            <span
+                              key={idx}
+                              className="px-2 py-0.5 bg-blue-200 text-blue-900 rounded-full text-xs font-semibold"
+                            >
+                              {kw}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                      <div className="text-gray-700 text-base leading-relaxed whitespace-pre-line word-keep-all bg-white/70 p-4 rounded-lg">
                         {
                           sibsinPositionDescriptions[wollyeongSibsin]["월주"]
-                            .meaning
+                            .detail
                         }
-                      </p>
-                      <div className="flex flex-wrap gap-1.5 mb-3">
-                        {sibsinPositionDescriptions[wollyeongSibsin][
-                          "월주"
-                        ].keywords.map((kw, idx) => (
-                          <span
-                            key={idx}
-                            className="px-2 py-0.5 bg-blue-200 text-blue-900 rounded-full text-xs font-semibold"
-                          >
-                            {kw}
-                          </span>
-                        ))}
                       </div>
                     </div>
-                    <div className="text-gray-700 text-base leading-relaxed whitespace-pre-line word-keep-all bg-white/70 p-4 rounded-lg">
-                      {
-                        sibsinPositionDescriptions[wollyeongSibsin]["월주"]
-                          .detail
-                      }
-                    </div>
                   </div>
-                </div>
-              )}
-            </div>
-
-            {/* 일지 십신 */}
-            <div className="bg-gradient-to-br from-pink-50 via-white to-pink-50 p-6 rounded-2xl border-2 border-pink-300 shadow-lg">
-              <div className="flex items-center justify-between mb-6 pb-4 border-b-2 border-pink-200">
-                <div className="flex items-center gap-3">
-                  <div className="bg-pink-500 text-white px-3 py-1.5 rounded-lg font-bold text-sm">
-                    일지 (日支)
-                  </div>
-                  <h4 className="text-2xl font-bold text-pink-900">
-                    {iljiSibsin}
-                  </h4>
-                  <CharBox char={iljiChar} />
-                </div>
+                )}
               </div>
 
-              {/* 십신 기본 정보 */}
-              {sibsinDescriptions[iljiSibsin] && (
-                <div className="bg-white/80 p-5 rounded-xl mb-5 border border-pink-200">
-                  <h5 className="font-bold text-pink-800 mb-3 flex items-center gap-2 text-lg">
-                    <span>📕</span> {sibsinDescriptions[iljiSibsin].title}
-                  </h5>
-                  <p className="text-gray-700 leading-relaxed whitespace-pre-line word-keep-all">
-                    {getSibsinDescriptionBeforePersonality(sibsinDescriptions[iljiSibsin].description)}
-                  </p>
-                </div>
-              )}
-
-              {/* 일주 위치별 해석 */}
-              {sibsinPositionDescriptions[iljiSibsin] && (
-                <div className="bg-gradient-to-r from-pink-100/50 to-white p-5 rounded-xl border border-pink-300">
-                  <h5 className="font-bold text-pink-900 mb-3 flex items-center gap-2 text-lg">
-                    <span>🎯</span> 일주에 위치한 의미
-                  </h5>
-                  <div className="space-y-3">
-                    <div>
-                      <p className="font-bold text-pink-800 text-base mb-2">
-                        {sibsinPositionDescriptions[iljiSibsin]["일주"].meaning}
-                      </p>
-                      <div className="flex flex-wrap gap-1.5 mb-3">
-                        {sibsinPositionDescriptions[iljiSibsin][
-                          "일주"
-                        ].keywords.map((kw, idx) => (
-                          <span
-                            key={idx}
-                            className="px-2 py-0.5 bg-pink-200 text-pink-900 rounded-full text-xs font-semibold"
-                          >
-                            {kw}
-                          </span>
-                        ))}
-                      </div>
+              {/* 일지 십신 */}
+              <div className="bg-gradient-to-br from-pink-50 via-white to-pink-50 p-6 rounded-2xl border-2 border-pink-300 shadow-lg">
+                <div className="flex items-center justify-between mb-6 pb-4 border-b-2 border-pink-200">
+                  <div className="flex items-center gap-3">
+                    <div className="bg-pink-500 text-white px-3 py-1.5 rounded-lg font-bold text-sm">
+                      일지 (日支)
                     </div>
-                    <div className="text-gray-700 text-base leading-relaxed whitespace-pre-line word-keep-all bg-white/70 p-4 rounded-lg">
-                      {sibsinPositionDescriptions[iljiSibsin]["일주"].detail}
-                    </div>
+                    <h4 className="text-2xl font-bold text-pink-900">
+                      {iljiSibsin}
+                    </h4>
+                    <CharBox char={iljiChar} />
                   </div>
                 </div>
-              )}
+
+                {/* 십신 기본 정보 */}
+                {sibsinDescriptions[iljiSibsin] && (
+                  <div className="bg-white/80 p-5 rounded-xl mb-5 border border-pink-200">
+                    <h5 className="font-bold text-pink-800 mb-3 flex items-center gap-2 text-lg">
+                      <span>📕</span> {sibsinDescriptions[iljiSibsin].title}
+                    </h5>
+                    <p className="text-gray-700 leading-relaxed whitespace-pre-line word-keep-all">
+                      {getSibsinDescriptionBeforePersonality(sibsinDescriptions[iljiSibsin].description)}
+                    </p>
+                  </div>
+                )}
+
+                {/* 일주 위치별 해석 */}
+                {sibsinPositionDescriptions[iljiSibsin] && (
+                  <div className="bg-gradient-to-r from-pink-100/50 to-white p-5 rounded-xl border border-pink-300">
+                    <h5 className="font-bold text-pink-900 mb-3 flex items-center gap-2 text-lg">
+                      <span>🎯</span> 일주에 위치한 의미
+                    </h5>
+                    <div className="space-y-3">
+                      <div>
+                        <p className="font-bold text-pink-800 text-base mb-2">
+                          {sibsinPositionDescriptions[iljiSibsin]["일주"].meaning}
+                        </p>
+                        <div className="flex flex-wrap gap-1.5 mb-3">
+                          {sibsinPositionDescriptions[iljiSibsin][
+                            "일주"
+                          ].keywords.map((kw, idx) => (
+                            <span
+                              key={idx}
+                              className="px-2 py-0.5 bg-pink-200 text-pink-900 rounded-full text-xs font-semibold"
+                            >
+                              {kw}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                      <div className="text-gray-700 text-base leading-relaxed whitespace-pre-line word-keep-all bg-white/70 p-4 rounded-lg">
+                        {sibsinPositionDescriptions[iljiSibsin]["일주"].detail}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
           </div>
         )}
       </div>
@@ -1174,37 +1158,36 @@ export const AnalysisResult: React.FC<AnalysisResultProps> = ({
     () =>
       result
         ? [
-            {
-              id: "stage1",
-              title: "1단계: 오행과 일간의 강약",
-              content: result.stage1,
-              Icon: DiagnosisIcon,
-              borderColor: "border-blue-200",
-            },
-            {
-              id: "stage2",
-              title: "2단계: 용신과 개운법",
-              content: result.stage2,
-              Icon: PrescriptionIcon,
-              borderColor: "border-emerald-200",
-            },
-            {
-              id: "stage3",
-              title: "3단계: 대운의 흐름 분석",
-              content: result.stage3,
-              Icon: PrognosisIcon,
-              borderColor: "border-amber-200",
-            },
-          ]
+          {
+            id: "stage1",
+            title: "1단계: 오행과 일간의 강약",
+            content: result.stage1,
+            Icon: DiagnosisIcon,
+            borderColor: "border-blue-200",
+          },
+          {
+            id: "stage2",
+            title: "2단계: 용신과 개운법",
+            content: result.stage2,
+            Icon: PrescriptionIcon,
+            borderColor: "border-emerald-200",
+          },
+          {
+            id: "stage3",
+            title: "3단계: 대운의 흐름 분석",
+            content: result.stage3,
+            Icon: PrognosisIcon,
+            borderColor: "border-amber-200",
+          },
+        ]
         : [],
     [result]
   );
 
-  const birthDateString = `${birthDate.year}년 ${birthDate.month}월 ${
-    birthDate.day
-  }일 ${String(birthDate.hour).padStart(2, "0")}:${String(
-    birthDate.minute
-  ).padStart(2, "0")}`;
+  const birthDateString = `${birthDate.year}년 ${birthDate.month}월 ${birthDate.day
+    }일 ${String(birthDate.hour).padStart(2, "0")}:${String(
+      birthDate.minute
+    ).padStart(2, "0")}`;
 
   return (
     <div className="mt-10 animate-fade-in">
