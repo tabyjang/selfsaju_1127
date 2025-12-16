@@ -10,7 +10,7 @@ import LandingPage from './LandingPage';
 
 
 const ANALYSIS_PROMPTS = {
-  stage1: `## 1단계: 오행과 일간의 강약
+    stage1: `## 1단계: 오행과 일간의 강약
 
 **목표:** 당신은 사주 초보자도 쉽게 이해할 수 있도록 설명하는 친절한 사주 멘토입니다. 아래 지시사항에 따라 이 사주의 핵심 특징을 분석해주세요.  모든 답변은 마크다운 형식을 사용하여 명확하고 보기 좋게 정리해야 합니다. 1단계 글자는 1000자 내외로 완성해주세요.  답변은 마크다운 형식을 사용하여 체계적으로 제시해야 합니다.
 본문에는 인사나 나는 사주 멘토입니다, 이런 말 절대 쓰지말 것.
@@ -22,14 +22,14 @@ const ANALYSIS_PROMPTS = {
 
 마지막으로, 위 모든 내용을 종합하여 오행과 일간의 강약에 대해서 요약해주세요.
 `,
-  stage2: `## 2단계: 용신의 활용
+    stage2: `## 2단계: 용신의 활용
 본문에는 인사나 나는 사주 멘토입니다, 이런 말 절대 쓰지말 것.
 **목표:** 당신은 사주 초보자도 쉽게 이해할 수 있도록 설명하는 친절한 사주 멘토입니다. 사주 원국과 1단계 분석 내용을 종합적으로 고려하여, 용신이 무엇이고 용신을 돕는 희신이 무엇인지 알려주고, 용신과 희신을 당겨올 수 있는 개운법에 대해서 설명해주세요. 글자는 1000자 내외로 완성해주세요.  답변은 마크다운 형식을 사용하여 체계적으로 제시해야 합니다.
 
 **[2단계 요약]**
 용신과 희신, 개운법을 한줄로 요약해주세요.
 `,
-  stage3: `## 3단계: 인생 대운의 흐름과 미래 예측
+    stage3: `## 3단계: 인생 대운의 흐름과 미래 예측
 본문에는 인사나 나는 사주 멘토입니다, 이런 말 절대 쓰지말 것.
 당신은 사주 초보자도 쉽게 이해할 수 있도록 설명하는 친절한 사주 멘토입니다.사주 원국과 1, 2단계 분석을 바탕으로, 인생 전체의 큰 흐름인 대운을 통찰력 있게 분석해주세요. 답변은 마크다운 형식을 사용하여 체계적으로 제시해야 합니다.
 초보자에게 설명한다고 생각하여, 어려운 단어나 명리학적 설명은 제외하고, 결과적으로 어떻게 하면 좋을지 생활용어를 사용해서 친절하게 설명해주세요. 어려운 단어는 쓰지 말고. 해야 할일을 명확하게 제시해주세요. 전체 글은 1500자 내외로 해주세요.
@@ -86,7 +86,7 @@ const App: React.FC = () => {
 
             setIsImageLoading(true);
             setImageError(null);
-            
+
             const imageAbortController = new AbortController();
             const mainAbortSignal = abortControllerRef.current?.signal;
             const onAbort = () => imageAbortController.abort();
@@ -120,9 +120,9 @@ const App: React.FC = () => {
         setChatSession(null);
         setChatHistory([]);
         setChatError(null);
-        
+
         setSajuDataForDisplay(sajuInfo);
-        
+
         abortControllerRef.current = new AbortController();
         try {
             const result = await analyzeSaju(
@@ -131,7 +131,7 @@ const App: React.FC = () => {
                 abortControllerRef.current.signal
             );
             setAnalysisResult(result);
-             if (result) {
+            if (result) {
                 const session = createChatSession(sajuInfo, result);
                 setChatSession(session);
             }
@@ -147,7 +147,7 @@ const App: React.FC = () => {
             setIsLoading(false);
         }
     }, []);
-    
+
     const handleCancel = () => {
         if (abortControllerRef.current) {
             abortControllerRef.current.abort();
@@ -165,7 +165,7 @@ const App: React.FC = () => {
         let fullResponse = '';
         try {
             const stream = await chatSession.sendMessageStream({ message });
-            
+
             setChatHistory(prev => [...prev, { role: 'model', content: '' }]);
 
             for await (const chunk of stream) {
@@ -177,7 +177,7 @@ const App: React.FC = () => {
                 });
             }
         } catch (e) {
-             const errorMessage = '';
+            const errorMessage = '';
             setChatError(errorMessage);
             setChatHistory(prev => prev.slice(0, -1));
         } finally {
@@ -193,10 +193,13 @@ const App: React.FC = () => {
         <div className="min-h-screen font-sans p-4 sm:p-6 lg:p-8">
             {isLoading && !analysisResult && <OhaengLoading />}
             <main className="max-w-7xl mx-auto relative">
-                <header className="text-center mb-12 relative">
-                     <h1 className="text-4xl sm:text-5xl font-extrabold text-gray-800">
-                         사주 분석
-                    </h1>
+                <header className="text-center mb-12 relative flex justify-center">
+                    {/* import 필요 없음! 그냥 /logo.png 라고 쓰면 알아서 찾습니다 */}
+                    <img
+                        src="/logo.png"
+                        alt="아사주달 로고"
+                        className="h-28 sm:h-36 md:h-44 w-auto object-contain"
+                    />
                 </header>
 
                 <SajuInputForm onAnalyze={handleAnalysis} isLoading={isLoading} />
@@ -209,14 +212,14 @@ const App: React.FC = () => {
                 )}
 
                 {sajuDataForDisplay && (
-                    <AnalysisResult 
-                        result={analysisResult} 
-                        sajuData={sajuDataForDisplay} 
+                    <AnalysisResult
+                        result={analysisResult}
+                        sajuData={sajuDataForDisplay}
                         isLoading={isLoading}
                         sajuImage={sajuImage}
                         isImageLoading={isImageLoading}
                         imageError={imageError}
-                     />
+                    />
                 )}
 
                 {analysisResult && chatSession && (
@@ -229,8 +232,8 @@ const App: React.FC = () => {
                 )}
             </main>
             <footer className="text-center mt-16 text-sm text-gray-500">
-                <p>본 분석을 통해 도움이 되길 진심으로 기원합니다. </p>
-                 <p>&copy; {new Date().getFullYear()} selfsaju.co.kr. All rights reserved.</p>
+                <p>아사주달의 분석을 통해 건강과 행복이 함께 하시길 기원합니다. </p>
+                <p>&copy; {new Date().getFullYear()} asajudal.com. All rights reserved.</p>
             </footer>
         </div>
     );
