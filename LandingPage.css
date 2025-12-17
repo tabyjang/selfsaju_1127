@@ -72,6 +72,33 @@
   color: var(--text-primary);
 }
 
+/* 무료 강조 스타일 */
+.free-text {
+  color: #ff5252;
+  font-weight: 700;
+  font-size: 1.2rem;
+}
+
+/* 주요 기능 강조 스타일 */
+.highlight-feature {
+  display: inline-block;
+  background: linear-gradient(135deg, #d4af37, #f4c542);
+  color: white;
+  padding: 0.15rem 0.7rem;
+  border-radius: 8px;
+  font-weight: 800;
+  font-size: 1.25rem;
+  margin: 0 0.15rem;
+  box-shadow: 0 3px 12px rgba(212, 175, 55, 0.4);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  transform: translateY(-1px);
+}
+
+.highlight-feature:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(212, 175, 55, 0.6);
+}
+
 .glow-button {
   background: linear-gradient(45deg, var(--accent-soft-pink), var(--accent-gold));
   border: none;

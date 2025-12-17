@@ -111,8 +111,9 @@ const LandingPage: React.FC<LandingPageProps> = ({ onStart }) => {
 
         <h1 className="landing-title fade-in"></h1>
         <p className="landing-description fade-in delay-2">
-          고대의 지혜로 당신의 삶을 명확하게 비춰드립니다.<br />
-          지금 바로 당신의 사주를 확인해보세요.
+          <span className="free-text">무료</span>로 볼 수 있는 가장 풍성한 사주정보를 제공합니다.<br />
+          <span className="free-text">무료</span>로 <span className="highlight-feature">격국</span>과 <span className="highlight-feature">대운정보</span>,  <span className="highlight-feature">사주 캘린더</span>까지 볼 수 있는 유일한 곳!<br />
+          아낌 없는 사주 정보가 기다립니다.
         </p>
         <div className="cta-container fade-in delay-3">
           <button onClick={onStart} className="glow-button">무료 사주 분석하기</button>

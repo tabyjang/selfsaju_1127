@@ -1,5 +1,5 @@
-import { supabase, SajuRecord } from './supabase';
-import type { SajuInfo } from '../types';
+import { supabase, SajuRecord } from "./supabase";
+import type { SajuInfo } from "../types";
 
 /**
  * 사주 정보를 Supabase에 저장
@@ -22,7 +22,8 @@ export async function saveSajuRecord(
       birth_year: sajuInfo.birthDate.year,
       birth_month: sajuInfo.birthDate.month,
       birth_day: sajuInfo.birthDate.day,
-      birth_hour: sajuInfo.birthDate.hour === 'unknown' ? null : sajuInfo.birthDate.hour,
+      birth_hour:
+        sajuInfo.birthDate.hour === "unknown" ? null : sajuInfo.birthDate.hour,
       birth_minute: sajuInfo.birthDate.minute,
       birth_region: sajuInfo.birthRegion,
       daewoon: sajuInfo.daewoon,
@@ -32,20 +33,20 @@ export async function saveSajuRecord(
 
     // Supabase에 INSERT
     const { data, error } = await supabase
-      .from('saju_records')
+      .from("saju_records")
       .insert([record])
       .select()
       .single();
 
     if (error) {
-      console.error('사주 저장 실패:', error);
-      throw new Error('사주 저장에 실패했습니다.');
+      console.error("사주 저장 실패:", error);
+      throw new Error("⚠️ 최대 10명까지만 저장이 가능합니다.");
     }
 
-    console.log('사주 저장 성공:', data);
+    console.log("사주 저장 성공:", data);
     return { success: true, data };
   } catch (err) {
-    console.error('사주 저장 에러:', err);
+    console.error("사주 저장 에러:", err);
     return { success: false, error: err };
   }
 }
@@ -58,15 +59,15 @@ export async function saveSajuRecord(
 export async function getSajuRecord(recordId: string) {
   try {
     const { data, error } = await supabase
-      .from('saju_records')
-      .select('*')
-      .eq('id', recordId)
+      .from("saju_records")
+      .select("*")
+      .eq("id", recordId)
       .single();
 
     if (error) throw error;
     return { success: true, data };
   } catch (err) {
-    console.error('사주 조회 에러:', err);
+    console.error("사주 조회 에러:", err);
     return { success: false, error: err };
   }
 }
@@ -79,15 +80,15 @@ export async function getSajuRecord(recordId: string) {
 export async function getUserSajuRecords(userId: string) {
   try {
     const { data, error } = await supabase
-      .from('saju_records')
-      .select('*')
-      .eq('user_id', userId)
-      .order('created_at', { ascending: false }); // 최신순 정렬
+      .from("saju_records")
+      .select("*")
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false }); // 최신순 정렬
 
     if (error) throw error;
     return { success: true, data: data || [] };
   } catch (err) {
-    console.error('사주 목록 조회 에러:', err);
+    console.error("사주 목록 조회 에러:", err);
     return { success: false, error: err, data: [] };
   }
 }
@@ -111,7 +112,8 @@ export async function updateSajuRecord(
       birth_year: sajuInfo.birthDate.year,
       birth_month: sajuInfo.birthDate.month,
       birth_day: sajuInfo.birthDate.day,
-      birth_hour: sajuInfo.birthDate.hour === 'unknown' ? null : sajuInfo.birthDate.hour,
+      birth_hour:
+        sajuInfo.birthDate.hour === "unknown" ? null : sajuInfo.birthDate.hour,
       birth_minute: sajuInfo.birthDate.minute,
       birth_region: sajuInfo.birthRegion,
       daewoon: sajuInfo.daewoon,
@@ -120,16 +122,16 @@ export async function updateSajuRecord(
     };
 
     const { data, error } = await supabase
-      .from('saju_records')
+      .from("saju_records")
       .update(record)
-      .eq('id', recordId)
+      .eq("id", recordId)
       .select()
       .single();
 
     if (error) throw error;
     return { success: true, data };
   } catch (err) {
-    console.error('사주 수정 에러:', err);
+    console.error("사주 수정 에러:", err);
     return { success: false, error: err };
   }
 }
@@ -142,14 +144,14 @@ export async function updateSajuRecord(
 export async function deleteSajuRecord(recordId: string) {
   try {
     const { error } = await supabase
-      .from('saju_records')
+      .from("saju_records")
       .delete()
-      .eq('id', recordId);
+      .eq("id", recordId);
 
     if (error) throw error;
     return { success: true };
   } catch (err) {
-    console.error('사주 삭제 에러:', err);
+    console.error("사주 삭제 에러:", err);
     return { success: false, error: err };
   }
 }

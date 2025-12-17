@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useRef, useEffect } from "react";
+
 // Clerk 훅 가져오기
 import {
   SignedIn,
@@ -49,15 +50,15 @@ const App: React.FC = () => {
   // 로그인 후 사주 데이터 복원
   useEffect(() => {
     if (isSignedIn) {
-      const pendingSajuData = localStorage.getItem('pendingSajuData');
+      const pendingSajuData = localStorage.getItem("pendingSajuData");
       if (pendingSajuData) {
         try {
           const sajuData = JSON.parse(pendingSajuData);
           setSajuDataForDisplay(sajuData);
           setShowLanding(false);
-          localStorage.removeItem('pendingSajuData');
+          localStorage.removeItem("pendingSajuData");
         } catch (error) {
-          console.error('사주 데이터 복원 실패:', error);
+          console.error("사주 데이터 복원 실패:", error);
         }
       }
     }
@@ -65,34 +66,31 @@ const App: React.FC = () => {
 
   // 로그인 모달 열기
   const handleLoginRequired = () => {
-    // 로그인 후 현재 페이지로 돌아오도록 설정
+    // 로그인 후 현재 보고 있는 '풀 주소'로 돌아오도록 설정
     clerk.openSignIn({
-      redirectUrl: window.location.pathname + window.location.search + window.location.hash,
+      forceRedirectUrl: window.location.href,
     });
   };
 
   // === [수정됨] 분석 요청 로직 (로그인 강제 제거!) ===
-  const handleAnalysis = useCallback(
-    async (sajuInfo: SajuInfo) => {
-      // 1. 로그인 체크 로직 삭제함! 
-      // 이제 로그인을 안 해도 바로 분석이 시작됩니다.
+  const handleAnalysis = useCallback(async (sajuInfo: SajuInfo) => {
+    // 1. 로그인 체크 로직 삭제함!
+    // 이제 로그인을 안 해도 바로 분석이 시작됩니다.
 
-      setIsLoading(true);
-      setError(null);
-      setSajuDataForDisplay(sajuInfo);
+    setIsLoading(true);
+    setError(null);
+    setSajuDataForDisplay(sajuInfo);
 
-      try {
-        // [임시] 분석 기능 시뮬레이션
-        console.log("AI 분석 기능 임시 비활성화");
-        await new Promise((resolve) => setTimeout(resolve, 500));
-        setIsLoading(false);
-      } catch (e) {
-        console.error(e);
-        setIsLoading(false);
-      }
-    },
-    [] 
-  );
+    try {
+      // [임시] 분석 기능 시뮬레이션
+      console.log("분석 기능 임시 비활성화");
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      setIsLoading(false);
+    } catch (e) {
+      console.error(e);
+      setIsLoading(false);
+    }
+  }, []);
 
   // === [결과 나오면 자동 스크롤] ===
   useEffect(() => {
@@ -132,7 +130,8 @@ const App: React.FC = () => {
           </SignInButton>
         </SignedOut>
         <SignedIn>
-          <UserButton />
+          {/* 로그아웃 후 현재 페이지를 유지하도록 afterSignOutUrl 추가 */}
+          <UserButton afterSignOutUrl={window.location.href} />
         </SignedIn>
       </div>
 
@@ -174,21 +173,22 @@ const App: React.FC = () => {
                 imageError={imageError}
                 onLoginRequired={handleLoginRequired}
               />
-              
+
               {/* [추가됨] 결과 하단에 로그인 유도 배너 (비로그인 시에만 보임) */}
               <SignedOut>
                 <div className="mt-8 p-6 bg-indigo-50 rounded-2xl border border-indigo-100 text-center">
                   <h3 className="text-lg font-bold text-indigo-900 mb-2">
                     로그인하면 사주결과를 저장할 수있습니다. 💾
                   </h3>
-                  <p className="text-indigo-700 mb-4 text-sm">
-
-                  </p>
+                  <p className="text-indigo-700 mb-4 text-sm"></p>
                   <button
                     onClick={() => {
                       // localStorage에 사주 데이터 저장 후 로그인 모달 열기
-                      localStorage.setItem('pendingSajuSave', 'true');
-                      localStorage.setItem('pendingSajuData', JSON.stringify(sajuDataForDisplay));
+                      localStorage.setItem("pendingSajuSave", "true");
+                      localStorage.setItem(
+                        "pendingSajuData",
+                        JSON.stringify(sajuDataForDisplay)
+                      );
                       handleLoginRequired();
                     }}
                     className="px-6 py-3 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 transition shadow-lg animate-pulse"

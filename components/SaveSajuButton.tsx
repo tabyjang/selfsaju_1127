@@ -32,7 +32,7 @@ export const SaveSajuButton: React.FC<SaveSajuButtonProps> = ({
         alert('사주 정보가 저장되었습니다.');
         onSaveSuccess?.();
       } else {
-        alert('저장에 실패했습니다. 다시 시도해주세요.');
+        alert('⚠️ 최대 10명까지만 저장이 가능합니다.\n기존 사주를 삭제 후 다시 시도해주세요.');
       }
     } catch (error) {
       console.error('저장 중 오류:', error);
