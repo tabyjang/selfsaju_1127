@@ -179,11 +179,10 @@ const App: React.FC = () => {
               <SignedOut>
                 <div className="mt-8 p-6 bg-indigo-50 rounded-2xl border border-indigo-100 text-center">
                   <h3 className="text-lg font-bold text-indigo-900 mb-2">
-                    결과를 영구적으로 소장하고 싶으신가요? 💾
+                    로그인하면 사주결과를 저장할 수있습니다. 💾
                   </h3>
                   <p className="text-indigo-700 mb-4 text-sm">
-                    지금 로그인하시면 사주 분석 내용을 저장하고<br/>
-                    언제든지 다시 꺼내볼 수 있습니다.
+
                   </p>
                   <button
                     onClick={() => {

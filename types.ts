@@ -63,6 +63,7 @@ export interface WolwoonPillar {
   jiJi: Ji;
 }
 export interface SajuInfo {
+  name?: string; // 이름 (선택 필드)
   pillars: {
     year: Pillar;
     month: Pillar;
