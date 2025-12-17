@@ -166,6 +166,7 @@ export const SajuInputForm: React.FC<SajuInputFormProps> = ({
   isLoading,
 }) => {
   const [inputMode, setInputMode] = useState<"date" | "direct">("date");
+  const [name, setName] = useState<string>("");
   const [gender, setGender] = useState<Gender>("female");
   const [dateError, setDateError] = useState<string | null>(null);
   const [location, setLocation] = useState(birthLocations[0].name);
@@ -408,7 +409,8 @@ export const SajuInputForm: React.FC<SajuInputFormProps> = ({
         daewoonNumber,
         numericBirthDate,
         location,
-        isHourUnknown
+        isHourUnknown,
+        name || undefined
       );
       onAnalyze(sajuInfo);
     } catch (err) {
@@ -495,7 +497,8 @@ export const SajuInputForm: React.FC<SajuInputFormProps> = ({
         derivedSajuData.daewoonNumber,
         numericBirthDate,
         location,
-        isHourUnknown
+        isHourUnknown,
+        name || undefined
       );
       onAnalyze(sajuInfo);
     } catch (err) {
@@ -530,18 +533,34 @@ export const SajuInputForm: React.FC<SajuInputFormProps> = ({
         className="glass-card p-6 md:p-8"
       >
         <div className="space-y-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
-          {/* Left Column: Gender */}
-          <div>
+        {/* 가로 5칸 레이아웃: 이름, 성별, 출생지역, 야자시 */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+          {/* 1. 이름 */}
+          <div className="lg:col-span-1">
+            <label className="block text-base font-semibold text-gray-800 mb-3">
+              이름
+            </label>
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="홍길동"
+              className={`${inputClass} h-14`}
+              disabled={isLoading}
+            />
+          </div>
+
+          {/* 2. 성별 */}
+          <div className="lg:col-span-2">
             <label className="block text-base font-semibold text-gray-800 mb-3">
               성별
             </label>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-2">
               <button
                 type="button"
                 onClick={() => setGender("male")}
                 disabled={isLoading}
-                className={`flex items-center justify-center p-4 rounded-xl transition-all duration-200 border-2 font-semibold text-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-400 ${
+                className={`flex items-center justify-center p-3 rounded-xl transition-all duration-200 border-2 font-semibold focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-400 ${
                   gender === "male"
                     ? "bg-sky-400 text-white border-sky-400 shadow-lg"
                     : "bg-gray-100 hover:bg-gray-200 text-gray-600 border-gray-200"
@@ -553,7 +572,7 @@ export const SajuInputForm: React.FC<SajuInputFormProps> = ({
                 type="button"
                 onClick={() => setGender("female")}
                 disabled={isLoading}
-                className={`flex items-center justify-center p-4 rounded-xl transition-all duration-200 border-2 font-semibold text-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-400 ${
+                className={`flex items-center justify-center p-3 rounded-xl transition-all duration-200 border-2 font-semibold focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-400 ${
                   gender === "female"
                     ? "bg-pink-400 text-white border-pink-400 shadow-lg"
                     : "bg-gray-100 hover:bg-gray-200 text-gray-600 border-gray-200"
@@ -563,55 +582,50 @@ export const SajuInputForm: React.FC<SajuInputFormProps> = ({
               </button>
             </div>
           </div>
-          {/* Right Column: Location & Yajasi */}
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-base font-semibold text-gray-800 mb-3">
-                출생 지역
-              </label>
-              <select
-                value={location}
-                onChange={(e) => setLocation(e.target.value)}
-                className={`${inputClass} h-14`}
-                disabled={isLoading}
+
+          {/* 3. 출생 지역 */}
+          <div className="lg:col-span-1">
+            <label className="block text-base font-semibold text-gray-800 mb-3">
+              출생 지역
+            </label>
+            <select
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
+              className={`${inputClass} h-14`}
+              disabled={isLoading}
+            >
+              {birthLocations.map((loc) => (
+                <option key={loc.name} value={loc.name}>
+                  {loc.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* 4. 야자시 적용 */}
+          <div className="lg:col-span-1">
+            <label className="block text-base font-semibold text-gray-800 mb-3 flex items-center gap-2">
+              야자시
+              <button
+                type="button"
+                onClick={() => setIsYajasiInfoOpen(true)}
+                className="text-gray-400 hover:text-gray-700 transition-colors"
+                aria-label="야자시 정보"
               >
-                {birthLocations.map((loc) => (
-                  <option key={loc.name} value={loc.name}>
-                    {loc.name}
-                  </option>
-                ))}
-              </select>
-              <p className="text-gray-500 text-xs mt-2 px-1">
-                정확한 시간 계산을 위해 반영됩니다.
-              </p>
-            </div>
-            <div>
-              <label className="block text-base font-semibold text-gray-800 mb-3 flex items-center gap-2">
-                야자시 적용
-                <button
-                  type="button"
-                  onClick={() => setIsYajasiInfoOpen(true)}
-                  className="text-gray-400 hover:text-gray-700 transition-colors"
-                  aria-label="야자시 정보"
-                >
-                  <InfoIcon className="w-5 h-5" />
-                </button>
-              </label>
-              <select
-                value={yajasiOption}
-                onChange={(e) =>
-                  setYajasiOption(e.target.value as "none" | "apply")
-                }
-                className={`${inputClass} h-14`}
-                disabled={isLoading}
-              >
-                <option value="none">적용 안 함 (표준 명리)</option>
-                <option value="apply">야자시 적용</option>
-              </select>
-              <p className="text-gray-500 text-xs mt-2 px-1">
-                23:30~23:59 출생 시 선택합니다.
-              </p>
-            </div>
+                <InfoIcon className="w-5 h-5" />
+              </button>
+            </label>
+            <select
+              value={yajasiOption}
+              onChange={(e) =>
+                setYajasiOption(e.target.value as "none" | "apply")
+              }
+              className={`${inputClass} h-14`}
+              disabled={isLoading}
+            >
+              <option value="none">미적용</option>
+              <option value="apply">적용</option>
+            </select>
           </div>
         </div>
 

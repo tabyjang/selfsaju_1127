@@ -24,6 +24,7 @@ import { InteractionsDisplay } from "./InteractionsDisplay";
 import { SinsalDisplay } from "./SinsalDisplay";
 import { GyeokgukDisplay } from "./GyeokgukDisplay";
 import { MonthlyIljuCalendar } from "./MonthlyIljuCalendar";
+import { SaveSajuButton } from "./SaveSajuButton";
 import {
   DiagnosisIcon,
   PrescriptionIcon,
@@ -41,6 +42,7 @@ interface AnalysisResultProps {
   sajuImage: string | null;
   isImageLoading: boolean;
   imageError: string | null;
+  onLoginRequired?: () => void;
 }
 
 const ohaengColorMap: Record<
@@ -2609,6 +2611,7 @@ export const AnalysisResult: React.FC<AnalysisResultProps> = ({
   sajuImage,
   isImageLoading,
   imageError,
+  onLoginRequired,
 }) => {
   const { birthDate, gender, daewoon, daewoonNumber, birthRegion } = sajuData;
   const ilganChar = sajuData.pillars.day.cheonGan.char;
@@ -2665,11 +2668,15 @@ export const AnalysisResult: React.FC<AnalysisResultProps> = ({
   return (
     <div className="mt-10 animate-fade-in">
       <div className="mb-10">
-        <h2 className="text-3xl font-bold text-gray-800 mb-5 text-center">
-          사주 원국 정보
-        </h2>
+        <div className="flex flex-col sm:flex-row justify-between items-center mb-5 gap-4">
+          <h2 className="text-3xl font-bold text-gray-800 text-center sm:text-left flex-1">
+            사주 원국 정보
+          </h2>
+          <SaveSajuButton sajuData={sajuData} onLoginRequired={onLoginRequired} />
+        </div>
 
-        <div className="mb-8 p-4 md:p-6 glass-card">
+        {/* 사용자 정보 표시 부분 숨김 처리 (데이터는 유지, 나중에 저장용) */}
+        {/* <div className="mb-8 p-4 md:p-6 glass-card">
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
             <div className="p-2">
               <div className="text-gray-500 text-sm mb-1">성별</div>
@@ -2702,7 +2709,7 @@ export const AnalysisResult: React.FC<AnalysisResultProps> = ({
               </div>
             </div>
           </div>
-        </div>
+        </div> */}
 
         <div className="p-1 md:p-2 glass-card">
           <SajuPillarsDisplay sajuInfo={sajuData} />

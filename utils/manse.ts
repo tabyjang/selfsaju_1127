@@ -455,7 +455,8 @@ export const getSajuInfoFromCharacters = (
     minute: number;
   },
   birthRegion: string,
-  isHourUnknown: boolean = false
+  isHourUnknown: boolean = false,
+  name?: string
 ): SajuInfo => {
   const [siGan, siJi, ilGan, ilJi, wolGan, wolJi, nyeonGan, nyeonJi] =
     characters;
@@ -520,6 +521,7 @@ export const getSajuInfoFromCharacters = (
     isHourUnknown || !siGan || !siJi ? null : createPillar("시주", siGan, siJi);
 
   return {
+    name,
     pillars: {
       hour: hourPillar || createPillar("시주", "-", "-"), // 빈 값일 경우 기본값 사용
       day: createPillar("일주", ilGan, ilJi),
