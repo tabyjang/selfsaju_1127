@@ -1,238 +1,218 @@
-import React, { useState, useCallback, useRef, useEffect } from 'react';
-import type { SajuInfo, SajuAnalysisResult, ChatMessage } from './types';
-import type { Chat } from '@google/genai';
-// [임시 비활성화] 나중에 다시 켜려면 아래 import 주석 해제
-// import { analyzeSaju, createChatSession, generateSajuImage } from './services/geminiService';
-import { SajuInputForm } from './components/SajuInputForm';
-import { AnalysisResult } from './components/AnalysisResult';
-// [임시 비활성화] 채팅 컴포넌트 import 주석 처리
-// import { InteractiveChat } from './components/InteractiveChat';
-import { OhaengLoading } from './components/OhaengLoading';
-import LandingPage from './LandingPage';
+import React, { useState, useCallback, useRef, useEffect } from "react";
+// Clerk 훅 가져오기
+import {
+  SignedIn,
+  SignedOut,
+  SignInButton,
+  UserButton,
+  useUser,
+  useClerk,
+} from "@clerk/clerk-react";
 
-
-const ANALYSIS_PROMPTS = {
-    stage1: `## 1단계: 오행과 일간의 강약... (생략)`,
-    stage2: `## 2단계: 용신의 활용... (생략)`,
-    stage3: `## 3단계: 인생 대운의 흐름과 미래 예측... (생략)`,
-};
-
+import type { SajuInfo, SajuAnalysisResult, ChatMessage } from "./types";
+import type { Chat } from "@google/genai";
+import { SajuInputForm } from "./components/SajuInputForm";
+import { AnalysisResult } from "./components/AnalysisResult";
+import { OhaengLoading } from "./components/OhaengLoading";
+import { SavedSajuList } from "./components/SavedSajuList";
+import LandingPage from "./LandingPage";
 
 const App: React.FC = () => {
-    const [showLanding, setShowLanding] = useState(true);
-    const [analysisResult, setAnalysisResult] = useState<SajuAnalysisResult | null>(null);
-    const [isLoading, setIsLoading] = useState<boolean>(false);
-    const [error, setError] = useState<string | null>(null);
-    const [sajuDataForDisplay, setSajuDataForDisplay] = useState<SajuInfo | null>(null);
-    const abortControllerRef = useRef<AbortController | null>(null);
+  // === [Clerk 훅 사용] ===
+  const { isSignedIn } = useUser();
+  const clerk = useClerk();
 
-    const [sajuImage, setSajuImage] = useState<string | null>(null);
-    const [isImageLoading, setIsImageLoading] = useState<boolean>(false);
-    const [imageError, setImageError] = useState<string | null>(null);
+  // === [State 관리] ===
+  const [showLanding, setShowLanding] = useState(true);
+  const [analysisResult, setAnalysisResult] =
+    useState<SajuAnalysisResult | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+  const [sajuDataForDisplay, setSajuDataForDisplay] = useState<SajuInfo | null>(
+    null
+  );
 
-    const [chatSession, setChatSession] = useState<Chat | null>(null);
-    const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
-    const [isChatLoading, setIsChatLoading] = useState<boolean>(false);
-    const [chatError, setChatError] = useState<string | null>(null);
+  // 화면 스크롤을 위한 '위치 표시기(Ref)'
+  const resultRef = useRef<HTMLDivElement>(null);
 
-    const handleStart = () => {
-        setShowLanding(false);
-    }
+  // 이미지/채팅 관련 State
+  const [sajuImage, setSajuImage] = useState<string | null>(null);
+  const [isImageLoading, setIsImageLoading] = useState<boolean>(false);
+  const [imageError, setImageError] = useState<string | null>(null);
+  const [chatSession, setChatSession] = useState<Chat | null>(null);
+  const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
 
-    // === [이미지 생성 로직] ===
-    useEffect(() => {
-        if (!analysisResult) return;
+  const handleStart = () => {
+    setShowLanding(false);
+  };
 
-        // [임시 비활성화] 이미지 생성 API 호출 막기
-        /* const extractMetaphor = (text: string): string | null => {
-            const metaphorRegex = /\*\*재미있는 비유\*\*[^'"]*['"]([^'"]+)['"]/;
-            const match = text.match(metaphorRegex);
-            return match ? match[1] : null;
-        };
-
-        const generateImage = async () => {
-            const metaphor = extractMetaphor(analysisResult.stage1);
-            if (!metaphor) return;
-
-            setIsImageLoading(true);
-            setImageError(null);
-            
-            const imageAbortController = new AbortController();
-            const mainAbortSignal = abortControllerRef.current?.signal;
-            const onAbort = () => imageAbortController.abort();
-            mainAbortSignal?.addEventListener('abort', onAbort);
-
-            try {
-                const imageUrl = await generateSajuImage(metaphor, imageAbortController.signal);
-                setSajuImage(imageUrl);
-            } catch (e) {
-                if (e instanceof Error && e.name !== 'AbortError') {
-                    setImageError(e.message);
-                }
-            } finally {
-                setIsImageLoading(false);
-                mainAbortSignal?.removeEventListener('abort', onAbort);
-            }
-        };
-
-        generateImage();
-        */
-       
-       console.log("이미지 생성 기능이 임시 비활성화되었습니다.");
-
-    }, [analysisResult]);
-
-
-    // === [분석 요청 로직] ===
-    const handleAnalysis = useCallback(async (sajuInfo: SajuInfo) => {
-        setIsLoading(true);
-        setError(null);
-        setAnalysisResult(null);
-        setSajuImage(null);
-        setIsImageLoading(false);
-        setImageError(null);
-        setChatSession(null);
-        setChatHistory([]);
-        setChatError(null);
-
-        setSajuDataForDisplay(sajuInfo);
-
-        // abortControllerRef.current = new AbortController();
-
+  // 로그인 후 사주 데이터 복원
+  useEffect(() => {
+    if (isSignedIn) {
+      const pendingSajuData = localStorage.getItem('pendingSajuData');
+      if (pendingSajuData) {
         try {
-            // [임시 비활성화] 제미나이 분석 API 호출 막기
-            /*
-            const result = await analyzeSaju(
-                sajuInfo,
-                ANALYSIS_PROMPTS,
-                abortControllerRef.current.signal
-            );
-            setAnalysisResult(result);
-            if (result) {
-                const session = createChatSession(sajuInfo, result);
-                setChatSession(session);
-            }
-            */
-            // API 호출 대신 안내 메시지 띄우고 로딩 종료
-            console.log("AI 분석 기능이 임시 비활성화되었습니다.");
-                        
-            // [수정] alert 삭제함 (사용자에게 아무것도 안 띄움)
-            // alert("현재 시스템 점검으로 인해 AI 상세 분석 및 상담 기능을 이용할 수 없습니다."); 
-
-            // [TODO] 나중에 여기에 Clerk 로그인 모달 띄우는 코드 작성 예정
-
-            setIsLoading(false); // 로딩바만 끄기
-
-
-        } catch (e) {
-            // [임시 비활성화] 에러 처리 로직도 API 미사용으로 인해 주석 처리 혹은 단순화
-            /*
-            if (e instanceof Error && e.name === 'AbortError') {
-                console.log('Analysis was cancelled by the user.');
-                setSajuDataForDisplay(null);
-            } else {
-                setError('');
-            }
-            */
-            console.error(e);
-            setIsLoading(false);
-        } 
-        // finally { setIsLoading(false); } // 
-        // 위에서 처리했으므로 주석
-    }, []);
-
-    const handleCancel = () => {
-        if (abortControllerRef.current) {
-            abortControllerRef.current.abort();
+          const sajuData = JSON.parse(pendingSajuData);
+          setSajuDataForDisplay(sajuData);
+          setShowLanding(false);
+          localStorage.removeItem('pendingSajuData');
+        } catch (error) {
+          console.error('사주 데이터 복원 실패:', error);
         }
-    };
-
-    const handleSendMessage = useCallback(async (message: string) => {
-        // [임시 비활성화] 채팅 메시지 전송 막기
-        /*
-        if (!chatSession) return;
-
-        const newUserMessage: ChatMessage = { role: 'user', content: message };
-        setChatHistory(prev => [...prev, newUserMessage]);
-        setIsChatLoading(true);
-        setChatError(null);
-
-        let fullResponse = '';
-        try {
-            const stream = await chatSession.sendMessageStream({ message });
-            setChatHistory(prev => [...prev, { role: 'model', content: '' }]);
-
-            for await (const chunk of stream) {
-                fullResponse += chunk.text;
-                setChatHistory(prev => {
-                    const newHistory = [...prev];
-                    newHistory[newHistory.length - 1] = { role: 'model', content: fullResponse };
-                    return newHistory;
-                });
-            }
-        } catch (e) {
-            setChatError('');
-            setChatHistory(prev => prev.slice(0, -1));
-        } finally {
-            setIsChatLoading(false);
-        }
-        */
-       console.log("채팅 기능이 비활성화되었습니다.");
-    }, [chatSession]);
-
-    if (showLanding) {
-        return <LandingPage onStart={handleStart} />;
+      }
     }
+  }, [isSignedIn]);
 
-    return (
-        <div className="min-h-screen font-sans p-4 sm:p-6 lg:p-8">
-            {isLoading && !analysisResult && <OhaengLoading />}
-            <main className="max-w-7xl mx-auto relative">
-                <header className="text-center mb-12 relative flex justify-center">
-                    <img
-                        src="/logo.png"
-                        alt="아사주달 로고"
-                        className="h-28 sm:h-36 md:h-44 w-auto object-contain"
-                    />
-                </header>
+  // 로그인 모달 열기
+  const handleLoginRequired = () => {
+    // 로그인 후 현재 페이지로 돌아오도록 설정
+    clerk.openSignIn({
+      redirectUrl: window.location.pathname + window.location.search + window.location.hash,
+    });
+  };
 
-                <SajuInputForm onAnalyze={handleAnalysis} isLoading={isLoading} />
+  // === [수정됨] 분석 요청 로직 (로그인 강제 제거!) ===
+  const handleAnalysis = useCallback(
+    async (sajuInfo: SajuInfo) => {
+      // 1. 로그인 체크 로직 삭제함! 
+      // 이제 로그인을 안 해도 바로 분석이 시작됩니다.
 
-                {error && error.trim() && (
-                    <div className="mt-8 text-center p-6 bg-red-100 border border-red-300 rounded-xl">
-                        <p className="font-bold text-xl text-red-600">오류 발생</p>
-                        <p className="text-red-700 mt-2">{error}</p>
-                    </div>
-                )}
+      setIsLoading(true);
+      setError(null);
+      setSajuDataForDisplay(sajuInfo);
 
-                {sajuDataForDisplay && (
-                    <AnalysisResult
-                        result={analysisResult} // 현재 null이 들어감 (상세 내용은 안 보임)
-                        sajuData={sajuDataForDisplay}
-                        isLoading={isLoading}
-                        sajuImage={sajuImage}
-                        isImageLoading={isImageLoading}
-                        imageError={imageError}
-                    />
-                )}
+      try {
+        // [임시] 분석 기능 시뮬레이션
+        console.log("AI 분석 기능 임시 비활성화");
+        await new Promise((resolve) => setTimeout(resolve, 500));
+        setIsLoading(false);
+      } catch (e) {
+        console.error(e);
+        setIsLoading(false);
+      }
+    },
+    [] 
+  );
 
-                {/* [임시 비활성화] InteractiveChat 컴포넌트 렌더링 막기 */}
-                {/* {analysisResult && chatSession && (
-                    <InteractiveChat
-                        onSendMessage={handleSendMessage}
-                        chatHistory={chatHistory}
-                        isLoading={isChatLoading}
-                        error={chatError}
-                    />
-                )}
-                */}
-            </main>
-            <footer className="text-center mt-16 text-sm text-gray-500">
-                <p>아사주달의 분석을 통해 건강과 행복이 함께 하시길 기원합니다. </p>
-                <p>&copy; {new Date().getFullYear()} asajudal.com. All rights reserved.</p>
-            </footer>
+  // === [결과 나오면 자동 스크롤] ===
+  useEffect(() => {
+    if (sajuDataForDisplay && resultRef.current) {
+      setTimeout(() => {
+        resultRef.current?.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }, 100);
+    }
+  }, [sajuDataForDisplay]);
+
+  // 기타 로직들
+  useEffect(() => {
+    if (!analysisResult) return;
+  }, [analysisResult]);
+
+  const handleSendMessage = useCallback(
+    async (message: string) => {},
+    [chatSession]
+  );
+
+  if (showLanding) {
+    return <LandingPage onStart={handleStart} />;
+  }
+
+  return (
+    <div className="min-h-screen font-sans p-4 sm:p-6 lg:p-8 bg-white">
+      {/* 우측 상단 로그인 버튼 */}
+      <div className="fixed top-4 right-4 z-50 flex gap-2">
+        <SignedOut>
+          <SignInButton mode="modal">
+            <button className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition text-sm font-bold shadow-md cursor-pointer">
+              로그인
+            </button>
+          </SignInButton>
+        </SignedOut>
+        <SignedIn>
+          <UserButton />
+        </SignedIn>
+      </div>
+
+      {isLoading && !analysisResult && <OhaengLoading />}
+
+      <main className="max-w-7xl mx-auto relative pt-12">
+        <header className="text-center mb-12 relative flex justify-center">
+          <img
+            src="/logo.png"
+            alt="아사주달 로고"
+            className="h-28 sm:h-36 md:h-44 w-auto object-contain"
+          />
+        </header>
+
+        {/* 저장된 사주 불러오기 버튼 (로그인한 유저에게만 보임) */}
+        <SignedIn>
+          <div className="flex justify-center mb-6">
+            <SavedSajuList
+              onSelect={(sajuData) => {
+                setSajuDataForDisplay(sajuData);
+                setShowLanding(false);
+              }}
+            />
+          </div>
+        </SignedIn>
+
+        <SajuInputForm onAnalyze={handleAnalysis} isLoading={isLoading} />
+
+        {/* 결과 화면 위치 표시기 */}
+        <div ref={resultRef} className="scroll-mt-10">
+          {sajuDataForDisplay && (
+            <>
+              <AnalysisResult
+                result={analysisResult}
+                sajuData={sajuDataForDisplay}
+                isLoading={isLoading}
+                sajuImage={sajuImage}
+                isImageLoading={isImageLoading}
+                imageError={imageError}
+                onLoginRequired={handleLoginRequired}
+              />
+              
+              {/* [추가됨] 결과 하단에 로그인 유도 배너 (비로그인 시에만 보임) */}
+              <SignedOut>
+                <div className="mt-8 p-6 bg-indigo-50 rounded-2xl border border-indigo-100 text-center">
+                  <h3 className="text-lg font-bold text-indigo-900 mb-2">
+                    결과를 영구적으로 소장하고 싶으신가요? 💾
+                  </h3>
+                  <p className="text-indigo-700 mb-4 text-sm">
+                    지금 로그인하시면 사주 분석 내용을 저장하고<br/>
+                    언제든지 다시 꺼내볼 수 있습니다.
+                  </p>
+                  <button
+                    onClick={() => {
+                      // localStorage에 사주 데이터 저장 후 로그인 모달 열기
+                      localStorage.setItem('pendingSajuSave', 'true');
+                      localStorage.setItem('pendingSajuData', JSON.stringify(sajuDataForDisplay));
+                      handleLoginRequired();
+                    }}
+                    className="px-6 py-3 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 transition shadow-lg animate-pulse"
+                  >
+                    결과 저장하기 (로그인)
+                  </button>
+                </div>
+              </SignedOut>
+            </>
+          )}
         </div>
-    );
+
+        {error && <div className="text-red-600 text-center mt-4">{error}</div>}
+      </main>
+
+      <footer className="text-center mt-16 text-sm text-gray-500 pb-8">
+        <p>아사주달의 분석을 통해 건강과 행복이 함께 하시길 기원합니다.</p>
+        <p>
+          &copy; {new Date().getFullYear()} asajudal.com. All rights reserved.
+        </p>
+      </footer>
+    </div>
+  );
 };
 
 export default App;
