@@ -53,6 +53,20 @@ const DaewoonPage: React.FC = () => {
     };
   }, [fullText]);
 
+  const currentYear = new Date().getFullYear();
+  const koreanAge = sajuData ? currentYear - sajuData.birthDate.year + 1 : 0;
+  const ilGan = sajuData?.pillars.day.cheonGan.char || '';
+
+  const sewoonPillars = useMemo(
+    () => sajuData ? getSewoonPillars(currentYear, 10, ilGan) : [],
+    [currentYear, ilGan, sajuData]
+  );
+
+  const wolwoonPillars = useMemo(
+    () => sajuData ? getWolwoonPillars(2026, ilGan) : [],
+    [ilGan, sajuData]
+  );
+
   if (!sajuData) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 to-pink-50 page-fade-in">
@@ -63,10 +77,6 @@ const DaewoonPage: React.FC = () => {
       </div>
     );
   }
-
-  const currentYear = new Date().getFullYear();
-  const koreanAge = currentYear - sajuData.birthDate.year + 1;
-  const ilGan = sajuData.pillars.day.cheonGan.char;
 
   const renderDaewoonPillar = (pillar: DaewoonPillar) => {
     const ganColor = ohaengColorMap[pillar.cheonGan.ohaeng];
@@ -125,11 +135,6 @@ const DaewoonPage: React.FC = () => {
     );
   };
 
-  const sewoonPillars = useMemo(
-    () => getSewoonPillars(currentYear, 10, ilGan),
-    [currentYear, ilGan]
-  );
-
   const renderSewoonPillar = (pillar: SewoonPillar) => {
     const ganColor = ohaengColorMap[pillar.cheonGan.ohaeng];
     const jiColor = ohaengColorMap[pillar.jiJi.ohaeng];
@@ -185,11 +190,6 @@ const DaewoonPage: React.FC = () => {
       </div>
     );
   };
-
-  const wolwoonPillars = useMemo(
-    () => getWolwoonPillars(2026, ilGan),
-    [ilGan]
-  );
 
   const renderWolwoonPillar = (pillar: WolwoonPillar) => {
     const ganColor = ohaengColorMap[pillar.cheonGan.ohaeng];
