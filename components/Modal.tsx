@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { CloseIcon } from './icons';
 
 interface ModalProps {
@@ -49,7 +50,7 @@ export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children }
   const handleMouseUp = () => {
     setIsDragging(false);
   };
-  
+
   useEffect(() => {
     if (isDragging) {
       window.addEventListener('mousemove', handleMouseMove);
@@ -81,13 +82,13 @@ export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children }
 
   if (!isOpen) return null;
 
-  return (
-    <div 
+  const modalContent = (
+    <div
       className="fixed inset-0 bg-black/40 z-50 p-4 animate-fade-in"
       aria-modal="true"
       role="dialog"
     >
-      <div 
+      <div
         ref={modalRef}
         style={{
           position: 'absolute',
@@ -96,12 +97,12 @@ export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children }
         }}
         className="w-full max-w-2xl bg-white rounded-2xl shadow-xl border border-gray-200 flex flex-col"
       >
-        <header 
+        <header
           className="p-6 md:p-8 border-b border-gray-200 flex justify-between items-center cursor-move"
           onMouseDown={handleMouseDown}
         >
           <h3 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-amber-600 to-yellow-500 select-none">{title}</h3>
-          <button 
+          <button
             onClick={onClose}
             className="text-gray-400 hover:text-gray-800 transition-colors rounded-full p-1 focus:outline-none focus:ring-2 focus:ring-yellow-500 cursor-pointer"
             aria-label="Close modal"
@@ -117,4 +118,6 @@ export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children }
       </div>
     </div>
   );
+
+  return createPortal(modalContent, document.body);
 };

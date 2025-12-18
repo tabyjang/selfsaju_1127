@@ -147,7 +147,7 @@ const App: React.FC = () => {
         </header>
 
         {/* 저장된 사주 불러오기 버튼 (로그인한 유저에게만 보임) */}
-        <SignedIn>
+        {/* <SignedIn>
           <div className="flex justify-center mb-6">
             <SavedSajuList
               onSelect={(sajuData) => {
@@ -156,7 +156,7 @@ const App: React.FC = () => {
               }}
             />
           </div>
-        </SignedIn>
+        </SignedIn> */}
 
         <SajuInputForm onAnalyze={handleAnalysis} isLoading={isLoading} />
 

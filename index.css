@@ -66,6 +66,18 @@ body {
 @keyframes fade-in-slower { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } } /* 아래에서 위로 부드럽게 떠오르는 효과 */
 .animate-fade-in-slower { animation: fade-in-slower 1.2s ease-out forwards; animation-delay: 0.5s; opacity: 0; } /* 0.5초 후 1.2초 동안 실행 */
 
+@keyframes heartbeat { 0%, 100% { transform: scale(1); } 25% { transform: scale(1.1); } 50% { transform: scale(1); } 75% { transform: scale(1.05); } } /* 두근두근하는 하트비트 효과 */
+.animate-heartbeat { animation: heartbeat 2.5s ease-in-out infinite; } /* 하트비트 효과를 2.5초마다 무한 반복 */
+
+@keyframes sparkle { 0%, 100% { transform: scale(1) rotate(0deg); box-shadow: 0 0 20px rgba(255, 215, 0, 0.5), 0 0 40px rgba(255, 215, 0, 0.3); } 25% { transform: scale(1.05) rotate(1deg); box-shadow: 0 0 30px rgba(255, 215, 0, 0.7), 0 0 60px rgba(255, 215, 0, 0.5); } 50% { transform: scale(1.1) rotate(0deg); box-shadow: 0 0 40px rgba(255, 215, 0, 0.9), 0 0 80px rgba(255, 215, 0, 0.7); } 75% { transform: scale(1.05) rotate(-1deg); box-shadow: 0 0 30px rgba(255, 215, 0, 0.7), 0 0 60px rgba(255, 215, 0, 0.5); } } /* 반짝반짝 빛나는 효과 */
+.animate-sparkle { animation: sparkle 2s ease-in-out infinite; } /* 반짝이는 효과를 2초마다 무한 반복 */
+
+@keyframes border-sparkle { 0%, 100% { box-shadow: 0 0 15px rgba(255, 215, 0, 0.6), 0 0 30px rgba(255, 215, 0, 0.4), inset 0 0 10px rgba(255, 215, 0, 0.2); } 50% { box-shadow: 0 0 25px rgba(255, 215, 0, 0.9), 0 0 50px rgba(255, 215, 0, 0.6), inset 0 0 15px rgba(255, 215, 0, 0.3); } } /* 테두리만 반짝이는 효과 (크기 변화 없음) */
+.animate-border-sparkle { animation: border-sparkle 2s ease-in-out infinite; } /* 테두리 반짝임을 2초마다 무한 반복 */
+
+@keyframes rainbow-glow { 0% { box-shadow: 0 0 20px rgba(255, 0, 150, 0.6), 0 0 40px rgba(255, 0, 150, 0.4); } 25% { box-shadow: 0 0 25px rgba(255, 215, 0, 0.6), 0 0 50px rgba(255, 215, 0, 0.4); } 50% { box-shadow: 0 0 30px rgba(0, 255, 150, 0.6), 0 0 60px rgba(0, 255, 150, 0.4); } 75% { box-shadow: 0 0 25px rgba(100, 150, 255, 0.6), 0 0 50px rgba(100, 150, 255, 0.4); } 100% { box-shadow: 0 0 20px rgba(255, 0, 150, 0.6), 0 0 40px rgba(255, 0, 150, 0.4); } } /* 무지개 빛나는 효과 */
+.animate-rainbow-glow { animation: rainbow-glow 3s ease-in-out infinite; } /* 무지개 효과를 3초마다 무한 반복 */
+
 /*
  * Glassmorphism Card Effect
  * '유리 카드' 효과를 정의하는 부분입니다. 반투명하고 흐릿한 배경을 가진 카드 스타일입니다.

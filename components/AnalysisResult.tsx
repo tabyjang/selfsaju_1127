@@ -207,12 +207,12 @@ const SajuPillarsDisplay: React.FC<{ sajuInfo: SajuInfo }> = ({ sajuInfo }) => {
           <div className="py-2 h-14 flex items-center justify-center border-t border-gray-200">
             <span className="text-gray-400 text-sm">-</span>
           </div>
-          <div className="flex justify-center py-1.5 px-2">
+          <div className="flex justify-center items-center py-1.5 px-2 h-24 md:h-28">
             <div className="saju-char-outline w-16 h-16 md:w-20 md:h-20 flex items-center justify-center text-4xl md:text-5xl font-bold rounded-lg shadow-lg bg-gray-100 text-gray-300 border border-gray-300">
               -
             </div>
           </div>
-          <div className="flex justify-center py-1.5 px-2">
+          <div className="flex justify-center items-center py-1.5 px-2 h-24 md:h-28">
             <div className="saju-char-outline w-16 h-16 md:w-20 md:h-20 flex items-center justify-center text-4xl md:text-5xl font-bold rounded-lg shadow-lg bg-gray-100 text-gray-300 border border-gray-300">
               -
             </div>
@@ -257,17 +257,19 @@ const SajuPillarsDisplay: React.FC<{ sajuInfo: SajuInfo }> = ({ sajuInfo }) => {
           </span>
         </div>
 
-        <div className="flex justify-center py-1.5 px-2">
+        <div className="flex justify-center items-center py-1.5 px-2 h-24 md:h-28">
           <div
-            className={`saju-char-outline w-16 h-16 md:w-20 md:h-20 flex items-center justify-center text-4xl md:text-5xl font-bold rounded-lg shadow-lg ${
-              ganColor.bg
-            } ${ganColor.text} ${ganColor.border ?? ""}`}
+            className={`saju-char-outline flex items-center justify-center font-bold rounded-lg ${
+              pillar.cheonGan.sibsin.name === "일간"
+                ? "w-20 h-20 md:w-24 md:h-24 text-5xl md:text-6xl animate-heartbeat border-4 border-yellow-400 shadow-[0_0_20px_rgba(250,204,21,0.6)]"
+                : "w-16 h-16 md:w-20 md:h-20 text-4xl md:text-5xl shadow-lg"
+            } ${ganColor.bg} ${ganColor.text} ${pillar.cheonGan.sibsin.name === "일간" ? "" : ganColor.border ?? ""}`}
           >
             {pillar.cheonGan.char}
           </div>
         </div>
 
-        <div className="flex justify-center py-1.5 px-2">
+        <div className="flex justify-center items-center py-1.5 px-2 h-24 md:h-28">
           <div
             className={`saju-char-outline w-16 h-16 md:w-20 md:h-20 flex items-center justify-center text-4xl md:text-5xl font-bold rounded-lg shadow-lg ${
               jiColor.bg
@@ -1881,11 +1883,12 @@ const IljuAnalysisDisplay: React.FC<{
                     <div className="mt-5 text-center">
                       <button
                         type="button"
-                        className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-gradient-to-r from-pink-500 to-pink-600 text-white font-extrabold shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300"
+                        className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-gradient-to-r from-pink-500 to-pink-600 text-white font-extrabold shadow-lg hover:shadow-xl transition-all duration-300 animate-sparkle"
                         onClick={() => setShowIljiSibsinSpecial(true)}
                       >
-                        <span>✨</span>
+                        <span className="text-2xl">✨</span>
                         <span>{iljuGanji}의 {iljiSibsin} 특별 해설 보기</span>
+                        <span className="text-2xl">✨</span>
                         <ChevronDownIcon className="w-5 h-5" />
                       </button>
                     </div>
@@ -1896,10 +1899,10 @@ const IljuAnalysisDisplay: React.FC<{
                 </div>
 
                 {iljuData?.ilji?.sibsin?.special_analysis && showIljiSibsinSpecial && (
-                  <div className="mt-5 bg-white/80 p-5 rounded-xl border-2 border-pink-200 shadow-sm">
+                  <div className="mt-5 bg-white/80 p-5 rounded-xl border-2 border-pink-300 shadow-sm animate-border-sparkle">
                     <div className="flex items-center justify-between gap-3 mb-3">
                       <div className="inline-block px-3 py-1 bg-pink-100 text-pink-900 rounded-full text-sm font-semibold">
-                        일주 십신 특별 해설
+                        ✨ 일주 십신 특별 해설 ✨
                       </div>
                       <button
                         type="button"
@@ -2132,11 +2135,12 @@ const IljuAnalysisDisplay: React.FC<{
                           <div className="mt-5 text-center">
                             <button
                               type="button"
-                              className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-gradient-to-r from-amber-500 to-amber-600 text-white font-extrabold shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300"
+                              className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-gradient-to-r from-amber-500 to-amber-600 text-white font-extrabold shadow-lg hover:shadow-xl transition-all duration-300 animate-sparkle"
                               onClick={() => setShowIljiUnseongSpecial(true)}
                             >
-                              <span>✨</span>
+                              <span className="text-2xl">✨</span>
                               <span>{iljuGanji}의 {iljiUnseong} 특별 해설 보기</span>
+                              <span className="text-2xl">✨</span>
                               <ChevronDownIcon className="w-5 h-5" />
                             </button>
                           </div>
@@ -2148,10 +2152,10 @@ const IljuAnalysisDisplay: React.FC<{
 
                 {/* 일주별 십이운성 특별 해설 내용 */}
                 {iljuData?.ilji?.unseong?.description && showIljiUnseongSpecial && (
-                  <div className="mt-5 bg-white/80 p-5 rounded-xl border-2 border-amber-200 shadow-sm">
+                  <div className="mt-5 bg-white/80 p-5 rounded-xl border-2 border-amber-300 shadow-sm animate-border-sparkle">
                     <div className="flex items-center justify-between gap-3 mb-3">
                       <div className="inline-block px-3 py-1 bg-amber-100 text-amber-900 rounded-full text-sm font-semibold">
-                        일주 십이운성 특별 해설
+                        ✨ 일주 십이운성 특별 해설 ✨
                       </div>
                       <button
                         type="button"
@@ -2321,8 +2325,9 @@ const SibsinPositionDisplay: React.FC<{ sajuInfo: SajuInfo }> = ({
                 <div className="mt-6 animate-fade-in">
                   <button
                     onClick={() => setShowInfo(true)}
-                    className="btn-primary flex items-center gap-3 py-4 px-8 rounded-full shadow-xl transform hover:scale-105 transition-all duration-300 mx-auto bg-purple-500 hover:bg-purple-600"
+                    className="btn-primary flex items-center gap-3 py-4 px-8 rounded-full shadow-xl transition-all duration-300 mx-auto bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 animate-rainbow-glow"
                   >
+                    <span className="text-2xl">🌟</span>
                     <svg
                       className="w-6 h-6"
                       fill="none"
@@ -2337,6 +2342,7 @@ const SibsinPositionDisplay: React.FC<{ sajuInfo: SajuInfo }> = ({
                       />
                     </svg>
                     <span className="text-lg font-bold">월령 십신 보기</span>
+                    <span className="text-2xl">🌟</span>
                     <ChevronDownIcon className="w-5 h-5" />
                   </button>
                 </div>
@@ -2672,7 +2678,7 @@ export const AnalysisResult: React.FC<AnalysisResultProps> = ({
           <h2 className="text-3xl font-bold text-gray-800 text-center sm:text-left flex-1">
             사주 원국 정보
           </h2>
-          <SaveSajuButton sajuData={sajuData} onLoginRequired={onLoginRequired} />
+          {/* <SaveSajuButton sajuData={sajuData} onLoginRequired={onLoginRequired} /> */}
         </div>
 
         {/* 사용자 정보 표시 부분 숨김 처리 (데이터는 유지, 나중에 저장용) */}
