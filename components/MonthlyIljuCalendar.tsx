@@ -130,7 +130,6 @@ export const MonthlyIljuCalendar: React.FC<{ sajuInfo: SajuInfo }> = ({
 
   // 체크박스 상태 관리 (localStorage 연동)
   const [showCheonEul, setShowCheonEul] = useState<boolean>(false);
-  const [showGongmang, setShowGongmang] = useState<boolean>(false);
   const [showYongsin, setShowYongsin] = useState<boolean>(false);
 
   // localStorage에서 초기값 로드
@@ -140,7 +139,6 @@ export const MonthlyIljuCalendar: React.FC<{ sajuInfo: SajuInfo }> = ({
       if (saved) {
         const options = JSON.parse(saved);
         setShowCheonEul(options.showCheonEul ?? false);
-        setShowGongmang(options.showGongmang ?? false);
         setShowYongsin(options.showYongsin ?? false);
       }
     } catch (error) {
@@ -153,14 +151,13 @@ export const MonthlyIljuCalendar: React.FC<{ sajuInfo: SajuInfo }> = ({
     try {
       const options = {
         showCheonEul,
-        showGongmang,
         showYongsin,
       };
       localStorage.setItem('calendar-display-options', JSON.stringify(options));
     } catch (error) {
       console.error('Failed to save calendar display options:', error);
     }
-  }, [showCheonEul, showGongmang, showYongsin]);
+  }, [showCheonEul, showYongsin]);
 
   const daysInMonth = useMemo(() => {
     return new Date(viewYear, viewMonth, 0).getDate();
@@ -327,17 +324,6 @@ export const MonthlyIljuCalendar: React.FC<{ sajuInfo: SajuInfo }> = ({
               <span className="text-sm md:text-base text-gray-700">천을귀인 표시</span>
             </label>
 
-            {/* 공망 체크박스 */}
-            <label className="flex items-center gap-2 cursor-pointer hover:bg-white/30 px-2 py-1 rounded transition">
-              <input
-                type="checkbox"
-                checked={showGongmang}
-                onChange={(e) => setShowGongmang(e.target.checked)}
-                className="w-4 h-4 cursor-pointer accent-gray-500"
-              />
-              <span className="text-sm md:text-base text-gray-700">공망 표시</span>
-            </label>
-
             {/* 용신 체크박스 (준비중) */}
             <label className="flex items-center gap-2 cursor-not-allowed hover:bg-white/20 px-2 py-1 rounded transition opacity-50">
               <input
@@ -380,7 +366,6 @@ export const MonthlyIljuCalendar: React.FC<{ sajuInfo: SajuInfo }> = ({
 
           // 표시할 특성 계산
           const displayCheonEul = showCheonEul && cell.isCheonEul;
-          const displayGongmang = showGongmang && cell.isGongmang;
 
           // 테두리 및 그림자 스타일 결정
           let borderClass = "";
@@ -392,20 +377,11 @@ export const MonthlyIljuCalendar: React.FC<{ sajuInfo: SajuInfo }> = ({
             borderClass = "border-blue-800 border-2 ring-2 ring-blue-400";
             shadowClass = "shadow-lg";
             bgClass = "bg-blue-200/70";
-          } else if (displayCheonEul && displayGongmang) {
-            // 천을귀인 + 공망 둘 다
-            borderClass = "border-4 border-yellow-400";
-            shadowClass = "shadow-lg shadow-yellow-300/50";
-            bgClass = "bg-gradient-to-br from-yellow-50/80 to-amber-50/60 relative after:absolute after:inset-0 after:border-2 after:border-gray-400/60 after:rounded-lg after:pointer-events-none";
           } else if (displayCheonEul) {
-            // 천을귀인만 (화려하게)
+            // 천을귀인 (화려하게)
             borderClass = "border-4 border-yellow-400";
             shadowClass = "shadow-lg shadow-yellow-300/50";
             bgClass = "bg-gradient-to-br from-yellow-50/80 to-amber-50/60";
-          } else if (displayGongmang) {
-            // 공망만 (흐리게)
-            borderClass = "border-2 border-gray-400";
-            bgClass = "bg-gray-200/40";
           } else {
             // 기본
             borderClass = "border-gray-200";
@@ -453,15 +429,6 @@ export const MonthlyIljuCalendar: React.FC<{ sajuInfo: SajuInfo }> = ({
             <div>
               <span className="font-semibold text-gray-800">천을귀인</span>
               <span className="text-gray-600 ml-1">- 귀인의 도움, 좋은 인연</span>
-            </div>
-          </div>
-
-          {/* 공망 */}
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded border-2 border-gray-400 bg-gray-200/40" />
-            <div>
-              <span className="font-semibold text-gray-800">공망</span>
-              <span className="text-gray-600 ml-1">- 비어있는 기운, 허무함</span>
             </div>
           </div>
 
