@@ -25,6 +25,34 @@ export const cheonEulGwiInMap: { [key: string]: string[] } = {
     '辛': ['寅', '午'],
 };
 
+// 공망(空亡) 계산 함수
+export function getGongmangByGanji(ganji: string): string[] {
+    const ganjiList = [
+        '甲子', '乙丑', '丙寅', '丁卯', '戊辰', '己巳', '庚午', '辛未', '壬申', '癸酉', // 甲子旬
+        '甲戌', '乙亥', '丙子', '丁丑', '戊寅', '己卯', '庚辰', '辛巳', '壬午', '癸未', // 甲戌旬
+        '甲申', '乙酉', '丙戌', '丁亥', '戊子', '己丑', '庚寅', '辛卯', '壬辰', '癸巳', // 甲申旬
+        '甲午', '乙未', '丙申', '丁酉', '戊戌', '己亥', '庚子', '辛丑', '壬寅', '癸卯', // 甲午旬
+        '甲辰', '乙巳', '丙午', '丁未', '戊申', '己酉', '庚戌', '辛亥', '壬子', '癸丑', // 甲辰旬
+        '甲寅', '乙卯', '丙辰', '丁巳', '戊午', '己未', '庚申', '辛酉', '壬戌', '癸亥', // 甲寅旬
+    ];
+
+    // 각 순(旬)의 공망
+    const gongmangByJun = [
+        ['戌', '亥'], // 甲子旬
+        ['申', '酉'], // 甲戌旬
+        ['午', '未'], // 甲申旬
+        ['辰', '巳'], // 甲午旬
+        ['寅', '卯'], // 甲辰旬
+        ['子', '丑'], // 甲寅旬
+    ];
+
+    const index = ganjiList.indexOf(ganji);
+    if (index === -1) return [];
+
+    const junIndex = Math.floor(index / 10);
+    return gongmangByJun[junIndex] || [];
+}
+
 export function analyzeSinsal(sajuInfo: SajuInfo): SinsalResult {
     const result: SinsalResult = {};
     const { pillars } = sajuInfo;

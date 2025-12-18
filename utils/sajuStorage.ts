@@ -23,7 +23,7 @@ export async function saveSajuRecord(
       birth_month: sajuInfo.birthDate.month,
       birth_day: sajuInfo.birthDate.day,
       birth_hour:
-        sajuInfo.birthDate.hour === "unknown" ? null : sajuInfo.birthDate.hour,
+        sajuInfo.birthDate.hour === -1 ? null : sajuInfo.birthDate.hour,
       birth_minute: sajuInfo.birthDate.minute,
       birth_region: sajuInfo.birthRegion,
       daewoon: sajuInfo.daewoon,
@@ -113,7 +113,7 @@ export async function updateSajuRecord(
       birth_month: sajuInfo.birthDate.month,
       birth_day: sajuInfo.birthDate.day,
       birth_hour:
-        sajuInfo.birthDate.hour === "unknown" ? null : sajuInfo.birthDate.hour,
+        sajuInfo.birthDate.hour === -1 ? null : sajuInfo.birthDate.hour,
       birth_minute: sajuInfo.birthDate.minute,
       birth_region: sajuInfo.birthRegion,
       daewoon: sajuInfo.daewoon,

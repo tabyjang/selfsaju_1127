@@ -14,7 +14,8 @@
       "Bash(netstat:*)",
       "Bash(findstr:*)",
       "Bash(npm uninstall:*)",
-      "Bash(npm install:*)"
+      "Bash(npm install:*)",
+      "Bash(npx tsc:*)"
     ],
     "deny": [],
     "ask": []

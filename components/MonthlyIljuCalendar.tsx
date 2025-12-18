@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import type { SajuInfo, Ohaeng } from "../types";
 import {
   earthlyBranchGanInfo,
@@ -7,7 +7,7 @@ import {
   getUnseongByIlganAndJiji,
   getSibsinByIlganAndTarget,
 } from "../utils/manse";
-import { cheonEulGwiInMap } from "../utils/sinsal";
+import { cheonEulGwiInMap, getGongmangByGanji } from "../utils/sinsal";
 
 const weekdayLabels = ["일", "월", "화", "수", "목", "금", "토"] as const;
 const weekdayFullLabels = [
@@ -118,13 +118,49 @@ export const MonthlyIljuCalendar: React.FC<{ sajuInfo: SajuInfo }> = ({
   sajuInfo,
 }) => {
   const ilgan = sajuInfo.pillars.day.cheonGan.char;
+  const ilganji = sajuInfo.pillars.day.ganji;
   const cheonEulJijis = useMemo(() => cheonEulGwiInMap[ilgan] || [], [ilgan]);
+  const gongmangJijis = useMemo(() => getGongmangByGanji(ilganji), [ilganji]);
 
   const today = new Date();
   const initialYM = clampYearMonth(today.getFullYear(), today.getMonth() + 1);
   const [viewYear, setViewYear] = useState<number>(initialYM.year);
   const [viewMonth, setViewMonth] = useState<number>(initialYM.month); // 1-12
   const [selectedDay, setSelectedDay] = useState<number>(today.getDate());
+
+  // 체크박스 상태 관리 (localStorage 연동)
+  const [showCheonEul, setShowCheonEul] = useState<boolean>(false);
+  const [showGongmang, setShowGongmang] = useState<boolean>(false);
+  const [showYongsin, setShowYongsin] = useState<boolean>(false);
+
+  // localStorage에서 초기값 로드
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('calendar-display-options');
+      if (saved) {
+        const options = JSON.parse(saved);
+        setShowCheonEul(options.showCheonEul ?? false);
+        setShowGongmang(options.showGongmang ?? false);
+        setShowYongsin(options.showYongsin ?? false);
+      }
+    } catch (error) {
+      console.error('Failed to load calendar display options:', error);
+    }
+  }, []);
+
+  // localStorage에 저장
+  useEffect(() => {
+    try {
+      const options = {
+        showCheonEul,
+        showGongmang,
+        showYongsin,
+      };
+      localStorage.setItem('calendar-display-options', JSON.stringify(options));
+    } catch (error) {
+      console.error('Failed to save calendar display options:', error);
+    }
+  }, [showCheonEul, showGongmang, showYongsin]);
 
   const daysInMonth = useMemo(() => {
     return new Date(viewYear, viewMonth, 0).getDate();
@@ -197,9 +233,10 @@ export const MonthlyIljuCalendar: React.FC<{ sajuInfo: SajuInfo }> = ({
       const { gan, ji } = getDayGanjiByYMD(viewYear, viewMonth, day);
       const unseong = getUnseongByIlganAndJiji(ilgan, ji);
       const isCheonEul = cheonEulJijis.includes(ji);
-      return { day, gan, ji, unseong, isCheonEul };
+      const isGongmang = gongmangJijis.includes(ji);
+      return { day, gan, ji, unseong, isCheonEul, isGongmang };
     });
-  }, [firstDow, daysInMonth, viewYear, viewMonth, ilgan, cheonEulJijis]);
+  }, [firstDow, daysInMonth, viewYear, viewMonth, ilgan, cheonEulJijis, gongmangJijis]);
 
   return (
     <div className="mt-8 p-4 md:p-6 glass-card animate-fade-in">
@@ -224,6 +261,7 @@ export const MonthlyIljuCalendar: React.FC<{ sajuInfo: SajuInfo }> = ({
 
       {/* 캘린더 바깥 정보 박스(월/월주) */}
       <div className="mb-4 flex items-stretch gap-3">
+        {/* 왼쪽: 월주 박스 */}
         <div className="glass-card p-3 md:p-4 flex flex-col justify-center min-w-[140px]">
           <div className="flex items-center justify-between gap-2">
             <button
@@ -271,7 +309,47 @@ export const MonthlyIljuCalendar: React.FC<{ sajuInfo: SajuInfo }> = ({
             ) : null}
           </div>
         </div>
-        <div className="flex-1" />
+
+        {/* 오른쪽: 체크박스 영역 */}
+        <div className="glass-card p-3 md:p-4 flex flex-col justify-center flex-1">
+          <div className="text-sm md:text-base font-semibold text-gray-700 mb-2">
+            📌 달력 표시 옵션
+          </div>
+          <div className="flex flex-col gap-1.5">
+            {/* 천을귀인 체크박스 */}
+            <label className="flex items-center gap-2 cursor-pointer hover:bg-white/30 px-2 py-1 rounded transition">
+              <input
+                type="checkbox"
+                checked={showCheonEul}
+                onChange={(e) => setShowCheonEul(e.target.checked)}
+                className="w-4 h-4 cursor-pointer accent-yellow-500"
+              />
+              <span className="text-sm md:text-base text-gray-700">천을귀인 표시</span>
+            </label>
+
+            {/* 공망 체크박스 */}
+            <label className="flex items-center gap-2 cursor-pointer hover:bg-white/30 px-2 py-1 rounded transition">
+              <input
+                type="checkbox"
+                checked={showGongmang}
+                onChange={(e) => setShowGongmang(e.target.checked)}
+                className="w-4 h-4 cursor-pointer accent-gray-500"
+              />
+              <span className="text-sm md:text-base text-gray-700">공망 표시</span>
+            </label>
+
+            {/* 용신 체크박스 (준비중) */}
+            <label className="flex items-center gap-2 cursor-not-allowed hover:bg-white/20 px-2 py-1 rounded transition opacity-50">
+              <input
+                type="checkbox"
+                checked={showYongsin}
+                disabled
+                className="w-4 h-4 cursor-not-allowed"
+              />
+              <span className="text-sm md:text-base text-gray-500">용신 표시 (준비중)</span>
+            </label>
+          </div>
+        </div>
       </div>
 
       {/* 요일 헤더 */}
@@ -300,22 +378,46 @@ export const MonthlyIljuCalendar: React.FC<{ sajuInfo: SajuInfo }> = ({
 
           const isSelected = cell.day === selectedDayInfo.d;
 
+          // 표시할 특성 계산
+          const displayCheonEul = showCheonEul && cell.isCheonEul;
+          const displayGongmang = showGongmang && cell.isGongmang;
+
+          // 테두리 및 그림자 스타일 결정
+          let borderClass = "";
+          let shadowClass = "";
+          let bgClass = "";
+
+          if (isSelected) {
+            // 선택된 셀
+            borderClass = "border-blue-800 border-2 ring-2 ring-blue-400";
+            shadowClass = "shadow-lg";
+            bgClass = "bg-blue-200/70";
+          } else if (displayCheonEul && displayGongmang) {
+            // 천을귀인 + 공망 둘 다
+            borderClass = "border-4 border-yellow-400";
+            shadowClass = "shadow-lg shadow-yellow-300/50";
+            bgClass = "bg-gradient-to-br from-yellow-50/80 to-amber-50/60 relative after:absolute after:inset-0 after:border-2 after:border-gray-400/60 after:rounded-lg after:pointer-events-none";
+          } else if (displayCheonEul) {
+            // 천을귀인만 (화려하게)
+            borderClass = "border-4 border-yellow-400";
+            shadowClass = "shadow-lg shadow-yellow-300/50";
+            bgClass = "bg-gradient-to-br from-yellow-50/80 to-amber-50/60";
+          } else if (displayGongmang) {
+            // 공망만 (흐리게)
+            borderClass = "border-2 border-gray-400";
+            bgClass = "bg-gray-200/40";
+          } else {
+            // 기본
+            borderClass = "border-gray-200";
+            bgClass = "bg-white/60 hover:bg-white";
+          }
+
           return (
             <button
               key={`${viewYear}-${viewMonth}-${cell.day}`}
               type="button"
               onClick={() => setSelectedDay(cell.day)}
-              className={`h-[92px] md:h-[108px] rounded-lg border transition-colors overflow-hidden ${
-                isSelected
-                  ? "bg-blue-200/70 border-blue-800 border-2 shadow-lg ring-2 ring-blue-400"
-                  : "bg-white/60 hover:bg-white"
-              } ${
-                !isSelected && cell.isCheonEul
-                  ? "border-gray-900 border-2"
-                  : !isSelected
-                  ? "border-gray-200"
-                  : ""
-              }`}
+              className={`h-[92px] md:h-[108px] rounded-lg border transition-all overflow-hidden ${borderClass} ${shadowClass} ${bgClass}`}
             >
               <div className="h-full grid grid-cols-[56px_44px] grid-rows-2 justify-center items-center">
                 {/* 좌측: 일주 */}
@@ -337,6 +439,41 @@ export const MonthlyIljuCalendar: React.FC<{ sajuInfo: SajuInfo }> = ({
             </button>
           );
         })}
+      </div>
+
+      {/* 범례(레전드) */}
+      <div className="mt-6 p-4 bg-white/70 rounded-lg border border-gray-300 shadow-sm">
+        <div className="text-sm md:text-base font-bold text-gray-800 mb-3">
+          📌 표시 범례
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs md:text-sm">
+          {/* 천을귀인 */}
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded border-4 border-yellow-400 bg-gradient-to-br from-yellow-50 to-amber-50 shadow-md shadow-yellow-300/50" />
+            <div>
+              <span className="font-semibold text-gray-800">천을귀인</span>
+              <span className="text-gray-600 ml-1">- 귀인의 도움, 좋은 인연</span>
+            </div>
+          </div>
+
+          {/* 공망 */}
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded border-2 border-gray-400 bg-gray-200/40" />
+            <div>
+              <span className="font-semibold text-gray-800">공망</span>
+              <span className="text-gray-600 ml-1">- 비어있는 기운, 허무함</span>
+            </div>
+          </div>
+
+          {/* 용신 (준비중) */}
+          <div className="flex items-center gap-2 opacity-50">
+            <div className="w-8 h-8 rounded border-2 border-gray-300 bg-gray-100" />
+            <div>
+              <span className="font-semibold text-gray-500">용신</span>
+              <span className="text-gray-400 ml-1">- 내게 필요한 기운 (준비중)</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
