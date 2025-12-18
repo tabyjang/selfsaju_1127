@@ -3,6 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import type { SajuInfo, Ohaeng, Pillar } from '../types';
 import { GyeokgukDisplay } from '../components/GyeokgukDisplay';
 import OhaengForceDisplay from '../yongsin/OhaengForceDisplay';
+import { earthlyBranchGanInfo } from '../utils/manse';
+import { sibsinDescriptions } from '../utils/sibsinDescriptions';
+import { sibsinPositionDescriptions } from '../utils/sibsinPositionDescriptions';
+import { unseongDescriptions } from '../utils/unseongDescriptions';
+import { ChevronDownIcon } from '../components/icons';
 
 // 사주 원국 표시 컴포넌트 (AnalysisResult에서 복사)
 const ohaengColorMap: Record<Ohaeng, { bg: string; text: string; border?: string }> = {
@@ -31,6 +36,299 @@ const ohaengColorMap: Record<Ohaeng, { bg: string; text: string; border?: string
     text: "text-white",
     border: "border border-gray-800",
   },
+};
+
+// CharBox 컴포넌트
+const CharBox: React.FC<{ char: string }> = ({ char }) => {
+  const ganInfo = earthlyBranchGanInfo[char];
+  if (!ganInfo) return null;
+  const color = ohaengColorMap[ganInfo.ohaeng];
+
+  return (
+    <div
+      className={`inline-flex items-center justify-center w-10 h-10 md:w-12 md:h-12 text-2xl font-bold rounded shadow-md ${
+        color.bg
+      } ${color.text} ${color.border ?? ""} saju-char-outline-small`}
+    >
+      {char}
+    </div>
+  );
+};
+
+// 십신 설명에서 [성격] 이전 부분만 추출하는 함수
+const getSibsinDescriptionBeforePersonality = (description: string): string => {
+  const personalityIndex = description.indexOf("[성격]");
+  if (personalityIndex === -1) return description;
+  return description.substring(0, personalityIndex).trim();
+};
+
+// 월령 분석 컴포넌트
+const SibsinPositionDisplay: React.FC<{ sajuInfo: SajuInfo }> = ({
+  sajuInfo,
+}) => {
+  const [isOpen, setIsOpen] = useState(true);
+  const [showInfo, setShowInfo] = useState(false);
+  const { pillars } = sajuInfo;
+
+  // 월령(월주 지지)의 십신
+  const wollyeongSibsin = pillars.month.jiJi.sibsin.name; // 월령 십신
+  const wollyeongChar = pillars.month.jiJi.char; // 월령 글자
+  const wollyeongUnseong = pillars.month.jiJi.unseong; // 월주 십이운성
+
+  return (
+    <div className="mt-8 glass-card">
+      <button
+        type="button"
+        className="w-full p-4 md:p-6 text-left flex justify-between items-center bg-gradient-to-br from-purple-50 via-violet-50 to-indigo-50 rounded-2xl border-2 border-purple-200 relative z-10"
+        onClick={() => setIsOpen(!isOpen)}
+        aria-expanded={isOpen}
+      >
+        <div className="flex items-center gap-3">
+          <div className="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-br from-purple-400 to-indigo-400 rounded-full shadow-lg">
+            <span className="text-2xl">📋</span>
+          </div>
+          <h4 className="text-xl md:text-2xl font-bold bg-gradient-to-r from-purple-600 via-violet-600 to-indigo-500 bg-clip-text text-transparent">
+            월령(月令) - 운명을 지휘하는{" "}
+            <span className="text-red-600 font-bold">사령관</span>
+          </h4>
+        </div>
+        <ChevronDownIcon
+          className={`w-6 h-6 text-gray-500 transition-transform duration-300 ${
+            isOpen ? "transform rotate-180" : ""
+          }`}
+        />
+      </button>
+
+      {isOpen && (
+        <div className="p-4 md:p-6 pt-0 animate-fade-in-fast">
+          <div className="bg-gradient-to-br from-purple-50 via-violet-50 to-indigo-50 rounded-2xl border-2 border-purple-200 shadow-lg">
+            <div className="text-center">
+              <div className="bg-white/80 p-6 rounded-xl border-2 border-purple-200 shadow-lg">
+                <div className="space-y-4 text-base font-normal leading-relaxed text-gray-700">
+                  <p>
+                    <strong className="text-purple-700 font-bold">
+                      월령(月令)
+                    </strong>
+                    은 사주 8글자 중에서 가장 강력한 권한을 가진 자리이자,
+                    운명의 사령탑입니다.
+                  </p>
+                  <p>
+                    내가 세상에 나올 때{" "}
+                    <strong className="text-purple-600 font-semibold">
+                      자연으로부터 부여받은 '특명'
+                    </strong>
+                    과 같습니다.
+                    <p>
+                      봄의 생명력(木), 여름의 열정(火), 가을의 결실(金), 겨울의
+                      지혜(水) 중 어떤 계절의 힘을 주무기로 삼아야 하는지를
+                      결정합니다.
+                    </p>
+                  </p>
+                  <div className="mt-4 space-y-2">
+                    <p>
+                      <strong className="text-purple-700 font-bold">
+                        운명의 뿌리:
+                      </strong>{" "}
+                      나의 사회적 성공, 직업, 부귀빈천을 결정짓는{" "}
+                      <strong className="text-purple-600 font-semibold">
+                        '격국(格局)'
+                      </strong>
+                      이 바로 이곳에서 탄생합니다.
+                    </p>
+                    <p>
+                      <strong className="text-purple-700 font-bold">
+                        환경의 지배자:
+                      </strong>{" "}
+                      내가 평생을 살아가며 활동해야 할 무대의 성격을 규정합니다.
+                    </p>
+                  </div>
+                  <p className="mt-4 font-semibold text-purple-800">
+                    월령을 장악했다는 것은, 내 인생의 주도권을 쥐고 세상의
+                    흐름을 내 편으로 만들 준비가 되었음을 의미합니다.
+                  </p>
+                </div>
+              </div>
+
+              {!showInfo && (
+                <div className="mt-6 animate-fade-in">
+                  <button
+                    type="button"
+                    onClick={() => setShowInfo(true)}
+                    className="btn-primary flex items-center gap-3 py-4 px-8 rounded-full shadow-xl transition-all duration-300 mx-auto bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 animate-rainbow-glow"
+                  >
+                    <span className="text-2xl">🌟</span>
+                    <svg
+                      className="w-6 h-6"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"
+                      />
+                    </svg>
+                    <span className="text-lg font-bold">월령 십신 보기</span>
+                    <span className="text-2xl">🌟</span>
+                    <ChevronDownIcon className="w-5 h-5" />
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {showInfo && (
+              <div className="mt-8 pt-8 border-t-2 border-purple-300 animate-fade-in-fast">
+                <div className="text-center mb-8">
+                  <div className="inline-block px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm font-semibold mb-2">
+                    핵심 십신 분석
+                  </div>
+                  <h3 className="text-2xl font-extrabold text-gray-800">
+                    월령(月令) - 계절의 기운이 만든 나의 운명
+                  </h3>
+                  <p className="text-gray-600 mt-2">
+                    월령은 태어난 달의 계절 기운으로, 나의 직업운과 사회적
+                    성공을 결정합니다. 봄의 따뜻함, 여름의 열정, 가을의 차분함,
+                    겨울의 침착함이 각각 다른 기운을 만들어냅니다.
+                  </p>
+                </div>
+
+                <div className="space-y-10">
+                  {/* 월령 십신 */}
+                  <div className="bg-gradient-to-br from-blue-50 via-white to-blue-50 p-6 rounded-2xl border-2 border-blue-300 shadow-lg">
+                    <div className="flex items-center justify-between mb-6 pb-4 border-b-2 border-blue-200">
+                      <div className="flex items-center gap-3">
+                        <div className="bg-blue-500 text-white px-3 py-1.5 rounded-lg font-bold text-sm">
+                          월령 (月令)
+                        </div>
+                        <h4 className="text-2xl font-bold text-blue-900">
+                          {wollyeongSibsin}
+                        </h4>
+                        <CharBox char={wollyeongChar} />
+                      </div>
+                    </div>
+
+                    {/* 십신 기본 정보 - 숨김 */}
+                    {sibsinDescriptions[wollyeongSibsin] && (
+                      <div className="hidden bg-white/80 p-5 rounded-xl mb-5 border border-blue-200">
+                        <h5 className="font-bold text-blue-800 mb-3 flex items-center gap-2 text-lg">
+                          <span>📘</span>{" "}
+                          {sibsinDescriptions[wollyeongSibsin].title}
+                        </h5>
+                        <p className="text-gray-700 leading-relaxed whitespace-pre-line word-keep-all">
+                          {getSibsinDescriptionBeforePersonality(
+                            sibsinDescriptions[wollyeongSibsin].description
+                          )}
+                        </p>
+                      </div>
+                    )}
+
+                    {/* 월주 위치별 해석 */}
+                    {sibsinPositionDescriptions[wollyeongSibsin] && (
+                      <div className="bg-gradient-to-r from-blue-100/50 to-white p-5 rounded-xl border border-blue-300 mb-5">
+                        <h5 className="font-bold text-blue-900 mb-3 flex items-center gap-2 text-lg">
+                          <span>🎯</span> 월주에 위치한 의미
+                        </h5>
+                        <div className="space-y-3">
+                          <div>
+                            <p className="font-bold text-blue-800 text-base mb-2">
+                              {
+                                sibsinPositionDescriptions[wollyeongSibsin][
+                                  "월주"
+                                ].meaning
+                              }
+                            </p>
+                            <div className="flex flex-wrap gap-1.5 mb-3">
+                              {sibsinPositionDescriptions[wollyeongSibsin][
+                                "월주"
+                              ].keywords.map((kw, idx) => (
+                                <span
+                                  key={idx}
+                                  className="px-2 py-0.5 bg-blue-200 text-blue-900 rounded-full text-xs font-semibold"
+                                >
+                                  {kw}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                          <div className="text-base font-normal leading-relaxed text-gray-700 whitespace-pre-line word-keep-all bg-white/70 p-4 rounded-lg">
+                            {
+                              sibsinPositionDescriptions[wollyeongSibsin][
+                                "월주"
+                              ].detail
+                            }
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* 월주 십이운성 정보 */}
+                    {unseongDescriptions[wollyeongUnseong.name] && (
+                      <div className="bg-gradient-to-br from-amber-50 via-yellow-50 to-orange-50 p-6 rounded-xl border-2 border-amber-200">
+                        <div className="flex items-center gap-3 mb-4 pb-3 border-b border-amber-200">
+                          <div className="bg-amber-500 text-white px-3 py-1.5 rounded-lg font-bold text-sm">
+                            십이운성 (十二運星)
+                          </div>
+                          <h4 className="text-xl font-bold text-amber-900">
+                            {wollyeongUnseong.name} ({wollyeongUnseong.hanja})
+                          </h4>
+                        </div>
+
+                        <div className="bg-white/80 p-4 rounded-lg border border-amber-200 mb-4">
+                          <h5 className="font-bold text-amber-800 mb-2 flex items-center gap-2">
+                            <span>⭐</span>{" "}
+                            {unseongDescriptions[wollyeongUnseong.name].title}
+                          </h5>
+                          <div className="flex flex-wrap gap-1.5 mb-3">
+                            {unseongDescriptions[
+                              wollyeongUnseong.name
+                            ].keywords.map((kw, idx) => (
+                              <span
+                                key={idx}
+                                className="px-2 py-0.5 bg-amber-200 text-amber-900 rounded-full text-xs font-semibold"
+                              >
+                                {kw}
+                              </span>
+                            ))}
+                          </div>
+                          <p className="text-base font-normal leading-relaxed text-gray-700 whitespace-pre-line word-keep-all">
+                            {
+                              unseongDescriptions[wollyeongUnseong.name]
+                                .description
+                            }
+                          </p>
+                        </div>
+
+                        {/* 월지 십이운성 정보 */}
+                        {unseongDescriptions[wollyeongUnseong.name].월지 && (
+                          <div className="bg-gradient-to-r from-blue-100/50 to-amber-100/50 p-5 rounded-xl border border-blue-300">
+                            <h5 className="font-bold text-blue-900 mb-3 flex items-center gap-2 text-lg">
+                              <span>🌙</span>{" "}
+                              {
+                                unseongDescriptions[wollyeongUnseong.name].월지
+                                  .title
+                              }
+                            </h5>
+                            <p className="text-base font-normal leading-relaxed text-gray-700 whitespace-pre-line word-keep-all bg-white/70 p-4 rounded-lg">
+                              {
+                                unseongDescriptions[wollyeongUnseong.name].월지
+                                  .description
+                              }
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
 };
 
 const DeepAnalysis: React.FC = () => {
@@ -180,6 +478,9 @@ const DeepAnalysis: React.FC = () => {
             </div>
           </div>
         </div>
+
+        {/* 월령(月令) 분석 */}
+        <SibsinPositionDisplay sajuInfo={sajuData} />
 
         {/* 격국(格局) 분석 */}
         <GyeokgukDisplay sajuInfo={sajuData} />
