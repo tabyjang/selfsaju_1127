@@ -307,33 +307,21 @@ export const MonthlyIljuCalendar: React.FC<{ sajuInfo: SajuInfo }> = ({
           </div>
         </div>
 
-        {/* 오른쪽: 체크박스 영역 */}
-        <div className="glass-card p-3 md:p-4 flex flex-col justify-center flex-1">
-          <div className="text-sm md:text-base font-semibold text-gray-700 mb-2">
-            📌 달력 표시 옵션
+        {/* 오른쪽: 오늘의 운세 */}
+        <div className="glass-card p-4 md:p-6 flex flex-col justify-center flex-1 bg-gradient-to-br from-purple-50 via-pink-50 to-yellow-50 border-2 border-purple-200 shadow-lg">
+          <div className="flex items-center justify-center gap-3 mb-3">
+            <span className="text-3xl md:text-4xl">✨</span>
+            <h3 className="text-xl md:text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500">
+              오늘의 운세
+            </h3>
+            <span className="text-3xl md:text-4xl">✨</span>
           </div>
-          <div className="flex flex-col gap-1.5">
-            {/* 천을귀인 체크박스 */}
-            <label className="flex items-center gap-2 cursor-pointer hover:bg-white/30 px-2 py-1 rounded transition">
-              <input
-                type="checkbox"
-                checked={showCheonEul}
-                onChange={(e) => setShowCheonEul(e.target.checked)}
-                className="w-4 h-4 cursor-pointer accent-yellow-500"
-              />
-              <span className="text-sm md:text-base text-gray-700">천을귀인 표시</span>
-            </label>
-
-            {/* 용신 체크박스 (준비중) */}
-            <label className="flex items-center gap-2 cursor-not-allowed hover:bg-white/20 px-2 py-1 rounded transition opacity-50">
-              <input
-                type="checkbox"
-                checked={showYongsin}
-                disabled
-                className="w-4 h-4 cursor-not-allowed"
-              />
-              <span className="text-sm md:text-base text-gray-500">용신 표시 (준비중)</span>
-            </label>
+          <div className="text-center">
+            <div className="inline-block px-4 py-2 bg-white/70 rounded-lg border border-purple-300 shadow-sm">
+              <p className="text-sm md:text-base text-gray-600 font-medium">
+                메시지가 여기에 표시됩니다
+              </p>
+            </div>
           </div>
         </div>
       </div>
@@ -417,28 +405,45 @@ export const MonthlyIljuCalendar: React.FC<{ sajuInfo: SajuInfo }> = ({
         })}
       </div>
 
-      {/* 범례(레전드) */}
-      <div className="mt-6 p-4 bg-white/70 rounded-lg border border-gray-300 shadow-sm">
-        <div className="text-sm md:text-base font-bold text-gray-800 mb-3">
-          📌 표시 범례
+      {/* 달력 표시 옵션 & 범례 */}
+      <div className="mt-6 p-4 md:p-6 bg-white/70 rounded-lg border-2 border-indigo-200 shadow-lg">
+        <div className="text-base md:text-lg font-bold text-gray-800 mb-4">
+          📌 달력 표시 옵션
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs md:text-sm">
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* 천을귀인 */}
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded border-4 border-yellow-400 bg-gradient-to-br from-yellow-50 to-amber-50 shadow-md shadow-yellow-300/50" />
-            <div>
-              <span className="font-semibold text-gray-800">천을귀인</span>
-              <span className="text-gray-600 ml-1">- 귀인의 도움, 좋은 인연</span>
-            </div>
+          <div className="flex items-center gap-3 p-3 bg-gradient-to-r from-yellow-50 to-amber-50 rounded-lg border border-yellow-200 hover:shadow-md transition">
+            <label className="flex items-center gap-3 cursor-pointer flex-1">
+              <input
+                type="checkbox"
+                checked={showCheonEul}
+                onChange={(e) => setShowCheonEul(e.target.checked)}
+                className="w-5 h-5 cursor-pointer accent-yellow-500"
+              />
+              <div className="w-8 h-8 rounded border-4 border-yellow-400 bg-gradient-to-br from-yellow-50 to-amber-50 shadow-md shadow-yellow-300/50 flex-shrink-0" />
+              <div className="flex-1">
+                <span className="font-semibold text-gray-800 block">천을귀인</span>
+                <span className="text-xs md:text-sm text-gray-600">귀인의 도움, 좋은 인연</span>
+              </div>
+            </label>
           </div>
 
           {/* 용신 (준비중) */}
-          <div className="flex items-center gap-2 opacity-50">
-            <div className="w-8 h-8 rounded border-2 border-gray-300 bg-gray-100" />
-            <div>
-              <span className="font-semibold text-gray-500">용신</span>
-              <span className="text-gray-400 ml-1">- 내게 필요한 기운 (준비중)</span>
-            </div>
+          <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200 opacity-50">
+            <label className="flex items-center gap-3 cursor-not-allowed flex-1">
+              <input
+                type="checkbox"
+                checked={showYongsin}
+                disabled
+                className="w-5 h-5 cursor-not-allowed"
+              />
+              <div className="w-8 h-8 rounded border-2 border-gray-300 bg-gray-100 flex-shrink-0" />
+              <div className="flex-1">
+                <span className="font-semibold text-gray-500 block">용신</span>
+                <span className="text-xs md:text-sm text-gray-400">내게 필요한 기운 (준비중)</span>
+              </div>
+            </label>
           </div>
         </div>
       </div>
