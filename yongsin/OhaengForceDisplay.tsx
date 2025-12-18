@@ -2,16 +2,21 @@
  * ============================================
  * 오행 세력표 디스플레이 컴포넌트
  * ============================================
- * 
+ *
  * - 기본 오행 숫자 표시
  * - 가중치 적용된 세력표 토글
  * - 신강/신약 판정 결과 표시
  */
 
-import React, { useState, useMemo } from 'react';
-import type { SajuInfo, Ohaeng } from '../types';
-import { analyzePhase2 } from '../utils/yongsin';
-import type { SajuInput, Phase1Result, StrengthResult, OhaengScores } from '../utils/yongsin/types';
+import React, { useState, useMemo } from "react";
+import type { SajuInfo, Ohaeng } from "../types";
+import { analyzePhase2 } from "../utils/yongsin";
+import type {
+  SajuInput,
+  Phase1Result,
+  StrengthResult,
+  OhaengScores,
+} from "../utils/yongsin/types";
 
 // ============================================
 // 타입 정의
@@ -26,28 +31,39 @@ interface OhaengForceDisplayProps {
 // 상수 및 유틸리티
 // ============================================
 
-const ohaengColorMap: Record<Ohaeng, { bg: string; text: string; border?: string }> = {
-  wood: { bg: 'bg-green-600', text: 'text-white', border: 'border-green-700' },
-  fire: { bg: 'bg-red-500', text: 'text-white', border: 'border-red-600' },
-  earth: { bg: 'bg-yellow-500', text: 'text-white', border: 'border-yellow-600' },
-  metal: { bg: 'bg-gray-100', text: 'text-gray-800', border: 'border-gray-300' },
-  water: { bg: 'bg-gray-900', text: 'text-white', border: 'border-gray-800' },
+const ohaengColorMap: Record<
+  Ohaeng,
+  { bg: string; text: string; border?: string }
+> = {
+  wood: { bg: "bg-green-600", text: "text-white", border: "border-green-700" },
+  fire: { bg: "bg-red-500", text: "text-white", border: "border-red-600" },
+  earth: {
+    bg: "bg-yellow-500",
+    text: "text-white",
+    border: "border-yellow-600",
+  },
+  metal: {
+    bg: "bg-gray-100",
+    text: "text-gray-800",
+    border: "border-gray-300",
+  },
+  water: { bg: "bg-gray-900", text: "text-white", border: "border-gray-800" },
 };
 
 const ohaengKoreanMap: Record<Ohaeng, string> = {
-  wood: '목(木)',
-  fire: '화(火)',
-  earth: '토(土)',
-  metal: '금(金)',
-  water: '수(水)',
+  wood: "목(木)",
+  fire: "화(火)",
+  earth: "토(土)",
+  metal: "금(金)",
+  water: "수(水)",
 };
 
 const ohaengColors: Record<Ohaeng, string> = {
-  wood: '#00B050',
-  fire: '#FF0000',
-  earth: '#FEC100',
-  metal: '#9CA3AF',
-  water: '#000000',
+  wood: "#00B050",
+  fire: "#FF0000",
+  earth: "#FEC100",
+  metal: "#9CA3AF",
+  water: "#000000",
 };
 
 // SajuInfo를 SajuInput으로 변환
@@ -96,17 +112,17 @@ const OhaengDiagram: React.FC<OhaengDiagramProps> = ({
 
   const getFontSize = (score: number): string => {
     const radius = getCircleRadius(score);
-    if (radius <= 6) return '5px';
-    if (radius <= 10) return '7px';
-    return '9px';
+    if (radius <= 6) return "5px";
+    if (radius <= 10) return "7px";
+    return "9px";
   };
 
   const centerX = 50;
   const centerY = 50;
   const radius = 35;
 
-  const ohaengOrder: Ohaeng[] = ['wood', 'fire', 'earth', 'metal', 'water'];
-  
+  const ohaengOrder: Ohaeng[] = ["wood", "fire", "earth", "metal", "water"];
+
   // 일간 오행에 따라 회전
   const getRotationIndex = (): number => {
     if (!ilganOhaeng) return 0;
@@ -122,23 +138,35 @@ const OhaengDiagram: React.FC<OhaengDiagramProps> = ({
 
   // 십신 이름
   const getSibsinName = (ohaeng: Ohaeng): string => {
-    if (!ilganOhaeng) return '';
+    if (!ilganOhaeng) return "";
     const ilganIndex = ohaengOrder.indexOf(ilganOhaeng);
     const targetIndex = ohaengOrder.indexOf(ohaeng);
-    if (ilganIndex < 0 || targetIndex < 0) return '';
+    if (ilganIndex < 0 || targetIndex < 0) return "";
 
     const diff = (targetIndex - ilganIndex + 5) % 5;
-    const sibsinNames = ['비겁', '식상', '재성', '관성', '인성'];
+    const sibsinNames = ["비겁", "식상", "재성", "관성", "인성"];
     return sibsinNames[diff];
   };
 
   // 오각형 위치
   const basePositions = [
     { x: centerX, y: centerY - radius },
-    { x: centerX + radius * Math.sin((2 * Math.PI) / 5), y: centerY - radius * Math.cos((2 * Math.PI) / 5) },
-    { x: centerX + radius * Math.sin((4 * Math.PI) / 5), y: centerY + radius * Math.cos(Math.PI / 5) },
-    { x: centerX - radius * Math.sin((4 * Math.PI) / 5), y: centerY + radius * Math.cos(Math.PI / 5) },
-    { x: centerX - radius * Math.sin((2 * Math.PI) / 5), y: centerY - radius * Math.cos((2 * Math.PI) / 5) },
+    {
+      x: centerX + radius * Math.sin((2 * Math.PI) / 5),
+      y: centerY - radius * Math.cos((2 * Math.PI) / 5),
+    },
+    {
+      x: centerX + radius * Math.sin((4 * Math.PI) / 5),
+      y: centerY + radius * Math.cos(Math.PI / 5),
+    },
+    {
+      x: centerX - radius * Math.sin((4 * Math.PI) / 5),
+      y: centerY + radius * Math.cos(Math.PI / 5),
+    },
+    {
+      x: centerX - radius * Math.sin((2 * Math.PI) / 5),
+      y: centerY - radius * Math.cos((2 * Math.PI) / 5),
+    },
   ];
 
   const ohaengPositions = rotatedOhaengOrder.map((ohaeng, idx) => ({
@@ -150,13 +178,19 @@ const OhaengDiagram: React.FC<OhaengDiagramProps> = ({
 
   // 상생/상극 경로
   const sangsaengPaths = [
-    { from: 0, to: 1 }, { from: 1, to: 2 }, { from: 2, to: 3 },
-    { from: 3, to: 4 }, { from: 4, to: 0 },
+    { from: 0, to: 1 },
+    { from: 1, to: 2 },
+    { from: 2, to: 3 },
+    { from: 3, to: 4 },
+    { from: 4, to: 0 },
   ];
 
   const sanggeukPaths = [
-    { from: 0, to: 2 }, { from: 1, to: 3 }, { from: 2, to: 4 },
-    { from: 3, to: 0 }, { from: 4, to: 1 },
+    { from: 0, to: 2 },
+    { from: 1, to: 3 },
+    { from: 2, to: 4 },
+    { from: 3, to: 0 },
+    { from: 4, to: 1 },
   ];
 
   return (
@@ -234,7 +268,7 @@ const OhaengDiagram: React.FC<OhaengDiagramProps> = ({
                 cy={pos.y}
                 r={circleRadius}
                 fill={color}
-                stroke={pos.ohaeng === 'metal' ? '#666' : color}
+                stroke={pos.ohaeng === "metal" ? "#666" : color}
                 strokeWidth={isIlgan ? 2 : 1}
               />
               <text
@@ -242,7 +276,7 @@ const OhaengDiagram: React.FC<OhaengDiagramProps> = ({
                 y={pos.y}
                 textAnchor="middle"
                 dominantBaseline="central"
-                fill={pos.ohaeng === 'metal' ? '#333' : 'white'}
+                fill={pos.ohaeng === "metal" ? "#333" : "white"}
                 fontSize={fontSize}
                 fontWeight="bold"
               >
@@ -264,9 +298,9 @@ const OhaengDiagram: React.FC<OhaengDiagramProps> = ({
                 x={pos.x + textOffset.x}
                 y={pos.y + textOffset.y}
                 textAnchor="middle"
-                fill={isIlgan ? '#4F46E5' : '#666'}
+                fill={isIlgan ? "#4F46E5" : "#666"}
                 fontSize="5px"
-                fontWeight={isIlgan ? 'bold' : 'normal'}
+                fontWeight={isIlgan ? "bold" : "normal"}
               >
                 {sibsinName}
               </text>
@@ -276,7 +310,7 @@ const OhaengDiagram: React.FC<OhaengDiagramProps> = ({
       </svg>
       <div className="mt-2 text-center">
         <h5 className="text-sm font-semibold text-gray-700">
-          {isWeighted ? '가중치 적용 오행표' : '오행 상생·상극 관계'}
+          {isWeighted ? "가중치 적용 오행표" : "오행 상생·상극 관계"}
         </h5>
       </div>
     </div>
@@ -298,7 +332,7 @@ const OhaengBarChart: React.FC<OhaengBarChartProps> = ({
   percentages,
   isWeighted = false,
 }) => {
-  const ohaengOrder: Ohaeng[] = ['wood', 'fire', 'earth', 'metal', 'water'];
+  const ohaengOrder: Ohaeng[] = ["wood", "fire", "earth", "metal", "water"];
 
   return (
     <div className="space-y-3">
@@ -349,29 +383,67 @@ interface StrengthDisplayProps {
 
 const StrengthDisplay: React.FC<StrengthDisplayProps> = ({ strength }) => {
   const levelConfig = {
-    extreme_strong: { emoji: '🔥🔥', label: '태왕 (극신강)', color: 'text-red-600', bgColor: 'bg-red-50', borderColor: 'border-red-300' },
-    strong: { emoji: '🔥', label: '신강 (身强)', color: 'text-orange-600', bgColor: 'bg-orange-50', borderColor: 'border-orange-300' },
-    neutral: { emoji: '⚖️', label: '중화 (中和)', color: 'text-green-600', bgColor: 'bg-green-50', borderColor: 'border-green-300' },
-    weak: { emoji: '💧', label: '신약 (身弱)', color: 'text-blue-600', bgColor: 'bg-blue-50', borderColor: 'border-blue-300' },
-    extreme_weak: { emoji: '💧💧', label: '태약 (극신약)', color: 'text-indigo-600', bgColor: 'bg-indigo-50', borderColor: 'border-indigo-300' },
+    extreme_strong: {
+      emoji: "🔥🔥",
+      label: "태왕 (극신강)",
+      color: "text-red-600",
+      bgColor: "bg-red-50",
+      borderColor: "border-red-300",
+    },
+    strong: {
+      emoji: "🔥",
+      label: "신강 (身强)",
+      color: "text-orange-600",
+      bgColor: "bg-orange-50",
+      borderColor: "border-orange-300",
+    },
+    neutral: {
+      emoji: "⚖️",
+      label: "중화 (中和)",
+      color: "text-green-600",
+      bgColor: "bg-green-50",
+      borderColor: "border-green-300",
+    },
+    weak: {
+      emoji: "💧",
+      label: "신약 (身弱)",
+      color: "text-blue-600",
+      bgColor: "bg-blue-50",
+      borderColor: "border-blue-300",
+    },
+    extreme_weak: {
+      emoji: "💧💧",
+      label: "태약 (극신약)",
+      color: "text-indigo-600",
+      bgColor: "bg-indigo-50",
+      borderColor: "border-indigo-300",
+    },
   };
 
   const config = levelConfig[strength.level];
 
   const interpretations = {
-    extreme_strong: '일간이 극도로 강합니다. 종왕격/종강격 가능성이 있으며, 설기(식상)나 재관으로 기운을 분산시키는 것이 좋습니다.',
-    strong: '일간이 강합니다. 재물이나 관직 운에서 힘을 발휘할 수 있으며, 식상이나 재성 운에서 성과를 낼 수 있습니다.',
-    neutral: '일간이 중화 상태로 가장 이상적인 균형입니다. 대운과 세운의 흐름에 따라 유연하게 대응할 수 있습니다.',
-    weak: '일간이 약합니다. 인성이나 비겁의 도움이 필요하며, 무리한 확장보다는 내실을 다지는 것이 좋습니다.',
-    extreme_weak: '일간이 극도로 약합니다. 종격(종재/종살/종아) 가능성이 있으며, 강한 오행을 따르는 것이 유리할 수 있습니다.',
+    extreme_strong:
+      "일간이 극도로 강합니다. 종왕격/종강격 가능성이 있으며, 설기(식상)나 재관으로 기운을 분산시키는 것이 좋습니다.",
+    strong:
+      "일간이 강합니다. 재물이나 관직 운에서 힘을 발휘할 수 있으며, 식상이나 재성 운에서 성과를 낼 수 있습니다.",
+    neutral:
+      "일간이 중화 상태로 가장 이상적인 균형입니다. 대운과 세운의 흐름에 따라 유연하게 대응할 수 있습니다.",
+    weak: "일간이 약합니다. 인성이나 비겁의 도움이 필요하며, 무리한 확장보다는 내실을 다지는 것이 좋습니다.",
+    extreme_weak:
+      "일간이 극도로 약합니다. 종격(종재/종살/종아) 가능성이 있으며, 강한 오행을 따르는 것이 유리할 수 있습니다.",
   };
 
   return (
-    <div className={`rounded-xl border-2 ${config.borderColor} ${config.bgColor} p-5`}>
+    <div
+      className={`rounded-xl border-2 ${config.borderColor} ${config.bgColor} p-5`}
+    >
       {/* 헤더 */}
       <div className="flex items-center justify-between mb-4">
         <h4 className="text-lg font-bold text-gray-800">신강/신약 판정</h4>
-        <div className={`text-2xl font-bold ${config.color} flex items-center gap-2`}>
+        <div
+          className={`text-2xl font-bold ${config.color} flex items-center gap-2`}
+        >
           <span>{config.emoji}</span>
           <span>{config.label}</span>
         </div>
@@ -388,9 +460,15 @@ const StrengthDisplay: React.FC<StrengthDisplayProps> = ({ strength }) => {
           <div className="absolute left-1/2 transform -translate-x-1/2 w-1/5 h-full bg-green-200 opacity-50" />
           {/* 지수 표시 */}
           <div
-            className={`absolute top-0 h-full w-1 ${config.color.replace('text', 'bg')}`}
+            className={`absolute top-0 h-full w-1 ${config.color.replace(
+              "text",
+              "bg"
+            )}`}
             style={{
-              left: `${Math.min(Math.max((strength.index + 50) / 100 * 100, 0), 100)}%`,
+              left: `${Math.min(
+                Math.max(((strength.index + 50) / 100) * 100, 0),
+                100
+              )}%`,
             }}
           />
         </div>
@@ -405,20 +483,33 @@ const StrengthDisplay: React.FC<StrengthDisplayProps> = ({ strength }) => {
       <div className="grid grid-cols-3 gap-3 mb-4">
         <div className="text-center p-3 bg-white rounded-lg shadow-sm">
           <div className="text-sm text-gray-600 mb-1">득령</div>
-          <div className={`text-lg font-bold ${strength.deukryeong ? 'text-green-600' : 'text-gray-400'}`}>
-            {strength.deukryeong ? '✓' : '✗'}
+          <div
+            className={`text-lg font-bold ${
+              strength.deukryeong ? "text-green-600" : "text-gray-400"
+            }`}
+          >
+            {strength.deukryeong ? "✓" : "✗"}
           </div>
         </div>
         <div className="text-center p-3 bg-white rounded-lg shadow-sm">
           <div className="text-sm text-gray-600 mb-1">득지</div>
-          <div className={`text-lg font-bold ${strength.deukji ? 'text-green-600' : 'text-gray-400'}`}>
-            {strength.deukji ? '✓' : '✗'}
+          <div
+            className={`text-lg font-bold ${
+              strength.deukji ? "text-green-600" : "text-gray-400"
+            }`}
+          >
+            {strength.deukji ? "✓" : "✗"}
           </div>
         </div>
         <div className="text-center p-3 bg-white rounded-lg shadow-sm">
           <div className="text-sm text-gray-600 mb-1">득세</div>
-          <div className={`text-lg font-bold ${strength.deukseScore >= 0 ? 'text-green-600' : 'text-red-500'}`}>
-            {strength.deukseScore >= 0 ? '+' : ''}{strength.deukseScore.toFixed(1)}
+          <div
+            className={`text-lg font-bold ${
+              strength.deukseScore >= 0 ? "text-green-600" : "text-red-500"
+            }`}
+          >
+            {strength.deukseScore >= 0 ? "+" : ""}
+            {strength.deukseScore.toFixed(1)}
           </div>
         </div>
       </div>
@@ -427,11 +518,15 @@ const StrengthDisplay: React.FC<StrengthDisplayProps> = ({ strength }) => {
       <div className="grid grid-cols-2 gap-3 mb-4">
         <div className="p-3 bg-white rounded-lg shadow-sm">
           <div className="text-sm text-gray-600">아군 (인성+비겁)</div>
-          <div className="text-xl font-bold text-blue-600">{strength.supportScore.toFixed(1)}</div>
+          <div className="text-xl font-bold text-blue-600">
+            {strength.supportScore.toFixed(1)}
+          </div>
         </div>
         <div className="p-3 bg-white rounded-lg shadow-sm">
           <div className="text-sm text-gray-600">적군 (식상+재관)</div>
-          <div className="text-xl font-bold text-red-500">{strength.opposeScore.toFixed(1)}</div>
+          <div className="text-xl font-bold text-red-500">
+            {strength.opposeScore.toFixed(1)}
+          </div>
         </div>
       </div>
 
@@ -453,7 +548,9 @@ interface InteractionsDisplayProps {
   phase1: Phase1Result;
 }
 
-const InteractionsDisplay: React.FC<InteractionsDisplayProps> = ({ phase1 }) => {
+const InteractionsDisplay: React.FC<InteractionsDisplayProps> = ({
+  phase1,
+}) => {
   const { habs, chungs } = phase1.interactions;
 
   if (habs.length === 0 && chungs.length === 0) {
@@ -462,16 +559,24 @@ const InteractionsDisplay: React.FC<InteractionsDisplayProps> = ({ phase1 }) => 
 
   return (
     <div className="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
-      <h5 className="text-sm font-bold text-gray-700 mb-3">합(合)/충(沖) 상호작용</h5>
+      <h5 className="text-sm font-bold text-gray-700 mb-3">
+        합(合)/충(沖) 상호작용
+      </h5>
       <div className="space-y-2 text-sm">
-        {habs.map((hab, idx) => (
-          <div key={`hab-${idx}`} className="flex items-center gap-2 text-green-700">
+        {habs.map((hab: any, idx: number) => (
+          <div
+            key={`hab-${idx}`}
+            className="flex items-center gap-2 text-green-700"
+          >
             <span className="text-green-500">✓</span>
             <span>{hab.description}</span>
           </div>
         ))}
-        {chungs.map((chung, idx) => (
-          <div key={`chung-${idx}`} className="flex items-center gap-2 text-red-700">
+        {chungs.map((chung: any, idx: number) => (
+          <div
+            key={`chung-${idx}`}
+            className="flex items-center gap-2 text-red-700"
+          >
             <span className="text-red-500">✗</span>
             <span>{chung.description}</span>
           </div>
@@ -497,22 +602,34 @@ const OhaengForceDisplay: React.FC<OhaengForceDisplayProps> = ({
 
   // 기본 오행 숫자 계산
   const basicCounts = useMemo(() => {
-    const counts: OhaengScores = { wood: 0, fire: 0, earth: 0, metal: 0, water: 0 };
-    
+    const counts: OhaengScores = {
+      wood: 0,
+      fire: 0,
+      earth: 0,
+      metal: 0,
+      water: 0,
+    };
+
     (Object.keys(pillars) as Array<keyof typeof pillars>).forEach((key) => {
       const pillar = pillars[key];
-      if (key === 'hour' && isHourUnknown) return;
+      if (key === "hour" && isHourUnknown) return;
       counts[pillar.cheonGan.ohaeng]++;
       counts[pillar.jiJi.ohaeng]++;
     });
-    
+
     return counts;
   }, [pillars, isHourUnknown]);
 
   // 기본 오행 백분율
   const basicPercentages = useMemo(() => {
-    const total = Object.values(basicCounts).reduce((a, b) => a + b, 0);
-    const pct: OhaengScores = { wood: 0, fire: 0, earth: 0, metal: 0, water: 0 };
+    const total: number = (Object.values(basicCounts) as number[]).reduce((a: number, b: number) => a + b, 0);
+    const pct: OhaengScores = {
+      wood: 0,
+      fire: 0,
+      earth: 0,
+      metal: 0,
+      water: 0,
+    };
     if (total > 0) {
       (Object.keys(basicCounts) as Ohaeng[]).forEach((k) => {
         pct[k] = (basicCounts[k] / total) * 100;
@@ -527,18 +644,24 @@ const OhaengForceDisplay: React.FC<OhaengForceDisplayProps> = ({
       const input = convertToSajuInput(sajuInfo);
       return analyzePhase2(input);
     } catch (e) {
-      console.error('Phase 2 분석 오류:', e);
+      console.error("Phase 2 분석 오류:", e);
       return null;
     }
   }, [sajuInfo]);
 
   // 가중치 적용된 점수
   const weightedScores = analysisResult?.phase1.adjustedScores || basicCounts;
-  
+
   // 가중치 적용된 백분율
   const weightedPercentages = useMemo(() => {
-    const total = Object.values(weightedScores).reduce((a, b) => a + b, 0);
-    const pct: OhaengScores = { wood: 0, fire: 0, earth: 0, metal: 0, water: 0 };
+    const total: number = (Object.values(weightedScores) as number[]).reduce((a: number, b: number) => a + b, 0);
+    const pct: OhaengScores = {
+      wood: 0,
+      fire: 0,
+      earth: 0,
+      metal: 0,
+      water: 0,
+    };
     if (total > 0) {
       (Object.keys(weightedScores) as Ohaeng[]).forEach((k) => {
         pct[k] = (weightedScores[k] / total) * 100;
@@ -549,8 +672,10 @@ const OhaengForceDisplay: React.FC<OhaengForceDisplayProps> = ({
 
   // 현재 표시할 점수/백분율
   const currentScores = showWeighted ? weightedScores : basicCounts;
-  const currentPercentages = showWeighted ? weightedPercentages : basicPercentages;
-  const maxScore = Math.max(...Object.values(currentScores));
+  const currentPercentages = showWeighted
+    ? weightedPercentages
+    : basicPercentages;
+  const maxScore = Math.max(...(Object.values(currentScores) as number[]));
 
   return (
     <div className="mt-8 glass-card">
@@ -564,12 +689,19 @@ const OhaengForceDisplay: React.FC<OhaengForceDisplayProps> = ({
           오행 세력 분석
         </h3>
         <svg
-          className={`w-6 h-6 text-gray-500 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}
+          className={`w-6 h-6 text-gray-500 transition-transform duration-300 ${
+            isOpen ? "rotate-180" : ""
+          }`}
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
         >
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M19 9l-7 7-7-7"
+          />
         </svg>
       </button>
 
@@ -581,8 +713,8 @@ const OhaengForceDisplay: React.FC<OhaengForceDisplayProps> = ({
               <button
                 className={`px-4 py-2 text-sm font-medium rounded-md transition-all ${
                   !showWeighted
-                    ? 'bg-indigo-600 text-white shadow'
-                    : 'text-gray-600 hover:text-gray-900'
+                    ? "bg-indigo-600 text-white shadow"
+                    : "text-gray-600 hover:text-gray-900"
                 }`}
                 onClick={() => setShowWeighted(false)}
               >
@@ -591,8 +723,8 @@ const OhaengForceDisplay: React.FC<OhaengForceDisplayProps> = ({
               <button
                 className={`px-4 py-2 text-sm font-medium rounded-md transition-all ${
                   showWeighted
-                    ? 'bg-indigo-600 text-white shadow'
-                    : 'text-gray-600 hover:text-gray-900'
+                    ? "bg-indigo-600 text-white shadow"
+                    : "text-gray-600 hover:text-gray-900"
                 }`}
                 onClick={() => setShowWeighted(true)}
               >
@@ -607,7 +739,7 @@ const OhaengForceDisplay: React.FC<OhaengForceDisplayProps> = ({
               {/* 왼쪽: 다이어그램 */}
               <div className="bg-gradient-to-br from-gray-50 to-white rounded-xl border-2 border-gray-200 p-6">
                 <h4 className="text-lg font-bold text-gray-800 mb-4 text-center">
-                  {showWeighted ? '가중치 적용 오행표' : '기본 오행표'}
+                  {showWeighted ? "가중치 적용 오행표" : "기본 오행표"}
                 </h4>
                 <div className="flex items-center justify-center">
                   <OhaengDiagram
@@ -649,8 +781,9 @@ const OhaengForceDisplay: React.FC<OhaengForceDisplayProps> = ({
           {!showWeighted && (
             <div className="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
               <p className="text-sm text-blue-800">
-                💡 <strong>가중치 적용</strong> 버튼을 누르면 위치별 영향력, 지장간, 합/충 등을 반영한
-                정밀한 오행 세력과 신강/신약 판정 결과를 확인할 수 있습니다.
+                💡 <strong>가중치 적용</strong> 버튼을 누르면 위치별 영향력,
+                지장간, 합/충 등을 반영한 정밀한 오행 세력과 신강/신약 판정
+                결과를 확인할 수 있습니다.
               </p>
             </div>
           )}
