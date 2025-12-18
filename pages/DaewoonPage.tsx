@@ -8,13 +8,7 @@ import { ChevronDownIcon } from '../components/icons';
 const DaewoonPage: React.FC = () => {
   const navigate = useNavigate();
   const [sajuData, setSajuData] = useState<SajuInfo | null>(null);
-  const [showDaewoon, setShowDaewoon] = useState(false);
   const [showWolwoon, setShowWolwoon] = useState(false);
-  const [typedText, setTypedText] = useState("");
-  const [showButton, setShowButton] = useState(false);
-
-  const fullText =
-    "인생을 10년 단위로 나누어 각 시기의 흐름과 방향성을 보여주는 운명의 큰 물결입니다. 대운의 변화는 인생의 전환점이 되며, 각 시기마다 다른 기운이 작용합니다.";
 
   useEffect(() => {
     // localStorage에서 사주 데이터 불러오기
@@ -26,32 +20,6 @@ const DaewoonPage: React.FC = () => {
       navigate('/input');
     }
   }, [navigate]);
-
-  // 타이핑 효과
-  useEffect(() => {
-    let index = 0;
-    let isMounted = true;
-
-    const typingInterval = setInterval(() => {
-      if (!isMounted) {
-        clearInterval(typingInterval);
-        return;
-      }
-
-      if (index <= fullText.length) {
-        setTypedText(fullText.slice(0, index));
-        index++;
-      } else {
-        clearInterval(typingInterval);
-        setShowButton(true);
-      }
-    }, 50);
-
-    return () => {
-      isMounted = false;
-      clearInterval(typingInterval);
-    };
-  }, [fullText]);
 
   const currentYear = new Date().getFullYear();
   const koreanAge = sajuData ? currentYear - sajuData.birthDate.year + 1 : 0;
@@ -258,87 +226,86 @@ const DaewoonPage: React.FC = () => {
           <p className="text-gray-600">인생의 큰 물결, 한 해의 운세, 매월의 기운을 확인하세요</p>
         </div>
 
-        {/* 대운 설명 섹션 */}
-        <div className="p-6 bg-gradient-to-br from-purple-50 via-pink-50 to-yellow-50 rounded-2xl border-2 border-purple-200 shadow-lg animate-fade-in glass-card">
-          <div className="text-center">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-purple-400 to-pink-400 rounded-full mb-4 animate-pulse shadow-lg">
-              <span className="text-4xl">🌊</span>
+        {/* 대운·세운·월운 설명 섹션 */}
+        <div className="mb-8 p-6 bg-white rounded-2xl border-2 border-purple-200 shadow-lg glass-card">
+          <div className="flex items-start gap-4">
+            <div className="flex-shrink-0 w-14 h-14 bg-gradient-to-br from-purple-400 to-pink-400 rounded-full flex items-center justify-center shadow-md">
+              <span className="text-3xl">🌊</span>
             </div>
-            <h4 className="text-3xl md:text-4xl font-extrabold bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500 bg-clip-text text-transparent mb-5">
-              대운(大運)이란?
-            </h4>
-            <div className="min-h-[120px] flex items-center justify-center">
-              <p className="text-lg md:text-xl text-gray-700 leading-relaxed font-medium max-w-3xl mx-auto">
-                {typedText}
-                {typedText.length < fullText.length && (
-                  <span className="inline-block w-0.5 h-6 bg-purple-600 ml-1 animate-pulse"></span>
-                )}
-              </p>
-            </div>
-
-            {showButton && !showDaewoon && (
-              <div className="mt-6 animate-fade-in">
-                <button
-                  type="button"
-                  onClick={() => setShowDaewoon(true)}
-                  className="btn-primary flex items-center gap-3 py-4 px-8 rounded-full shadow-xl transform hover:scale-105 transition-all duration-300 mx-auto"
-                >
-                  <span className="text-4xl">🌊</span>
-                  <span className="text-lg font-bold">대운·세운의 흐름 보기</span>
-                  <ChevronDownIcon className="w-5 h-5" />
-                </button>
+            <div className="flex-1">
+              <h4 className="text-2xl font-bold text-gray-800 mb-3">
+                대운·세운·월운이란?
+              </h4>
+              <div className="space-y-3 text-gray-700 leading-relaxed">
+                <div className="bg-purple-50 p-4 rounded-lg border-l-4 border-purple-400">
+                  <p className="font-semibold text-purple-900 mb-2">🌊 대운(大運)</p>
+                  <p className="text-sm md:text-base">
+                    인생을 <strong className="text-purple-700">10년 단위</strong>로 나누어 각 시기의 흐름과 방향성을 보여주는 운명의 큰 물결입니다.
+                    대운의 변화는 인생의 전환점이 되며, 각 시기마다 다른 기운이 작용합니다.
+                  </p>
+                </div>
+                <div className="bg-pink-50 p-4 rounded-lg border-l-4 border-pink-400">
+                  <p className="font-semibold text-pink-900 mb-2">📅 세운(歲運)</p>
+                  <p className="text-sm md:text-base">
+                    <strong className="text-pink-700">한 해</strong>의 운세를 나타내며, 매년 변화하는 기운을 보여줍니다.
+                    대운의 큰 흐름 속에서 한 해 한 해의 세밀한 변화를 확인할 수 있습니다.
+                  </p>
+                </div>
+                <div className="bg-orange-50 p-4 rounded-lg border-l-4 border-orange-400">
+                  <p className="font-semibold text-orange-900 mb-2">🗓️ 월운(月運)</p>
+                  <p className="text-sm md:text-base">
+                    <strong className="text-orange-700">매월</strong>의 기운과 흐름을 나타냅니다.
+                    세운보다 더 짧은 주기로 변화하는 운의 흐름을 파악할 수 있습니다.
+                  </p>
+                </div>
               </div>
-            )}
+            </div>
           </div>
         </div>
 
         {/* 대운 흐름 표시 */}
-        {showDaewoon && (
-          <>
-            <div className="mt-6 p-4 md:p-6 glass-card animate-fade-in">
-              <h3 className="text-xl font-bold text-gray-800 mb-4 text-center">
-                대운의 흐름{" "}
-                <span className="text-base font-medium text-gray-500">
-                  (한국 나이 기준)
-                </span>
-                <span className="block text-sm font-normal text-gray-500 mt-1">
-                  현재 나이: {koreanAge}세 | 대운 방향:{" "}
-                  {sajuData.daewoon === "sunhaeng" ? "순행" : "역행"}
-                </span>
-              </h3>
-              <div className="overflow-x-auto pb-3 custom-scrollbar">
-                <div className="flex flex-row justify-start md:justify-center">
-                  <div className="inline-flex gap-2">
-                    {sajuData.daewoonPillars.map((p) => renderDaewoonPillar(p))}
-                  </div>
-                </div>
+        <div className="mt-6 p-4 md:p-6 glass-card animate-fade-in">
+          <h3 className="text-xl font-bold text-gray-800 mb-4 text-center">
+            대운의 흐름{" "}
+            <span className="text-base font-medium text-gray-500">
+              (한국 나이 기준)
+            </span>
+            <span className="block text-sm font-normal text-gray-500 mt-1">
+              현재 나이: {koreanAge}세 | 대운 방향:{" "}
+              {sajuData.daewoon === "sunhaeng" ? "순행" : "역행"}
+            </span>
+          </h3>
+          <div className="overflow-x-auto pb-3 custom-scrollbar">
+            <div className="flex flex-row justify-start md:justify-center">
+              <div className="inline-flex gap-2">
+                {sajuData.daewoonPillars.map((p) => renderDaewoonPillar(p))}
               </div>
             </div>
+          </div>
+        </div>
 
-            {/* 세운 흐름 표시 */}
-            <div className="mt-6 p-4 md:p-6 glass-card animate-fade-in">
-              <h3 className="text-xl font-bold text-gray-800 mb-4 text-center">
-                세운의 흐름{" "}
-                <span className="text-base font-medium text-gray-500">
-                  (최근 10년)
-                </span>
-                <span className="block text-sm font-normal text-gray-500 mt-1">
-                  현재: {currentYear}년
-                </span>
-              </h3>
-              <div className="overflow-x-auto pb-3 custom-scrollbar">
-                <div className="flex flex-row justify-start md:justify-center">
-                  <div className="inline-flex gap-2">
-                    {sewoonPillars.map((p) => renderSewoonPillar(p))}
-                  </div>
-                </div>
+        {/* 세운 흐름 표시 */}
+        <div className="mt-6 p-4 md:p-6 glass-card animate-fade-in">
+          <h3 className="text-xl font-bold text-gray-800 mb-4 text-center">
+            세운의 흐름{" "}
+            <span className="text-base font-medium text-gray-500">
+              (최근 10년)
+            </span>
+            <span className="block text-sm font-normal text-gray-500 mt-1">
+              현재: {currentYear}년
+            </span>
+          </h3>
+          <div className="overflow-x-auto pb-3 custom-scrollbar">
+            <div className="flex flex-row justify-start md:justify-center">
+              <div className="inline-flex gap-2">
+                {sewoonPillars.map((p) => renderSewoonPillar(p))}
               </div>
             </div>
-          </>
-        )}
+          </div>
+        </div>
 
         {/* 2026년 월운 보기 버튼 */}
-        {showDaewoon && !showWolwoon && (
+        {!showWolwoon && (
           <div className="mt-8 flex justify-center animate-fade-in">
             <button
               onClick={() => setShowWolwoon(true)}
