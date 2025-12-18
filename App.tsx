@@ -174,29 +174,31 @@ const App: React.FC = () => {
                 onLoginRequired={handleLoginRequired}
               />
 
-              {/* [추가됨] 결과 하단에 로그인 유도 배너 (비로그인 시에만 보임) */}
-              <SignedOut>
-                <div className="mt-8 p-6 bg-indigo-50 rounded-2xl border border-indigo-100 text-center">
-                  <h3 className="text-lg font-bold text-indigo-900 mb-2">
-                    로그인하면 사주결과를 저장할 수있습니다. 💾
-                  </h3>
-                  <p className="text-indigo-700 mb-4 text-sm"></p>
-                  <button
-                    onClick={() => {
-                      // localStorage에 사주 데이터 저장 후 로그인 모달 열기
-                      localStorage.setItem("pendingSajuSave", "true");
-                      localStorage.setItem(
-                        "pendingSajuData",
-                        JSON.stringify(sajuDataForDisplay)
-                      );
-                      handleLoginRequired();
-                    }}
-                    className="px-6 py-3 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 transition shadow-lg animate-pulse"
-                  >
-                    결과 저장하기 (로그인)
-                  </button>
-                </div>
-              </SignedOut>
+              {/* 더 깊은 내용 보기 버튼 */}
+              <div className="mt-8 p-6 bg-gradient-to-r from-purple-50 to-indigo-50 rounded-2xl border-2 border-purple-200 text-center animate-border-sparkle">
+                <h3 className="text-xl font-bold text-purple-900 mb-3">
+                  🔮 더 정확하고 깊은 사주 분석이 필요하신가요?
+                </h3>
+                <p className="text-purple-700 mb-4 text-sm leading-relaxed">
+                  오행 가중치 분석, 신강신약 판단, 용신 추출을 통한<br />
+                  궁합·직업운·재물운·연애운 심층 분석
+                </p>
+                <button
+                  onClick={() => {
+                    // 사주 데이터를 localStorage에 저장하고 새 페이지로 이동
+                    localStorage.setItem(
+                      "deepAnalysisSajuData",
+                      JSON.stringify(sajuDataForDisplay)
+                    );
+                    window.location.href = "/deep-analysis";
+                  }}
+                  className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-full font-bold hover:from-purple-700 hover:to-indigo-700 transition shadow-xl animate-sparkle text-lg"
+                >
+                  <span className="text-2xl">✨</span>
+                  <span>더 깊은 내용 보기</span>
+                  <span className="text-2xl">✨</span>
+                </button>
+              </div>
             </>
           )}
         </div>

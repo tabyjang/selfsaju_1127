@@ -1,7 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { ClerkProvider } from '@clerk/clerk-react';
+import './index.css';
 import App from './App';
+import { DeepAnalysis } from './components/DeepAnalysis';
 
 // Clerk Publishable Key 가져오기
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
@@ -19,7 +22,12 @@ const root = ReactDOM.createRoot(rootElement);
 root.render(
   <React.StrictMode>
     <ClerkProvider publishableKey={PUBLISHABLE_KEY}>
-      <App />
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<App />} />
+          <Route path="/deep-analysis" element={<DeepAnalysis />} />
+        </Routes>
+      </BrowserRouter>
     </ClerkProvider>
   </React.StrictMode>
 );
