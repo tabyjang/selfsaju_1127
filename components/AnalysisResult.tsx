@@ -42,7 +42,7 @@ interface AnalysisResultProps {
   onLoginRequired?: () => void;
 }
 
-const ohaengColorMap: Record<
+export const ohaengColorMap: Record<
   Ohaeng,
   { bg: string; text: string; border?: string }
 > = {
