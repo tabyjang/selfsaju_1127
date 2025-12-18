@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import type {
   SajuInfo,
   Pillar,
@@ -2619,6 +2620,7 @@ export const AnalysisResult: React.FC<AnalysisResultProps> = ({
   imageError,
   onLoginRequired,
 }) => {
+  const navigate = useNavigate();
   const { birthDate, gender, daewoon, daewoonNumber, birthRegion } = sajuData;
   const ilganChar = sajuData.pillars.day.cheonGan.char;
   const iljuGanji = sajuData.pillars.day.ganji; // e.g., "甲子"
@@ -2773,21 +2775,22 @@ export const AnalysisResult: React.FC<AnalysisResultProps> = ({
         )}
 
         {/* 2026년 월별 달력 보기 버튼 */}
-        {showWolwoon && !showCalendar && (
+        {showWolwoon && (
           <div className="mt-8 flex justify-center animate-fade-in">
             <button
-              onClick={() => setShowCalendar(true)}
+              onClick={() => {
+                // 사주 데이터를 localStorage에 저장하고 캘린더 페이지로 이동
+                localStorage.setItem('calendarSajuData', JSON.stringify(sajuData));
+                navigate('/calendar', { state: { sajuData } });
+              }}
               className="flex items-center gap-3 py-4 px-8 bg-gradient-to-r from-teal-400 to-cyan-500 hover:from-teal-500 hover:to-cyan-600 text-white font-bold rounded-full shadow-xl transform hover:scale-105 transition-all duration-300"
             >
               <span className="text-2xl">🗓️</span>
-              <span className="text-lg">2026년 월별 달력 보기</span>
+              <span className="text-lg">사주 캘린더 보기</span>
               <ChevronDownIcon className="w-5 h-5" />
             </button>
           </div>
         )}
-
-        {/* 2026년 월별 달력 표시 */}
-        {showCalendar && <MonthlyIljuCalendar sajuInfo={sajuData} />}
 
         {/*  상세 분석 결과 토글 버튼 */}
         {result && !showAiDetails && (

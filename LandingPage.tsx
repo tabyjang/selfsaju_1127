@@ -1,11 +1,9 @@
 import React, { useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './LandingPage.css';
 
-interface LandingPageProps {
-  onStart: () => void;
-}
-
-const LandingPage: React.FC<LandingPageProps> = ({ onStart }) => {
+const LandingPage: React.FC = () => {
+  const navigate = useNavigate();
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -97,7 +95,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onStart }) => {
   }, []);
 
   return (
-    <div className="landing-page-wrapper">
+    <div className="landing-page-wrapper page-fade-in">
       <canvas ref={canvasRef} id="particles-canvas"></canvas>
       <main className="landing-container">
 
@@ -116,7 +114,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onStart }) => {
           아낌 없는 사주 정보가 기다립니다.
         </p>
         <div className="cta-container fade-in delay-3">
-          <button onClick={onStart} className="glow-button">무료 사주 분석하기</button>
+          <button onClick={() => navigate('/input')} className="glow-button">무료 사주 분석하기</button>
         </div>
       </main>
 

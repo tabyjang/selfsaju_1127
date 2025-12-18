@@ -78,6 +78,35 @@ body {
 @keyframes rainbow-glow { 0% { box-shadow: 0 0 20px rgba(255, 0, 150, 0.6), 0 0 40px rgba(255, 0, 150, 0.4); } 25% { box-shadow: 0 0 25px rgba(255, 215, 0, 0.6), 0 0 50px rgba(255, 215, 0, 0.4); } 50% { box-shadow: 0 0 30px rgba(0, 255, 150, 0.6), 0 0 60px rgba(0, 255, 150, 0.4); } 75% { box-shadow: 0 0 25px rgba(100, 150, 255, 0.6), 0 0 50px rgba(100, 150, 255, 0.4); } 100% { box-shadow: 0 0 20px rgba(255, 0, 150, 0.6), 0 0 40px rgba(255, 0, 150, 0.4); } } /* 무지개 빛나는 효과 */
 .animate-rainbow-glow { animation: rainbow-glow 3s ease-in-out infinite; } /* 무지개 효과를 3초마다 무한 반복 */
 
+/* 페이지 전환 애니메이션 */
+@keyframes pageSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pageFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.page-transition {
+  animation: pageSlideIn 0.5s ease-out;
+}
+
+.page-fade-in {
+  animation: pageFadeIn 0.3s ease-out;
+}
+
 /*
  * Glassmorphism Card Effect
  * '유리 카드' 효과를 정의하는 부분입니다. 반투명하고 흐릿한 배경을 가진 카드 스타일입니다.

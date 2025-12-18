@@ -3,8 +3,11 @@ import ReactDOM from 'react-dom/client';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { ClerkProvider } from '@clerk/clerk-react';
 import './index.css';
-import App from './App';
-import { DeepAnalysis } from './components/DeepAnalysis';
+import LandingPage from './LandingPage';
+import InputPage from './pages/InputPage';
+import ResultPage from './pages/ResultPage';
+import DeepAnalysis from './pages/DeepAnalysis';
+import CalendarPage from './pages/CalendarPage';
 
 // Clerk Publishable Key 가져오기
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
@@ -24,8 +27,11 @@ root.render(
     <ClerkProvider publishableKey={PUBLISHABLE_KEY}>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<App />} />
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/input" element={<InputPage />} />
+          <Route path="/result" element={<ResultPage />} />
           <Route path="/deep-analysis" element={<DeepAnalysis />} />
+          <Route path="/calendar" element={<CalendarPage />} />
         </Routes>
       </BrowserRouter>
     </ClerkProvider>
