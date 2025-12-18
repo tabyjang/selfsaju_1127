@@ -282,6 +282,182 @@ const DaewoonPage: React.FC = () => {
               </div>
             </div>
           </div>
+
+          {/* 대운 상세 설명 */}
+          <div className="mt-8 space-y-6">
+            {/* 대운의 본질 */}
+            <div className="bg-gradient-to-r from-indigo-50 to-purple-50 p-6 rounded-xl border-2 border-indigo-200 shadow-sm">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 bg-indigo-500 rounded-full flex items-center justify-center text-white font-bold text-lg">
+                  1
+                </div>
+                <h4 className="text-xl font-bold text-indigo-900">대운의 본질</h4>
+              </div>
+              <div className="space-y-4 text-gray-700 leading-relaxed">
+                <p className="bg-white/70 p-4 rounded-lg">
+                  <strong className="text-indigo-800">대운(大運)</strong>은 단순히 '운이 좋다'는 의미가 아니라,
+                  한 사람의 인생에서 <strong className="text-indigo-700">10년 주기</strong>로 변화하는 환경과 계절을 의미합니다.
+                </p>
+                <div className="bg-indigo-100/50 p-4 rounded-lg border-l-4 border-indigo-400">
+                  <p className="font-semibold text-indigo-900 mb-2">💡 비유로 이해하기</p>
+                  <p className="text-sm md:text-base">
+                    원국(사주팔자)이 <strong>자동차</strong>라는 하드웨어라면,
+                    대운은 그 자동차가 달리는 <strong>도로의 상태나 날씨</strong>와 같습니다.
+                  </p>
+                </div>
+                <div className="bg-white/70 p-4 rounded-lg">
+                  <p className="font-semibold text-indigo-800 mb-2">📍 월주(月柱)의 확장</p>
+                  <p className="text-sm md:text-base">
+                    대운은 태어난 달의 기운인 <strong>월주</strong>에서 시작됩니다.
+                    사주에서 월지는 내가 태어난 계절의 환경을 결정하므로,
+                    대운은 <strong className="text-indigo-700">"내가 살아가는 계절이 어떻게 흘러가는가"</strong>를 보는 것입니다.
+                  </p>
+                </div>
+                <div className="bg-white/70 p-4 rounded-lg">
+                  <p className="font-semibold text-indigo-800 mb-2">🔄 방합(方合)의 흐름</p>
+                  <p className="text-sm md:text-base">
+                    대운은 보통 계절의 흐름(봄→여름→가을→겨울)을 따릅니다.
+                    <strong className="text-indigo-700">30년 단위</strong>로 계절(木-火-金-水)이 크게 바뀌는데,
+                    이를 <strong>'방운'</strong>이라고 하며 <strong className="text-red-600">인생의 큰 변곡점</strong>이 됩니다.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* 대운에서 중요한 요소 */}
+            <div className="bg-gradient-to-r from-purple-50 to-pink-50 p-6 rounded-xl border-2 border-purple-200 shadow-sm">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 bg-purple-500 rounded-full flex items-center justify-center text-white font-bold text-lg">
+                  2
+                </div>
+                <h4 className="text-xl font-bold text-purple-900">대운 분석의 핵심 요소</h4>
+              </div>
+              <div className="space-y-4">
+                {/* 지지가 우선 */}
+                <div className="bg-white/70 p-5 rounded-lg border-l-4 border-purple-400">
+                  <div className="flex items-start gap-3">
+                    <span className="text-2xl flex-shrink-0">①</span>
+                    <div className="flex-1">
+                      <p className="font-bold text-purple-900 text-lg mb-2">천간보다 '지지(地支)'가 우선</p>
+                      <p className="text-sm md:text-base text-gray-700 mb-3">
+                        많은 술사가 강조하듯, 대운은 <strong className="text-purple-700">지지를 7~8할로</strong> 봅니다.
+                      </p>
+                      <div className="bg-purple-50 p-3 rounded-lg">
+                        <p className="text-sm mb-2"><strong>이유:</strong></p>
+                        <p className="text-sm text-gray-700">
+                          천간은 명분이나 생각, 외부로 드러나는 현상을 의미하지만,
+                          <strong className="text-purple-700">지지는 실제 내가 발 딛고 있는 환경, 현실적인 기반, 계절의 온도</strong>를 결정하기 때문입니다.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 접목운 */}
+                <div className="bg-white/70 p-5 rounded-lg border-l-4 border-red-400">
+                  <div className="flex items-start gap-3">
+                    <span className="text-2xl flex-shrink-0">②</span>
+                    <div className="flex-1">
+                      <p className="font-bold text-red-900 text-lg mb-2">접목운(接木運): 계절이 바뀌는 시기</p>
+                      <p className="text-sm md:text-base text-gray-700 mb-3">
+                        대운 분석에서 <strong className="text-red-600">가장 위험하면서도 중요한 시기</strong>가 바로 접목운입니다.
+                      </p>
+                      <div className="bg-red-50 p-3 rounded-lg mb-3">
+                        <p className="text-sm font-semibold text-red-900 mb-1">환절기 대운:</p>
+                        <p className="text-sm text-gray-700">
+                          진(辰), 미(未), 술(戌), 축(丑) 대운이 끝날 때
+                        </p>
+                      </div>
+                      <p className="text-sm text-gray-700">
+                        30년 주기로 환경이 완전히 뒤바뀌기 때문에, 이때
+                        <strong className="text-red-600">직업 변경, 거주지 이동, 건강 악화, 가치관의 대전환</strong> 등
+                        인생의 큰 풍파나 변화가 찾아오는 경우가 많습니다.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 형충회합 */}
+                <div className="bg-white/70 p-5 rounded-lg border-l-4 border-blue-400">
+                  <div className="flex items-start gap-3">
+                    <span className="text-2xl flex-shrink-0">③</span>
+                    <div className="flex-1">
+                      <p className="font-bold text-blue-900 text-lg mb-2">원국과의 형·충·회·합 (刑·沖·會·合)</p>
+                      <p className="text-sm md:text-base text-gray-700 mb-3">
+                        대운의 글자가 내 사주 원국과 어떤 상호작용을 하는지 살펴야 합니다.
+                      </p>
+                      <div className="space-y-2">
+                        <div className="bg-blue-50 p-3 rounded-lg">
+                          <p className="text-sm">
+                            <strong className="text-blue-800">합(合):</strong> 새로운 환경과의 결합, 협력, 생산적인 변화
+                          </p>
+                        </div>
+                        <div className="bg-blue-50 p-3 rounded-lg">
+                          <p className="text-sm">
+                            <strong className="text-blue-800">충(沖):</strong> 기존 환경의 파괴, 이동, 분리, 충돌을 통한 역동적인 변화
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 조후 */}
+                <div className="bg-white/70 p-5 rounded-lg border-l-4 border-amber-400">
+                  <div className="flex items-start gap-3">
+                    <span className="text-2xl flex-shrink-0">④</span>
+                    <div className="flex-1">
+                      <p className="font-bold text-amber-900 text-lg mb-2">조후(調喉)의 해결</p>
+                      <p className="text-sm md:text-base text-gray-700 mb-3">
+                        사주가 너무 차갑거나(냉습), 너무 뜨겁다면(조열),
+                        대운에서 이를 해결해 주는 글자가 올 때 비로소 <strong className="text-amber-700">삶이 안정</strong>을 찾습니다.
+                      </p>
+                      <div className="bg-amber-50 p-3 rounded-lg">
+                        <p className="text-sm text-gray-700">
+                          격국(사회적 성취)이 좋아도 <strong className="text-amber-700">조후(심리적·환경적 편안함)</strong>가 맞지 않으면
+                          본인은 매우 고통스러울 수 있습니다. 대운은 이 조후를 해결해 주는 가장 강력한 수단입니다.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* 대운을 보는 관점 */}
+            <div className="bg-gradient-to-r from-rose-50 to-orange-50 p-6 rounded-xl border-2 border-rose-200 shadow-sm">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 bg-rose-500 rounded-full flex items-center justify-center text-white font-bold text-lg">
+                  3
+                </div>
+                <h4 className="text-xl font-bold text-rose-900">대운을 보는 올바른 관점</h4>
+              </div>
+              <div className="space-y-4">
+                <div className="bg-white/70 p-5 rounded-lg text-center">
+                  <p className="text-lg md:text-xl font-bold text-rose-800 mb-4">
+                    "원국이 불변의 명(命)이라면,<br/>대운은 가변의 운(運)이다."
+                  </p>
+                  <div className="text-left space-y-3 text-sm md:text-base text-gray-700">
+                    <p className="bg-rose-50 p-4 rounded-lg">
+                      아무리 좋은 사주라도 <strong className="text-rose-700">대운이 험난하면 능력을 발휘하기 어렵고</strong>,
+                      사주 원국이 조금 부족해도 <strong className="text-rose-700">대운이 돕는다면 큰 성취를 이룰 수 있습니다</strong>.
+                    </p>
+                    <div className="bg-gradient-to-r from-rose-100 to-orange-100 p-4 rounded-lg border-l-4 border-rose-400">
+                      <p className="font-semibold text-rose-900 mb-2">📌 핵심 원리</p>
+                      <p>
+                        <strong className="text-rose-700">대운은 '성패'를 결정</strong>하고,
+                        <strong className="text-orange-700">세운(1년 운)은 '득실'을 결정</strong>한다는 말이 있습니다.
+                      </p>
+                      <p className="mt-2">
+                        즉, <strong className="text-rose-700">10년이라는 큰 흐름 속에서 내가 나아가야 할지, 멈춰야 할지</strong>를
+                        결정하는 것이 대운 분석의 핵심입니다.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* 세운 흐름 표시 */}
