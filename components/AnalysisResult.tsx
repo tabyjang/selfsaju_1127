@@ -12,6 +12,7 @@ import {
 import { cheonEulGwiInMap } from "../utils/sinsal";
 import { ilganDescriptions } from "../utils/ilganDescriptions";
 import { sibsinDescriptions } from "../utils/sibsinDescriptions";
+import { unseongDescriptions } from "../utils/unseongDescriptions";
 import { loadIljuBundle } from "../utils/ilju/loadIljuBundle";
 import type { IljuBundle } from "../utils/ilju/types";
 import { InteractionsDisplay } from "./InteractionsDisplay";
