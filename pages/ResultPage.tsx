@@ -107,43 +107,59 @@ const ResultPage: React.FC = () => {
 
   return (
     <div className="min-h-screen font-sans p-4 sm:p-6 lg:p-8 bg-white page-transition">
-      {/* 우측 상단 로그인 버튼 */}
-      <div className="fixed top-4 right-4 z-50 flex gap-2">
-        <SignedOut>
-          <SignInButton mode="modal">
-            <button className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition text-sm font-bold shadow-md cursor-pointer">
-              로그인
-            </button>
-          </SignInButton>
-        </SignedOut>
-        <SignedIn>
-          <button
-            onClick={handleSaveMySaju}
-            disabled={isSaving}
-            className="px-4 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-lg hover:from-purple-700 hover:to-indigo-700 transition text-sm font-bold shadow-md cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {isSaving ? "저장 중..." : "내 사주로 저장"}
-          </button>
-          <UserButton afterSignOutUrl="/input" />
-        </SignedIn>
+      {/* 치티키 헤더 (대시보드와 동일) */}
+      <div className="fixed top-0 left-0 right-0 bg-white/80 backdrop-blur-md border-b border-gray-200 z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate('/')}>
+              <img
+                src="/logo.png"
+                alt="아사주달 로고"
+                className="h-10 w-auto object-contain"
+              />
+              <h1 className="text-xl font-bold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">
+                아사주달
+              </h1>
+            </div>
+            <div className="flex gap-2 items-center">
+              <button
+                onClick={() => navigate('/input', { state: { skipAutoLoad: true } })}
+                className="hidden md:block px-4 py-2 text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition text-sm font-bold border border-indigo-200"
+              >
+                다른 사주 입력
+              </button>
+              <SignedOut>
+                <SignInButton mode="modal">
+                  <button className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition text-sm font-bold shadow-md cursor-pointer">
+                    로그인
+                  </button>
+                </SignInButton>
+              </SignedOut>
+              <SignedIn>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={handleSaveMySaju}
+                    disabled={isSaving}
+                    className="px-4 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-lg hover:from-purple-700 hover:to-indigo-700 transition text-sm font-bold shadow-md cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isSaving ? "저장 중..." : "내 사주로 저장"}
+                  </button>
+                  <UserButton afterSignOutUrl="/input" />
+                </div>
+              </SignedIn>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* 저장 메시지 표시 */}
       {saveMessage && (
-        <div className="fixed top-20 right-4 z-50 px-4 py-2 bg-white border-2 border-green-500 text-green-700 rounded-lg shadow-lg text-sm font-bold animate-fade-in">
+        <div className="fixed top-20 right-4 z-[60] px-4 py-2 bg-white border-2 border-green-500 text-green-700 rounded-lg shadow-lg text-sm font-bold animate-fade-in">
           {saveMessage}
         </div>
       )}
 
-      <main className="max-w-7xl mx-auto relative pt-12">
-        <header className="text-center mb-12 relative flex justify-center">
-          <img
-            src="/logo.png"
-            alt="아사주달 로고"
-            className="h-28 sm:h-36 md:h-44 w-auto object-contain cursor-pointer"
-            onClick={() => navigate("/")}
-          />
-        </header>
+      <main className="max-w-7xl mx-auto relative pt-24">
 
         <AnalysisResult
           result={analysisResult}

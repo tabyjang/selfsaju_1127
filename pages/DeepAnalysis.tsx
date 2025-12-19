@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/clerk-react';
 import type { SajuInfo, Ohaeng, Pillar } from '../types';
 import { GyeokgukDisplay } from '../components/GyeokgukDisplay';
-import OhaengForceDisplay from '../yongsin/OhaengForceDisplay';
+
 import { earthlyBranchGanInfo } from '../utils/manse';
 import { sibsinDescriptions } from '../utils/sibsinDescriptions';
 import { sibsinPositionDescriptions } from '../utils/sibsinPositionDescriptions';
@@ -503,7 +503,7 @@ const DeepAnalysis: React.FC = () => {
           <h1 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-indigo-600 mb-2">
             심층 사주 분석
           </h1>
-          <p className="text-gray-600 text-lg">오행 가중치·신강신약·용신 기반 정밀 분석</p>
+          <p className="text-gray-600 text-lg">사주 원국·월령·격국 기반 심층 분석</p>
         </div>
 
         {/* 사주 원국 정보 */}
@@ -528,23 +528,9 @@ const DeepAnalysis: React.FC = () => {
         <GyeokgukDisplay sajuInfo={sajuData} />
 
         {/* 오행 가중치 분석 및 신강신약 판단 */}
-        <OhaengForceDisplay
-          sajuInfo={sajuData}
-          isHourUnknown={isHourUnknown}
-        />
 
-        {/* 용신 추출 (개발 예정) */}
-        <div className="glass-card p-6 text-center mt-8">
-          <h3 className="text-3xl font-bold text-gray-800 mb-4">🚧 용신 추출 기능</h3>
-          <p className="text-gray-600 text-lg mb-4">
-            신강신약 판정을 기반으로 한 용신 추출 기능이<br />
-            곧 추가될 예정입니다.
-          </p>
-          <div className="p-4 bg-blue-50 rounded-lg">
-            <h4 className="font-bold text-blue-900 mb-2">🎯 용신 추출</h4>
-            <p className="text-sm text-blue-700">Coming Soon...</p>
-          </div>
-        </div>
+
+
       </div>
     </div>
   );
