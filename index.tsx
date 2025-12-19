@@ -10,6 +10,7 @@ import DeepAnalysis from './pages/DeepAnalysis';
 import CalendarPage from './pages/CalendarPage';
 import DaewoonPage from './pages/DaewoonPage';
 import DashboardPage from './pages/DashboardPage';
+import FiveElementsOrbit from './pages/FiveElementsOrbit';
 
 // Clerk Publishable Key 가져오기
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
@@ -36,6 +37,7 @@ root.render(
           <Route path="/calendar" element={<CalendarPage />} />
           <Route path="/daewoon" element={<DaewoonPage />} />
           <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/orbit" element={<FiveElementsOrbit />} />
         </Routes>
       </BrowserRouter>
     </ClerkProvider>
