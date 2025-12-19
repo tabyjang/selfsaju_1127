@@ -1368,6 +1368,47 @@ export default function FiveElementsOrbit() {
         </p>
       </div>
 
+      {/* 대시보드로 이동 버튼 */}
+      <div
+        style={{
+          position: "absolute",
+          bottom: "20px",
+          left: "20px",
+          zIndex: 10,
+        }}
+      >
+        <button
+          onClick={() => window.location.href = '/dashboard'}
+          style={{
+            padding: "12px 20px",
+            background: "rgba(59, 130, 246, 0.9)",
+            border: "2px solid rgba(147, 197, 253, 0.5)",
+            color: "white",
+            borderRadius: "12px",
+            cursor: "pointer",
+            fontSize: "14px",
+            fontWeight: "bold",
+            fontFamily: "sans-serif",
+            backdropFilter: "blur(10px)",
+            transition: "all 0.3s",
+            display: "flex",
+            alignItems: "center",
+            gap: "8px",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = "rgba(37, 99, 235, 1)";
+            e.currentTarget.style.transform = "scale(1.05)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = "rgba(59, 130, 246, 0.9)";
+            e.currentTarget.style.transform = "scale(1)";
+          }}
+        >
+          <span style={{ fontSize: "16px" }}>🏠</span>
+          <span>대시보드로 이동</span>
+        </button>
+      </div>
+
       {/* 컨트롤 패널 */}
       <ControlPanel
         elementOrder={elementOrder}

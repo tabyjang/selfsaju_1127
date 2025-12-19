@@ -1,7 +1,55 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/clerk-react';
-import type { SajuInfo } from '../types';
+import type { SajuInfo, Ohaeng } from '../types';
+import { getDayGanjiByYMD, getUnseongByIlganAndJiji, earthlyBranchGanInfo } from '../utils/manse';
+
+// 오행 색상 맵 (캘린더와 동일)
+const ohaengColorMap: Record<Ohaeng, { bg: string; text: string; border: string }> = {
+  wood: { bg: 'bg-[#00B050]', text: 'text-white', border: 'border border-gray-800' },
+  fire: { bg: 'bg-[#FF0000]', text: 'text-white', border: 'border border-gray-800' },
+  earth: { bg: 'bg-[#FEC100]', text: 'text-white', border: 'border border-gray-800' },
+  metal: { bg: 'bg-slate-200', text: 'text-white', border: 'border border-gray-800' },
+  water: { bg: 'bg-black', text: 'text-white', border: 'border border-gray-800' },
+};
+
+// 간지 한글 매핑
+const ganjiKoreanMap: Record<string, string> = {
+  '甲': '갑목', '乙': '을목',
+  '丙': '병화', '丁': '정화',
+  '戊': '무토', '己': '기토',
+  '庚': '경금', '辛': '신금',
+  '壬': '임수', '癸': '계수',
+  '子': '자수', '丑': '축토', '寅': '인목', '卯': '묘목',
+  '辰': '진토', '巳': '사화', '午': '오화', '未': '미토',
+  '申': '신금', '酉': '유금', '戌': '술토', '亥': '해수',
+};
+
+// 간지 박스 컴포넌트 (캘린더와 동일한 스타일)
+const GanjiBox: React.FC<{ char: string; showKorean?: boolean }> = ({ char, showKorean = true }) => {
+  const info = earthlyBranchGanInfo[char];
+  if (!info) return <span className="text-2xl font-bold">{char}</span>;
+
+  const color = ohaengColorMap[info.ohaeng];
+  const koreanLabel = ganjiKoreanMap[char] || '';
+
+  return (
+    <div className="flex flex-col items-center gap-1">
+      <div
+        className={`inline-flex items-center justify-center w-16 h-16 text-4xl font-bold rounded-md shadow-md ${color.bg} ${color.text} ${color.border}`}
+        style={{
+          WebkitTextStroke: '0.5px black',
+          textShadow: '0 0 1px rgba(0,0,0,0.5), 1px 1px 2px rgba(0,0,0,0.3)'
+        }}
+      >
+        {char}
+      </div>
+      {showKorean && koreanLabel && (
+        <span className="text-xs text-gray-600 font-medium">{koreanLabel}</span>
+      )}
+    </div>
+  );
+};
 
 const DashboardPage: React.FC = () => {
   const navigate = useNavigate();
@@ -25,6 +73,42 @@ const DashboardPage: React.FC = () => {
     }
   }, []);
 
+  // 오늘 날짜 정보 계산
+  const todayInfo = useMemo(() => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = today.getMonth() + 1;
+    const day = today.getDate();
+
+    const weekdays = ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'];
+    const weekday = weekdays[today.getDay()];
+
+    try {
+      const { gan, ji, ganji } = getDayGanjiByYMD(year, month, day);
+
+      // 일간 정보 (사주 데이터에서)
+      const ilgan = sajuData?.pillars.day.cheonGan.char || '';
+
+      // 12운성 계산
+      const unseong = ilgan ? getUnseongByIlganAndJiji(ilgan, ji) : null;
+
+      return {
+        year,
+        month,
+        day,
+        weekday,
+        gan,
+        ji,
+        ganji,
+        ilgan,
+        unseong,
+      };
+    } catch (error) {
+      console.error('오늘 날짜 정보 계산 실패:', error);
+      return null;
+    }
+  }, [sajuData]);
+
   // 메뉴 카드 데이터
   const menuCards = [
     {
@@ -42,6 +126,14 @@ const DashboardPage: React.FC = () => {
       path: '/deep-analysis',
       gradient: 'from-purple-500 to-indigo-500',
       bgGradient: 'from-purple-50 to-indigo-50',
+    },
+    {
+      title: '오행 에너지 보기',
+      description: '나를 둘러싼 오행의 에너지 흐름을 한눈에 볼 수 있습니다',
+      icon: '✨',
+      path: '/orbit',
+      gradient: 'from-pink-500 to-rose-500',
+      bgGradient: 'from-pink-50 to-rose-50',
     },
     {
       title: '대운 분석',
@@ -90,15 +182,6 @@ const DashboardPage: React.FC = () => {
       bgColor: 'bg-blue-50',
       borderColor: 'border-blue-200',
     },
-    {
-      label: '용신',
-      value: '분석중',
-      description: '필요한 기운',
-      icon: '✨',
-      color: 'text-green-600',
-      bgColor: 'bg-green-50',
-      borderColor: 'border-green-200',
-    },
   ];
 
   return (
@@ -145,14 +228,78 @@ const DashboardPage: React.FC = () => {
           </p>
         </div>
 
+        {/* 오늘의 운세 섹션 */}
+        {sajuData && todayInfo && (
+          <div className="mb-12 animate-fade-in" style={{ animationDelay: '0.1s' }}>
+            <div className="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-xl border-2 border-indigo-200 overflow-hidden shadow-lg">
+              {/* 상단 헤더 */}
+              <div className="bg-gradient-to-r from-indigo-600 to-purple-600 px-4 py-3 flex items-center">
+                <div className="flex items-center gap-2 flex-1">
+                  <span className="text-white font-bold text-base md:text-lg">
+                    {todayInfo.month}월 {todayInfo.day}일 {todayInfo.weekday}
+                  </span>
+                </div>
+                <div className="flex items-center gap-4 absolute left-1/2 transform -translate-x-1/2">
+                  <span className="text-white/80 text-lg">일간</span>
+                  <div className="flex flex-col items-center">
+                    <div
+                      className={`inline-flex items-center justify-center w-12 h-12 text-3xl font-bold rounded-md shadow-md ${
+                        (() => {
+                          const info = earthlyBranchGanInfo[todayInfo.ilgan];
+                          return info ? `${ohaengColorMap[info.ohaeng].bg} ${ohaengColorMap[info.ohaeng].text} ${ohaengColorMap[info.ohaeng].border}` : 'bg-gray-200 text-black border border-gray-800';
+                        })()
+                      }`}
+                      style={{
+                        WebkitTextStroke: '0.5px black',
+                        textShadow: '0 0 1px rgba(0,0,0,0.5), 1px 1px 2px rgba(0,0,0,0.3)'
+                      }}
+                    >
+                      {todayInfo.ilgan}
+                    </div>
+                  </div>
+                  <span className="text-white/80 text-lg">나 자신</span>
+                </div>
+                <div className="text-white font-bold flex items-center gap-2 flex-1 justify-end">
+                  <span>✨</span>
+                  <span className="hidden sm:inline text-lg">오늘의 운세</span>
+                </div>
+              </div>
+
+              {/* 내용 */}
+              <div className="grid grid-cols-1 md:grid-cols-5 gap-4 p-4">
+                {/* 왼쪽: 오늘의 날짜 정보 (1/5) */}
+                <div className="bg-white rounded-lg p-4 shadow border border-indigo-100">
+                  <div className="flex flex-col items-center justify-center h-full">
+                    {/* 일주 세로 배치 */}
+                    <div className="flex flex-col gap-3">
+                      <GanjiBox char={todayInfo.gan} />
+                      <GanjiBox char={todayInfo.ji} />
+                    </div>
+                  </div>
+                </div>
+
+                {/* 오른쪽: 운세 메시지 (4/5) */}
+                <div className="md:col-span-4 bg-white rounded-lg p-6 shadow border border-indigo-100 flex items-center justify-center min-h-[250px]">
+                  <div className="text-center">
+                    <div className="text-4xl mb-4">🔮</div>
+                    <p className="text-gray-600 text-base leading-relaxed">
+                      오늘의 운세가 표시됩니다.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* 통계 카드 섹션 */}
         {sajuData && (
-          <div className="mb-12 animate-fade-in" style={{ animationDelay: '0.1s' }}>
+          <div className="mb-12 animate-fade-in" style={{ animationDelay: '0.15s' }}>
             <h3 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2">
               <span>📊</span>
               <span>나의 사주 핵심 정보</span>
             </h3>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {statsCards.map((stat, index) => (
                 <div
                   key={index}

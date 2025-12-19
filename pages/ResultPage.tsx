@@ -101,39 +101,23 @@ const ResultPage: React.FC = () => {
           onLoginRequired={handleLoginRequired}
         />
 
-        {/* 더 깊은 내용 보기 버튼 */}
-        <div className="mt-8 p-6 bg-gradient-to-r from-purple-50 to-indigo-50 rounded-2xl border-2 border-purple-200 text-center animate-border-sparkle">
-          <h3 className="text-xl font-bold text-purple-900 mb-3">
-            🔮 더 정확하고 깊은 사주 분석이 필요하신가요?
+        {/* 대시보드로 이동 버튼 */}
+        <div className="mt-8 p-6 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-2xl border-2 border-blue-200 text-center">
+          <h3 className="text-xl font-bold text-blue-900 mb-3">
+            📊 대시보드에서 한눈에 보기
           </h3>
-          <p className="text-purple-700 mb-4 text-sm leading-relaxed">
-            오행 가중치 분석, 신강신약 판단, 용신 추출을 통한<br />
-            궁합·직업운·재물운·연애운 심층 분석
+          <p className="text-blue-700 mb-4 text-sm leading-relaxed">
+            사주 정보와 분석 결과를 한 화면에서 확인하세요
           </p>
           <button
             onClick={() => {
-              // 사주 데이터를 localStorage에 저장하고 새 페이지로 이동
-              localStorage.setItem(
-                "deepAnalysisSajuData",
-                JSON.stringify(sajuDataForDisplay)
-              );
-              navigate("/deep-analysis");
+              navigate("/dashboard");
             }}
-            className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-full font-bold hover:from-purple-700 hover:to-indigo-700 transition shadow-xl animate-sparkle text-lg"
+            className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-full font-bold hover:from-blue-700 hover:to-cyan-700 transition shadow-xl text-lg"
           >
-            <span className="text-2xl">✨</span>
-            <span>더 깊은 내용 보기</span>
-            <span className="text-2xl">✨</span>
-          </button>
-        </div>
-
-        {/* 다시 분석하기 버튼 */}
-        <div className="mt-6 text-center">
-          <button
-            onClick={() => navigate("/input")}
-            className="px-6 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition font-semibold"
-          >
-            ← 다시 분석하기
+            <span className="text-2xl">🎯</span>
+            <span>대시보드로 이동</span>
+            <span className="text-2xl">→</span>
           </button>
         </div>
       </main>
