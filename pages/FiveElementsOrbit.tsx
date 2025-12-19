@@ -399,8 +399,8 @@ function Scene({
           const orbitRadius = 4 + index * 3;
           const sizeMultiplier = elementSizes[element.name] || 1;
           const planetColor = elementColors[element.name] || element.color;
-          // 수성(Water)의 경우 파티클을 더 밝은 파란색으로 설정
-          const beltColor = element.id === "water" ? "#60a5fa" : planetColor;
+          // 파티클 색상도 행성과 동일하게 설정
+          const beltColor = planetColor;
 
           return (
             <React.Fragment key={element.id}>
@@ -848,11 +848,11 @@ const STORAGE_KEY = "fiveElementsOrbitSettings_v6";
 const DEFAULT_SETTINGS = {
   elementOrder: [...FIVE_ELEMENTS_BASE],
   elementSizes: {
-    월주: 2.3,
-    대운: 2.1,
-    일주: 1.9,
-    시주: 1.5,
-    년주: 1.2,
+    월주: 2.2,
+    대운: 2.0,
+    일주: 1.8,
+    시주: 1.4,
+    년주: 1.1,
   },
   elementColors: {
     월주: "#22c55e",
@@ -871,15 +871,76 @@ const DEFAULT_SETTINGS = {
   trailLength: 100,
 };
 
+// 현재 나이 계산 함수 (한국 나이 = 만 나이 + 1)
+const getCurrentAge = (birthDate: {
+  year: number;
+  month: number;
+  day: number;
+}): number => {
+  const today = new Date();
+  const birth = new Date(birthDate.year, birthDate.month - 1, birthDate.day);
+  let age = today.getFullYear() - birth.getFullYear();
+  const monthDiff = today.getMonth() - birth.getMonth();
+
+  // 생일이 지나지 않았으면 나이에서 1을 뺌
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+    age--;
+  }
+
+  // 한국 나이로 변환 (만 나이 + 1)
+  return age + 1;
+};
+
+// 현재 나이에 맞는 대운 인덱스 계산
+const getCurrentDaewoonIndex = (
+  currentAge: number,
+  daewoonNumber: number
+): number => {
+  // daewoonNumber는 대운 시작 나이 (예: 3세)
+  // 각 대운은 10년 단위
+  // 예: 3세 시작이면 -> 0번: 3-12세, 1번: 13-22세, 2번: 23-32세...
+  if (currentAge < daewoonNumber) {
+    return 0; // 대운이 아직 시작 안됨
+  }
+
+  const index = Math.floor((currentAge - daewoonNumber) / 10);
+  return Math.min(index, 9); // 최대 9번 인덱스 (10개까지만)
+};
+
 // 사주 정보에서 색깔 추출
 const getColorsFromSaju = (sajuInfo: SajuInfo | null): ElementColors | null => {
   if (!sajuInfo) return null;
 
   try {
-    const { pillars, daewoonPillars, daewoonNumber } = sajuInfo;
+    const { pillars, daewoonPillars, daewoonNumber, birthDate } = sajuInfo;
+
+    // 현재 나이 계산
+    const currentAge = getCurrentAge(birthDate);
+
+    // 현재 나이에 맞는 대운 인덱스 계산
+    const daewoonIndex = getCurrentDaewoonIndex(currentAge, daewoonNumber);
 
     // 현재 대운 가져오기
-    const currentDaewoon = daewoonPillars[daewoonNumber];
+    const currentDaewoon = daewoonPillars[daewoonIndex];
+
+    console.log("=== 대운 디버깅 정보 ===");
+    console.log("현재 나이:", currentAge);
+    console.log("대운 시작 나이:", daewoonNumber);
+    console.log("대운 인덱스:", daewoonIndex);
+    console.log("전체 대운 목록:", daewoonPillars);
+    console.log(
+      "현재 대운:",
+      currentDaewoon ? currentDaewoon.ganji : "없음",
+      "(",
+      currentDaewoon ? currentDaewoon.age : "-",
+      "세)"
+    );
+
+    if (currentDaewoon) {
+      console.log("대운 천간:", currentDaewoon.cheonGan.char, "오행:", currentDaewoon.cheonGan.ohaeng);
+      console.log("대운 지지:", currentDaewoon.jiJi.char, "오행:", currentDaewoon.jiJi.ohaeng);
+      console.log("대운 지지 색상:", OHAENG_COLOR_MAP[currentDaewoon.jiJi.ohaeng]);
+    }
 
     return {
       년주: OHAENG_COLOR_MAP[pillars.year.jiJi.ohaeng], // 년지
@@ -1081,77 +1142,236 @@ export default function FiveElementsOrbit() {
           color: "white",
           zIndex: 10,
           fontFamily: "sans-serif",
-          background: "rgba(0,0,0,0.85)",
+          background: "rgba(0,0,0,0.9)",
           padding: "20px",
-          borderRadius: "15px",
-          maxWidth: "300px",
-          border: "2px solid rgba(255,255,255,0.2)",
-          backdropFilter: "blur(10px)",
+          borderRadius: "16px",
+          maxWidth: "400px",
+          maxHeight: "90vh",
+          overflowY: "auto",
+          border: "2px solid rgba(255,255,255,0.15)",
+          backdropFilter: "blur(12px)",
+          boxShadow: "0 8px 32px rgba(0,0,0,0.4)",
         }}
       >
         <h1
           style={{
-            margin: "0 0 12px 0",
-            fontSize: "22px",
-            background: "linear-gradient(45deg, #60a5fa, #fbbf24)",
+            margin: "0 0 16px 0",
+            fontSize: "26px",
+            background: "linear-gradient(135deg, #60a5fa, #fbbf24, #ec4899)",
             WebkitBackgroundClip: "text",
             WebkitTextFillColor: "transparent",
             fontWeight: "bold",
+            letterSpacing: "-0.5px",
           }}
         >
-          🌟 5행 궤도로 보는 생극제화
+          🌌 5행 에너지 궤도: 당신을 중심으로 움직이는 우주의 지도
         </h1>
+
         <div
           style={{
-            margin: "0",
             fontSize: "13px",
-            opacity: 0.95,
-            lineHeight: "1.8",
+            lineHeight: "1.7",
+            marginBottom: "16px",
+            padding: "12px",
+            background: "rgba(96, 165, 250, 0.1)",
+            borderLeft: "3px solid #60a5fa",
+            borderRadius: "6px",
           }}
         >
-          <div style={{ marginBottom: "10px" }}>
-            <strong style={{ color: "#fbbf24" }}>중심:</strong> 나(일간)
+          이 궤도는 단순한 그림이 아닙니다. 당신이 태어난 순간의 기운(원국)과
+          지금 통과하고 있는 시간(대운)이 만나 형성된{" "}
+          <strong style={{ color: "#60a5fa" }}>
+            '실시간 에너지 자기장'
+          </strong>
+          입니다.
+        </div>
+
+        {/* 1. 궤도의 거리 */}
+        <div
+          style={{
+            marginBottom: "18px",
+            padding: "14px",
+            background: "rgba(251, 191, 36, 0.08)",
+            borderRadius: "10px",
+            border: "1px solid rgba(251, 191, 36, 0.2)",
+          }}
+        >
+          <h3
+            style={{
+              margin: "0 0 12px 0",
+              fontSize: "15px",
+              color: "#fbbf24",
+              fontWeight: "bold",
+              display: "flex",
+              alignItems: "center",
+              gap: "6px",
+            }}
+          >
+            <span>📍</span> 1. 궤도의 거리: 나에게 미치는 '영향력의 크기'
+          </h3>
+          <div style={{ fontSize: "12.5px", lineHeight: "1.8" }}>
+            <p style={{ margin: "0 0 10px 0", opacity: 0.95 }}>
+              중심에 있는 <strong style={{ color: "#fbbf24" }}>나(일간)</strong>
+              와 거리가 가까울수록 나의 성격, 환경, 운명에 더 강력하고 직접적인
+              결정을 내립니다.
+            </p>
+
+            <div style={{ marginBottom: "8px" }}>
+              <strong style={{ color: "#ef4444" }}>• 핵심 궤도 (1~2번):</strong>{" "}
+              <span style={{ opacity: 0.9 }}>
+                월지(월령)와 대운입니다. 내가 태어난 계절의 기운과 현재 내가
+                처한 거대한 환경입니다. 내 삶의 온도와 습도를 결정하는 가장
+                압도적인 에너지입니다.
+              </span>
+            </div>
+
+            <div style={{ marginBottom: "8px" }}>
+              <strong style={{ color: "#f59e0b" }}>• 밀착 궤도 (3번):</strong>{" "}
+              <span style={{ opacity: 0.9 }}>
+                일지입니다. 내가 깔고 앉은 자리이자 배우자궁으로, 나의 내면
+                심리와 가장 사적인 공간에 상시 영향을 미치는 기운입니다.
+              </span>
+            </div>
+
+            <div>
+              <strong style={{ color: "#60a5fa" }}>• 배경 궤도 (4~5번):</strong>{" "}
+              <span style={{ opacity: 0.9 }}>
+                시지와 년지입니다. 나의 노년과 사회적 뿌리를 상징합니다. 거리는
+                멀지만, 당신이라는 우주를 지탱하는 든든한 배경이자 삶의 여운을
+                형성합니다.
+              </span>
+            </div>
           </div>
-          <div style={{ marginBottom: "8px" }}>
-            <strong style={{ color: "#60a5fa" }}>안쪽 궤도:</strong> 월지·대운
-            <span style={{ opacity: 0.7, fontSize: "12px" }}>
-              {" "}
-              (핵심 영향력)
-            </span>
+        </div>
+
+        {/* 2. 크기와 색상 */}
+        <div
+          style={{
+            marginBottom: "18px",
+            padding: "14px",
+            background: "rgba(236, 72, 153, 0.08)",
+            borderRadius: "10px",
+            border: "1px solid rgba(236, 72, 153, 0.2)",
+          }}
+        >
+          <h3
+            style={{
+              margin: "0 0 12px 0",
+              fontSize: "15px",
+              color: "#ec4899",
+              fontWeight: "bold",
+              display: "flex",
+              alignItems: "center",
+              gap: "6px",
+            }}
+          >
+            <span>🎨</span> 2. 크기와 색상: '생극제화(生剋制化)'의 시각화
+          </h3>
+          <div style={{ fontSize: "12.5px", lineHeight: "1.8" }}>
+            <p style={{ margin: "0 0 10px 0", opacity: 0.95 }}>
+              구슬의 <strong style={{ color: "#ec4899" }}>색상</strong>은 오행의
+              종류를, <strong style={{ color: "#ec4899" }}>크기</strong>는 그
+              기운의 세기를 나타냅니다. 이 둘의 조화를 통해 나의 신강·신약과
+              에너지 흐름을 바로 알 수 있습니다.
+            </p>
+
+            <div style={{ marginBottom: "7px" }}>
+              <strong style={{ color: "#22c55e" }}>• 나를 살리는 힘 (생, 生):</strong>{" "}
+              <span style={{ opacity: 0.9 }}>
+                인성(나를 돕는 색)의 구슬이 크고 가까운 궤도에 있다면, 당신은
+                주변의 지원을 잘 받고 에너지가 쉽게 충전되는 사람입니다.
+              </span>
+            </div>
+
+            <div style={{ marginBottom: "7px" }}>
+              <strong style={{ color: "#ef4444" }}>• 나를 누르는 힘 (극, 剋):</strong>{" "}
+              <span style={{ opacity: 0.9 }}>
+                관성(나를 통제하는 색)의 구슬이 크고 위협적이라면, 당신은 강한
+                책임감이나 조직의 압박 속에 자신을 단련하며 살아가고 있음을
+                보여줍니다.
+              </span>
+            </div>
+
+            <div style={{ marginBottom: "7px" }}>
+              <strong style={{ color: "#f59e0b" }}>• 내가 뿜어내는 힘 (설, 泄):</strong>{" "}
+              <span style={{ opacity: 0.9 }}>
+                식상(내가 생하는 색)의 구슬이 발달했다면, 당신은 에너지를
+                외부로 발산하고 표현하며 삶의 통로를 넓혀가는 흐름에 있습니다.
+              </span>
+            </div>
+
+            <div>
+              <strong style={{ color: "#60a5fa" }}>• 내가 취하는 힘 (재, 宰):</strong>{" "}
+              <span style={{ opacity: 0.9 }}>
+                재성(내가 극하는 색)의 구슬이 적절히 배치되었다면, 삶의 목표를
+                쟁취하고 결과를 만들어내는 에너지가 활성화된 상태입니다.
+              </span>
+            </div>
           </div>
-          <div style={{ marginBottom: "12px" }}>
-            <strong style={{ color: "#a78bfa" }}>바깥 궤도:</strong> 일·시·년지
-            <span style={{ opacity: 0.7, fontSize: "12px" }}>
-              {" "}
-              (보조 영향력)
-            </span>
-          </div>
+        </div>
+
+        {/* 궤도 판독 가이드 */}
+        <div
+          style={{
+            padding: "16px",
+            background:
+              "linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(147, 51, 234, 0.15))",
+            borderRadius: "10px",
+            border: "1px solid rgba(147, 197, 253, 0.3)",
+          }}
+        >
+          <h3
+            style={{
+              margin: "0 0 12px 0",
+              fontSize: "14px",
+              color: "#93c5fd",
+              fontWeight: "bold",
+              display: "flex",
+              alignItems: "center",
+              gap: "6px",
+            }}
+          >
+            <span>💡</span> 궤도 판독 가이드 (Quick Tip)
+          </h3>
           <div
             style={{
               fontSize: "12px",
-              lineHeight: "1.6",
-              marginBottom: "10px",
-              paddingTop: "10px",
-              borderTop: "1px solid rgba(255,255,255,0.2)",
+              lineHeight: "1.9",
+              display: "grid",
+              gap: "6px",
             }}
           >
-            각 궤도 요소의 크기와 색상은 나를 생(生)하고 극(剋)하는 에너지의
-            세기를 나타냅니다. 나를 둘러싼 오행의 균형과 흐름을 시각적으로
-            체험해 보세요.
-          </div>
-          <div
-            style={{
-              fontSize: "11px",
-              opacity: 0.8,
-              padding: "8px",
-              background: "rgba(255,255,255,0.05)",
-              borderRadius: "6px",
-              lineHeight: "1.5",
-            }}
-          >
-            <strong>💡 Tip:</strong> 색상은 오행(목·화·토·금·수)을 의미하며,
-            나(일간)와 같은 색은 비겁, 생하는 색은 인성, 극하는 색은 관성 등을
-            상징합니다.
+            <div>
+              <strong style={{ color: "#fbbf24" }}>• 비겁</strong>
+              <span style={{ opacity: 0.85 }}> (나와 같은 색)</span>:{" "}
+              <span style={{ opacity: 0.9 }}>나의 주체성과 고집의 크기</span>
+            </div>
+            <div>
+              <strong style={{ color: "#22c55e" }}>• 인성</strong>
+              <span style={{ opacity: 0.85 }}> (나를 생하는 색)</span>:{" "}
+              <span style={{ opacity: 0.9 }}>
+                내가 받는 사랑과 공부, 수용력
+              </span>
+            </div>
+            <div>
+              <strong style={{ color: "#f59e0b" }}>• 식상</strong>
+              <span style={{ opacity: 0.85 }}> (내가 생하는 색)</span>:{" "}
+              <span style={{ opacity: 0.9 }}>나의 재능 발현과 활동력</span>
+            </div>
+            <div>
+              <strong style={{ color: "#60a5fa" }}>• 재성</strong>
+              <span style={{ opacity: 0.85 }}> (내가 극하는 색)</span>:{" "}
+              <span style={{ opacity: 0.9 }}>
+                나의 결과물과 재물에 대한 통제력
+              </span>
+            </div>
+            <div>
+              <strong style={{ color: "#ef4444" }}>• 관성</strong>
+              <span style={{ opacity: 0.85 }}> (나를 극하는 색)</span>:{" "}
+              <span style={{ opacity: 0.9 }}>
+                나의 명예와 조직생활, 인내심
+              </span>
+            </div>
           </div>
         </div>
       </div>

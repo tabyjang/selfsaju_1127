@@ -1,14 +1,16 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { SignedIn, SignedOut, SignInButton, UserButton, useClerk } from "@clerk/clerk-react";
+import { SignedIn, SignedOut, SignInButton, UserButton, useClerk, useUser } from "@clerk/clerk-react";
 import type { SajuInfo, SajuAnalysisResult, ChatMessage } from "../types";
 import type { Chat } from "@google/genai";
 import { AnalysisResult } from "../components/AnalysisResult";
+import { upsertMySaju } from "../utils/sajuStorage";
 
 const ResultPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const clerk = useClerk();
+  const { user, isSignedIn } = useUser();
 
   const [sajuDataForDisplay, setSajuDataForDisplay] = useState<SajuInfo | null>(null);
   const [analysisResult, setAnalysisResult] = useState<SajuAnalysisResult | null>(null);
@@ -17,6 +19,8 @@ const ResultPage: React.FC = () => {
   const [imageError, setImageError] = useState<string | null>(null);
   const [chatSession, setChatSession] = useState<Chat | null>(null);
   const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
+  const [isSaving, setIsSaving] = useState<boolean>(false);
+  const [saveMessage, setSaveMessage] = useState<string>("");
 
   // 페이지 로드 시 사주 데이터 복원
   useEffect(() => {
@@ -42,6 +46,42 @@ const ResultPage: React.FC = () => {
       navigate("/input");
     }
   }, [location, navigate]);
+
+  // 자동 저장 기능 제거 - "내 사주로 저장" 버튼으로 대체
+
+  // "내 사주로 저장" 핸들러
+  const handleSaveMySaju = async () => {
+    if (!isSignedIn || !user || !sajuDataForDisplay) {
+      alert("로그인이 필요합니다.");
+      return;
+    }
+
+    try {
+      setIsSaving(true);
+      setSaveMessage("");
+
+      const result = await upsertMySaju(user.id, sajuDataForDisplay);
+
+      if (result.success) {
+        const name = sajuDataForDisplay.name || "사주 정보";
+        const message = result.isUpdate
+          ? `✅ ${name}님의 사주가 업데이트되었습니다!`
+          : `✅ ${name}님의 사주가 저장되었습니다!`;
+        setSaveMessage(message);
+
+        // 3초 후 메시지 제거
+        setTimeout(() => setSaveMessage(""), 3000);
+      } else {
+        setSaveMessage("❌ 저장 중 오류가 발생했습니다.");
+        console.error("저장 실패:", result.error);
+      }
+    } catch (error) {
+      setSaveMessage("❌ 저장 중 오류가 발생했습니다.");
+      console.error("저장 오류:", error);
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   const handleLoginRequired = () => {
     clerk.openSignIn({
@@ -77,9 +117,23 @@ const ResultPage: React.FC = () => {
           </SignInButton>
         </SignedOut>
         <SignedIn>
-          <UserButton afterSignOutUrl={window.location.href} />
+          <button
+            onClick={handleSaveMySaju}
+            disabled={isSaving}
+            className="px-4 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-lg hover:from-purple-700 hover:to-indigo-700 transition text-sm font-bold shadow-md cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isSaving ? "저장 중..." : "내 사주로 저장"}
+          </button>
+          <UserButton afterSignOutUrl="/input" />
         </SignedIn>
       </div>
+
+      {/* 저장 메시지 표시 */}
+      {saveMessage && (
+        <div className="fixed top-20 right-4 z-50 px-4 py-2 bg-white border-2 border-green-500 text-green-700 rounded-lg shadow-lg text-sm font-bold animate-fade-in">
+          {saveMessage}
+        </div>
+      )}
 
       <main className="max-w-7xl mx-auto relative pt-12">
         <header className="text-center mb-12 relative flex justify-center">

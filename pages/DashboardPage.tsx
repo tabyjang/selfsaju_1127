@@ -56,6 +56,11 @@ const DashboardPage: React.FC = () => {
   const [sajuData, setSajuData] = useState<SajuInfo | null>(null);
   const [userName, setUserName] = useState<string>('사용자');
 
+  // 페이지 로드 시 스크롤을 최상단으로 이동
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   useEffect(() => {
     // localStorage에서 사주 데이터 불러오기
     const savedData = localStorage.getItem('currentSajuData');
@@ -209,7 +214,7 @@ const DashboardPage: React.FC = () => {
                 </SignInButton>
               </SignedOut>
               <SignedIn>
-                <UserButton afterSignOutUrl={window.location.href} />
+                <UserButton afterSignOutUrl="/input" />
               </SignedIn>
             </div>
           </div>

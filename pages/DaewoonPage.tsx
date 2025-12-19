@@ -474,18 +474,17 @@ const DaewoonPage: React.FC = () => {
           </div>
         )}
 
-        {/* 2026년 월별 달력 보기 버튼 */}
+        {/* 대시보드로 가기 버튼 */}
         {showWolwoon && (
           <div className="mt-8 flex justify-center animate-fade-in">
             <button
               onClick={() => {
-                localStorage.setItem('calendarSajuData', JSON.stringify(sajuData));
-                navigate('/calendar', { state: { sajuData } });
+                navigate('/dashboard');
               }}
-              className="flex items-center gap-3 py-4 px-8 bg-gradient-to-r from-teal-400 to-cyan-500 hover:from-teal-500 hover:to-cyan-600 text-white font-bold rounded-full shadow-xl transform hover:scale-105 transition-all duration-300"
+              className="flex items-center gap-3 py-4 px-8 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-bold rounded-full shadow-xl transform hover:scale-105 transition-all duration-300"
             >
-              <span className="text-2xl">🗓️</span>
-              <span className="text-lg">사주 캘린더 보기</span>
+              <span className="text-2xl">🏠</span>
+              <span className="text-lg">대시보드로 가기</span>
               <ChevronDownIcon className="w-5 h-5" />
             </button>
           </div>

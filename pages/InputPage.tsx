@@ -1,14 +1,66 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/clerk-react";
+import { SignedIn, SignedOut, SignInButton, UserButton, useUser } from "@clerk/clerk-react";
 import type { SajuInfo } from "../types";
 import { SajuInputForm } from "../components/SajuInputForm";
 import { OhaengLoading } from "../components/OhaengLoading";
+import { getUserSajuRecords } from "../utils/sajuStorage";
 
 const InputPage: React.FC = () => {
   const navigate = useNavigate();
+  const { user, isSignedIn } = useUser();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [hasCheckedSajuData, setHasCheckedSajuData] = useState<boolean>(false);
+
+  // 로그인 후 사주 데이터 자동 확인 및 대시보드 이동
+  useEffect(() => {
+    const checkAndLoadSajuData = async () => {
+      // 로그인하지 않았거나, 이미 확인했으면 스킵
+      if (!isSignedIn || !user || hasCheckedSajuData) {
+        return;
+      }
+
+      try {
+        console.log("로그인 감지! 사주 데이터 확인 중...");
+        setIsLoading(true);
+
+        // 로그인 전 localStorage 데이터 클리어 (다른 사람의 사주 방지)
+        console.log("로그인 전 localStorage 클리어...");
+        localStorage.removeItem("currentSajuData");
+
+        // Supabase에서 사주 데이터 조회
+        const result = await getUserSajuRecords(user.id);
+
+        if (result.success && result.data && result.data.length > 0) {
+          console.log(`✅ 사주 데이터 ${result.data.length}개 발견!`);
+
+          // 가장 최근 데이터 가져오기 (created_at 기준으로 이미 정렬됨)
+          const latestRecord = result.data[0];
+          const sajuInfo = latestRecord.saju_data as SajuInfo;
+
+          // localStorage에 본인의 사주 데이터 저장
+          localStorage.setItem("currentSajuData", JSON.stringify(sajuInfo));
+
+          console.log("대시보드로 자동 이동...");
+
+          // 대시보드로 이동
+          navigate("/dashboard");
+        } else {
+          console.log("저장된 사주 데이터가 없습니다. 입력창에 유지합니다.");
+        }
+
+        setHasCheckedSajuData(true);
+        setIsLoading(false);
+      } catch (error) {
+        console.error("사주 데이터 확인 중 오류:", error);
+        setHasCheckedSajuData(true);
+        setIsLoading(false);
+      }
+    };
+
+    checkAndLoadSajuData();
+  }, [isSignedIn, user, hasCheckedSajuData, navigate]);
 
   const handleAnalysis = useCallback(async (sajuInfo: SajuInfo) => {
     setIsLoading(true);
@@ -45,7 +97,7 @@ const InputPage: React.FC = () => {
           </SignInButton>
         </SignedOut>
         <SignedIn>
-          <UserButton afterSignOutUrl={window.location.href} />
+          <UserButton afterSignOutUrl="/input" />
         </SignedIn>
       </div>
 

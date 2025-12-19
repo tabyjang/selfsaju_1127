@@ -114,7 +114,7 @@ const LandingPage: React.FC = () => {
           아낌 없는 사주 정보가 기다립니다.
         </p>
         <div className="cta-container fade-in delay-3">
-          <button onClick={() => navigate('/input')} className="glow-button">무료 사주 분석하기</button>
+          <button onClick={() => navigate('/dashboard')} className="glow-button">무료 사주 분석하기</button>
         </div>
       </main>
 

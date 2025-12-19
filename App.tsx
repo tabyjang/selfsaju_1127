@@ -130,8 +130,8 @@ const App: React.FC = () => {
           </SignInButton>
         </SignedOut>
         <SignedIn>
-          {/* 로그아웃 후 현재 페이지를 유지하도록 afterSignOutUrl 추가 */}
-          <UserButton afterSignOutUrl={window.location.href} />
+          {/* 로그아웃 후 입력 페이지로 이동 */}
+          <UserButton afterSignOutUrl="/input" />
         </SignedIn>
       </div>
 

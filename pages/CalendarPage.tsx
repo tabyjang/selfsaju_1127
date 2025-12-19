@@ -123,7 +123,7 @@ const CalendarPage: React.FC = () => {
           </SignInButton>
         </SignedOut>
         <SignedIn>
-          <UserButton afterSignOutUrl={window.location.href} />
+          <UserButton afterSignOutUrl="/input" />
         </SignedIn>
       </div>
 

@@ -2133,21 +2133,6 @@ export const AnalysisResult: React.FC<AnalysisResultProps> = ({
         {/* 일주 분석 섹션 */}
         <IljuAnalysisDisplay iljuGanji={iljuGanji} sajuInfo={sajuData} />
 
-        {/* 대운·세운·월운 페이지로 이동 */}
-        <div className="mt-8 flex justify-center animate-fade-in">
-          <button
-            onClick={() => {
-              localStorage.setItem('currentSajuData', JSON.stringify(sajuData));
-              navigate('/daewoon');
-            }}
-            className="btn-primary flex items-center gap-3 py-4 px-8 rounded-full shadow-xl transform hover:scale-105 transition-all duration-300"
-          >
-            <span className="text-4xl">🌊</span>
-            <span className="text-lg font-bold">대운·세운·월운 보기</span>
-            <ChevronDownIcon className="w-5 h-5" />
-          </button>
-        </div>
-
         {/*  상세 분석 결과 토글 버튼 */}
         {result && !showAiDetails && (
           <div className="mt-12 flex justify-center animate-fade-in">
