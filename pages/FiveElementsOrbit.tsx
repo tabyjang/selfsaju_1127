@@ -32,20 +32,38 @@ const COLOR_PALETTE = [
 
 // 오행 → 색깔 매핑
 const OHAENG_COLOR_MAP: Record<Ohaeng, string> = {
-  wood: "#22c55e",   // 목 - 녹색
-  fire: "#ef4444",   // 화 - 빨강
-  earth: "#f59e0b",  // 토 - 주황
-  metal: "#e5e7eb",  // 금 - 흰색
-  water: "#1e40af",  // 수 - 남색
+  wood: "#22c55e", // 목 - 녹색
+  fire: "#ef4444", // 화 - 빨강
+  earth: "#f59e0b", // 토 - 주황
+  metal: "#e5e7eb", // 금 - 흰색
+  water: "#1e40af", // 수 - 남색
 };
 
 // 5행 에너지 기본 정의
 const FIVE_ELEMENTS_BASE: ElementConfig[] = [
   { id: "wood", name: "월주", color: "#22c55e", baseRadius: 1, baseSpeed: 0.5 },
   { id: "fire", name: "대운", color: "#ef4444", baseRadius: 1, baseSpeed: 0.7 },
-  { id: "earth", name: "일주", color: "#f59e0b", baseRadius: 1, baseSpeed: 0.4 },
-  { id: "metal", name: "시주", color: "#e5e7eb", baseRadius: 1, baseSpeed: 0.6 },
-  { id: "water", name: "년주", color: "#1e40af", baseRadius: 1, baseSpeed: 0.8 },
+  {
+    id: "earth",
+    name: "일주",
+    color: "#f59e0b",
+    baseRadius: 1,
+    baseSpeed: 0.4,
+  },
+  {
+    id: "metal",
+    name: "시주",
+    color: "#e5e7eb",
+    baseRadius: 1,
+    baseSpeed: 0.6,
+  },
+  {
+    id: "water",
+    name: "년주",
+    color: "#1e40af",
+    baseRadius: 1,
+    baseSpeed: 0.7,
+  },
 ];
 
 // 궤도를 도는 행성 컴포넌트
@@ -98,8 +116,7 @@ function OrbitingPlanet({
 
   // 어두운 색상인지 확인 (검은색 계열 - #0으로 시작하는 경우만)
   const isDarkColor =
-    planetColor === "#0a0a0a" ||
-    planetColor.toLowerCase().startsWith("#0");
+    planetColor === "#0a0a0a" || planetColor.toLowerCase().startsWith("#0");
 
   return (
     <Trail
@@ -204,7 +221,7 @@ function OrbitBelt({
   useFrame(({ clock }) => {
     if (particlesRef.current) {
       // 벨트가 천천히 회전
-      particlesRef.current.rotation.y = clock.getElapsedTime() * 0.03;
+      particlesRef.current.rotation.y = clock.getElapsedTime() * 0.01;
 
       // 태양 위치에 따라 벨트 이동
       particlesRef.current.position.copy(sunPosition);
@@ -470,9 +487,7 @@ function ControlPanel({
 
   onReset: () => void;
 }) {
-  const [isOpen, setIsOpen] = useState(true);
-
-
+  const [isOpen, setIsOpen] = useState(false);
 
   return (
     <div
@@ -605,9 +620,9 @@ function ControlPanel({
               </div>
               <input
                 type="range"
-                min="2"
-                max="8"
-                step="0.5"
+                min="1"
+                max="5"
+                step="0.1"
                 value={sunSize}
                 onChange={(e) => onSunSizeChange(parseFloat(e.target.value))}
                 style={{
@@ -620,7 +635,6 @@ function ControlPanel({
           </div>
 
           {/* 행성 순서 조절 */}
-
 
           {/* 5행 크기 및 색깔 조절 */}
           <div style={{ marginBottom: "20px" }}>
@@ -691,7 +705,7 @@ function ControlPanel({
                     type="range"
                     min="0"
                     max="5"
-                    step="0.5"
+                    step="0.1"
                     value={elementSizes[element.name] || 1}
                     onChange={(e) =>
                       onElementSizeChange(
@@ -759,275 +773,6 @@ function ControlPanel({
                 </div>
               );
             })}
-          </div>
-
-          {/* 궤도 속도 조절 */}
-          <div style={{ marginBottom: "20px" }}>
-            <h3
-              style={{
-                margin: "0 0 10px 0",
-                fontSize: "16px",
-                borderBottom: "1px solid rgba(255,255,255,0.3)",
-                paddingBottom: "5px",
-              }}
-            >
-              🚀 행성 궤도 속도
-            </h3>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                marginBottom: "5px",
-              }}
-            >
-              <span style={{ fontSize: "14px" }}>속도 배율</span>
-              <span
-                style={{
-                  fontSize: "14px",
-                  fontWeight: "bold",
-                  minWidth: "30px",
-                  textAlign: "right",
-                }}
-              >
-                {speedMultiplier.toFixed(1)}x
-              </span>
-            </div>
-            <input
-              type="range"
-              min="0"
-              max="3"
-              step="0.1"
-              value={speedMultiplier}
-              onChange={(e) => onSpeedChange(parseFloat(e.target.value))}
-              style={{
-                width: "100%",
-                cursor: "pointer",
-                accentColor: "#60a5fa",
-              }}
-            />
-          </div>
-
-
-
-          {/* 궤도 벨트 설정 */}
-          <div style={{ marginBottom: "20px" }}>
-            <h3
-              style={{
-                margin: "0 0 10px 0",
-                fontSize: "16px",
-                borderBottom: "1px solid rgba(255,255,255,0.3)",
-                paddingBottom: "5px",
-              }}
-            >
-              💫 궤도 벨트 설정
-            </h3>
-
-            {/* 벨트 농도 */}
-            <div style={{ marginBottom: "15px" }}>
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  marginBottom: "5px",
-                }}
-              >
-                <span style={{ fontSize: "14px" }}>벨트 농도 (파티클 수)</span>
-                <span
-                  style={{
-                    fontSize: "14px",
-                    fontWeight: "bold",
-                    minWidth: "30px",
-                    textAlign: "right",
-                  }}
-                >
-                  {beltDensity.toFixed(2)}
-                </span>
-              </div>
-              <input
-                type="range"
-                min="0"
-                max="1"
-                step="0.01"
-                value={beltDensity}
-                onChange={(e) =>
-                  onBeltDensityChange(parseFloat(e.target.value))
-                }
-                style={{
-                  width: "100%",
-                  cursor: "pointer",
-                  accentColor: "#8b5cf6",
-                }}
-              />
-              <div style={{ fontSize: "11px", opacity: 0.6, marginTop: "3px" }}>
-                {beltDensity === 0
-                  ? "벨트 숨김"
-                  : beltDensity < 0.3
-                    ? "흐리게"
-                    : beltDensity < 0.7
-                      ? "보통"
-                      : "엄청 짙게"}
-              </div>
-            </div>
-
-            {/* 벨트 투명도 */}
-            <div>
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  marginBottom: "5px",
-                }}
-              >
-                <span style={{ fontSize: "14px" }}>벨트 투명도 (밝기)</span>
-                <span
-                  style={{
-                    fontSize: "14px",
-                    fontWeight: "bold",
-                    minWidth: "30px",
-                    textAlign: "right",
-                  }}
-                >
-                  {beltOpacity.toFixed(2)}
-                </span>
-              </div>
-              <input
-                type="range"
-                min="0"
-                max="1"
-                step="0.01"
-                value={beltOpacity}
-                onChange={(e) =>
-                  onBeltOpacityChange(parseFloat(e.target.value))
-                }
-                style={{
-                  width: "100%",
-                  cursor: "pointer",
-                  accentColor: "#8b5cf6",
-                }}
-              />
-              <div style={{ fontSize: "11px", opacity: 0.6, marginTop: "3px" }}>
-                {beltOpacity === 0
-                  ? "투명"
-                  : beltOpacity < 0.3
-                    ? "희미함"
-                    : beltOpacity < 0.7
-                      ? "보통"
-                      : "선명함"}
-              </div>
-            </div>
-          </div>
-
-          {/* 행성 꼬리 설정 */}
-          <div style={{ marginBottom: "20px" }}>
-            <h3
-              style={{
-                margin: "0 0 10px 0",
-                fontSize: "16px",
-                borderBottom: "1px solid rgba(255,255,255,0.3)",
-                paddingBottom: "5px",
-              }}
-            >
-              ✨ 행성 꼬리 설정
-            </h3>
-
-            {/* 꼬리 두께 */}
-            <div style={{ marginBottom: "15px" }}>
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  marginBottom: "5px",
-                }}
-              >
-                <span style={{ fontSize: "14px" }}>꼬리 두께</span>
-                <span
-                  style={{
-                    fontSize: "14px",
-                    fontWeight: "bold",
-                    minWidth: "30px",
-                    textAlign: "right",
-                  }}
-                >
-                  {trailWidth}
-                </span>
-              </div>
-              <input
-                type="range"
-                min="0"
-                max="100"
-                step="5"
-                value={trailWidth}
-                onChange={(e) =>
-                  onTrailWidthChange(parseFloat(e.target.value))
-                }
-                style={{
-                  width: "100%",
-                  cursor: "pointer",
-                  accentColor: "#f59e0b",
-                }}
-              />
-              <div style={{ fontSize: "11px", opacity: 0.6, marginTop: "3px" }}>
-                {trailWidth === 0
-                  ? "꼬리 숨김"
-                  : trailWidth < 20
-                    ? "매우 얇음"
-                    : trailWidth < 40
-                      ? "보통"
-                      : "두꺼움"}
-              </div>
-            </div>
-
-            {/* 꼬리 길이 */}
-            <div>
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  marginBottom: "5px",
-                }}
-              >
-                <span style={{ fontSize: "14px" }}>꼬리 길이</span>
-                <span
-                  style={{
-                    fontSize: "14px",
-                    fontWeight: "bold",
-                    minWidth: "30px",
-                    textAlign: "right",
-                  }}
-                >
-                  {trailLength}
-                </span>
-              </div>
-              <input
-                type="range"
-                min="0"
-                max="200"
-                step="10"
-                value={trailLength}
-                onChange={(e) =>
-                  onTrailLengthChange(parseFloat(e.target.value))
-                }
-                style={{
-                  width: "100%",
-                  cursor: "pointer",
-                  accentColor: "#f59e0b",
-                }}
-              />
-              <div style={{ fontSize: "11px", opacity: 0.6, marginTop: "3px" }}>
-                {trailLength === 0
-                  ? "꼬리 없음"
-                  : trailLength < 50
-                    ? "짧음"
-                    : trailLength < 100
-                      ? "보통"
-                      : "길음"}
-              </div>
-            </div>
           </div>
 
           {/* 설명 */}
@@ -1103,11 +848,11 @@ const STORAGE_KEY = "fiveElementsOrbitSettings_v6";
 const DEFAULT_SETTINGS = {
   elementOrder: [...FIVE_ELEMENTS_BASE],
   elementSizes: {
-    월주: 2.5,
-    대운: 2,
-    일주: 1.5,
+    월주: 2.3,
+    대운: 2.1,
+    일주: 1.9,
     시주: 1.5,
-    년주: 1.0,
+    년주: 1.2,
   },
   elementColors: {
     월주: "#22c55e",
@@ -1123,7 +868,7 @@ const DEFAULT_SETTINGS = {
   beltDensity: 0.5,
   beltOpacity: 1.0,
   trailWidth: 20,
-  trailLength: 200,
+  trailLength: 100,
 };
 
 // 사주 정보에서 색깔 추출
@@ -1137,11 +882,13 @@ const getColorsFromSaju = (sajuInfo: SajuInfo | null): ElementColors | null => {
     const currentDaewoon = daewoonPillars[daewoonNumber];
 
     return {
-      년주: OHAENG_COLOR_MAP[pillars.year.jiJi.ohaeng],      // 년지
-      월주: OHAENG_COLOR_MAP[pillars.month.jiJi.ohaeng],     // 월지
-      일주: OHAENG_COLOR_MAP[pillars.day.jiJi.ohaeng],       // 일지
-      시주: OHAENG_COLOR_MAP[pillars.hour.jiJi.ohaeng],      // 시지
-      대운: currentDaewoon ? OHAENG_COLOR_MAP[currentDaewoon.jiJi.ohaeng] : "#ef4444", // 대운 지지
+      년주: OHAENG_COLOR_MAP[pillars.year.jiJi.ohaeng], // 년지
+      월주: OHAENG_COLOR_MAP[pillars.month.jiJi.ohaeng], // 월지
+      일주: OHAENG_COLOR_MAP[pillars.day.jiJi.ohaeng], // 일지
+      시주: OHAENG_COLOR_MAP[pillars.hour.jiJi.ohaeng], // 시지
+      대운: currentDaewoon
+        ? OHAENG_COLOR_MAP[currentDaewoon.jiJi.ohaeng]
+        : "#ef4444", // 대운 지지
     };
   } catch (error) {
     console.error("사주 색깔 추출 실패:", error);
@@ -1189,7 +936,7 @@ export default function FiveElementsOrbit() {
   // 사주 데이터 불러오기
   const loadSajuData = (): SajuInfo | null => {
     try {
-      const saved = localStorage.getItem('currentSajuData');
+      const saved = localStorage.getItem("currentSajuData");
       if (saved) {
         return JSON.parse(saved);
       }
@@ -1344,28 +1091,69 @@ export default function FiveElementsOrbit() {
       >
         <h1
           style={{
-            margin: "0 0 10px 0",
-            fontSize: "24px",
+            margin: "0 0 12px 0",
+            fontSize: "22px",
             background: "linear-gradient(45deg, #60a5fa, #fbbf24)",
             WebkitBackgroundClip: "text",
             WebkitTextFillColor: "transparent",
             fontWeight: "bold",
           }}
         >
-          🌟 5행 에너지 궤도
+          🌟 5행 궤도로 보는 생극제화
         </h1>
-        <p
+        <div
           style={{
             margin: "0",
-            fontSize: "14px",
-            opacity: 0.9,
-            lineHeight: "1.6",
+            fontSize: "13px",
+            opacity: 0.95,
+            lineHeight: "1.8",
           }}
         >
-          당신을 중심으로 우주가 돌아갑니다.
-          <br />
-          5행의 에너지를 시각화하여 체험하세요.
-        </p>
+          <div style={{ marginBottom: "10px" }}>
+            <strong style={{ color: "#fbbf24" }}>중심:</strong> 나(일간)
+          </div>
+          <div style={{ marginBottom: "8px" }}>
+            <strong style={{ color: "#60a5fa" }}>안쪽 궤도:</strong> 월지·대운
+            <span style={{ opacity: 0.7, fontSize: "12px" }}>
+              {" "}
+              (핵심 영향력)
+            </span>
+          </div>
+          <div style={{ marginBottom: "12px" }}>
+            <strong style={{ color: "#a78bfa" }}>바깥 궤도:</strong> 일·시·년지
+            <span style={{ opacity: 0.7, fontSize: "12px" }}>
+              {" "}
+              (보조 영향력)
+            </span>
+          </div>
+          <div
+            style={{
+              fontSize: "12px",
+              lineHeight: "1.6",
+              marginBottom: "10px",
+              paddingTop: "10px",
+              borderTop: "1px solid rgba(255,255,255,0.2)",
+            }}
+          >
+            각 궤도 요소의 크기와 색상은 나를 생(生)하고 극(剋)하는 에너지의
+            세기를 나타냅니다. 나를 둘러싼 오행의 균형과 흐름을 시각적으로
+            체험해 보세요.
+          </div>
+          <div
+            style={{
+              fontSize: "11px",
+              opacity: 0.8,
+              padding: "8px",
+              background: "rgba(255,255,255,0.05)",
+              borderRadius: "6px",
+              lineHeight: "1.5",
+            }}
+          >
+            <strong>💡 Tip:</strong> 색상은 오행(목·화·토·금·수)을 의미하며,
+            나(일간)와 같은 색은 비겁, 생하는 색은 인성, 극하는 색은 관성 등을
+            상징합니다.
+          </div>
+        </div>
       </div>
 
       {/* 대시보드로 이동 버튼 */}
@@ -1378,7 +1166,7 @@ export default function FiveElementsOrbit() {
         }}
       >
         <button
-          onClick={() => window.location.href = '/dashboard'}
+          onClick={() => (window.location.href = "/dashboard")}
           style={{
             padding: "12px 20px",
             background: "rgba(59, 130, 246, 0.9)",
@@ -1409,10 +1197,9 @@ export default function FiveElementsOrbit() {
         </button>
       </div>
 
-      {/* 컨트롤 패널 */}
-      <ControlPanel
+      {/* 컨트롤 패널 - 숨김 처리 */}
+      {/* <ControlPanel
         elementOrder={elementOrder}
-
         elementSizes={elementSizes}
         onElementSizeChange={handleElementSizeChange}
         elementColors={elementColors}
@@ -1431,9 +1218,8 @@ export default function FiveElementsOrbit() {
         onTrailWidthChange={setTrailWidth}
         trailLength={trailLength}
         onTrailLengthChange={setTrailLength}
-
         onReset={handleReset}
-      />
+      /> */}
 
       <Canvas
         camera={{ position: [0, 20, 35], fov: 60 }}
