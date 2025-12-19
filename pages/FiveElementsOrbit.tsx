@@ -2,6 +2,7 @@ import React, { useRef, useState, useEffect } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, Sphere, Trail, Stars } from "@react-three/drei";
 import * as THREE from "three";
+import type { SajuInfo, Ohaeng } from "../types";
 
 // 5행 에너지 타입 정의
 interface ElementConfig {
@@ -29,6 +30,15 @@ const COLOR_PALETTE = [
   { name: "수 (남색)", color: "#1e40af" },
 ];
 
+// 오행 → 색깔 매핑
+const OHAENG_COLOR_MAP: Record<Ohaeng, string> = {
+  wood: "#22c55e",   // 목 - 녹색
+  fire: "#ef4444",   // 화 - 빨강
+  earth: "#f59e0b",  // 토 - 주황
+  metal: "#e5e7eb",  // 금 - 흰색
+  water: "#1e40af",  // 수 - 남색
+};
+
 // 5행 에너지 기본 정의
 const FIVE_ELEMENTS_BASE: ElementConfig[] = [
   { id: "wood", name: "월주", color: "#22c55e", baseRadius: 1, baseSpeed: 0.5 },
@@ -47,6 +57,8 @@ function OrbitingPlanet({
   speedMultiplier,
   sunPosition,
   planetColor,
+  trailWidth,
+  trailLength,
 }: {
   element: ElementConfig;
   index: number;
@@ -55,6 +67,8 @@ function OrbitingPlanet({
   speedMultiplier: number;
   sunPosition: THREE.Vector3;
   planetColor: string;
+  trailWidth: number;
+  trailLength: number;
 }) {
   const groupRef = useRef<THREE.Group>(null);
   const [hovered, setHovered] = useState(false);
@@ -89,8 +103,8 @@ function OrbitingPlanet({
 
   return (
     <Trail
-      width={hovered ? 60 : 24}
-      length={20}
+      width={hovered ? trailWidth * 2.5 : trailWidth}
+      length={trailLength}
       color={planetColor}
       attenuation={(t) => t * t}
     >
@@ -322,6 +336,8 @@ function Scene({
   beltDensity,
   beltOpacity,
   galaxyOrbitSpeed,
+  trailWidth,
+  trailLength,
 }: {
   elementOrder: ElementConfig[];
   elementSizes: ElementSizes;
@@ -332,6 +348,8 @@ function Scene({
   beltDensity: number;
   beltOpacity: number;
   galaxyOrbitSpeed: number;
+  trailWidth: number;
+  trailLength: number;
 }) {
   const sunPosition = new THREE.Vector3(0, 0, 0); // 고정 위치
   const groupRef = useRef<THREE.Group>(null);
@@ -385,6 +403,8 @@ function Scene({
                 speedMultiplier={speedMultiplier}
                 sunPosition={sunPosition}
                 planetColor={planetColor}
+                trailWidth={trailWidth}
+                trailLength={trailLength}
               />
             </React.Fragment>
           );
@@ -420,6 +440,10 @@ function ControlPanel({
   onBeltDensityChange,
   beltOpacity,
   onBeltOpacityChange,
+  trailWidth,
+  onTrailWidthChange,
+  trailLength,
+  onTrailLengthChange,
 
   onReset,
 }: {
@@ -439,6 +463,10 @@ function ControlPanel({
   onBeltDensityChange: (value: number) => void;
   beltOpacity: number;
   onBeltOpacityChange: (value: number) => void;
+  trailWidth: number;
+  onTrailWidthChange: (value: number) => void;
+  trailLength: number;
+  onTrailLengthChange: (value: number) => void;
 
   onReset: () => void;
 }) {
@@ -892,6 +920,116 @@ function ControlPanel({
             </div>
           </div>
 
+          {/* 행성 꼬리 설정 */}
+          <div style={{ marginBottom: "20px" }}>
+            <h3
+              style={{
+                margin: "0 0 10px 0",
+                fontSize: "16px",
+                borderBottom: "1px solid rgba(255,255,255,0.3)",
+                paddingBottom: "5px",
+              }}
+            >
+              ✨ 행성 꼬리 설정
+            </h3>
+
+            {/* 꼬리 두께 */}
+            <div style={{ marginBottom: "15px" }}>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  marginBottom: "5px",
+                }}
+              >
+                <span style={{ fontSize: "14px" }}>꼬리 두께</span>
+                <span
+                  style={{
+                    fontSize: "14px",
+                    fontWeight: "bold",
+                    minWidth: "30px",
+                    textAlign: "right",
+                  }}
+                >
+                  {trailWidth}
+                </span>
+              </div>
+              <input
+                type="range"
+                min="0"
+                max="100"
+                step="5"
+                value={trailWidth}
+                onChange={(e) =>
+                  onTrailWidthChange(parseFloat(e.target.value))
+                }
+                style={{
+                  width: "100%",
+                  cursor: "pointer",
+                  accentColor: "#f59e0b",
+                }}
+              />
+              <div style={{ fontSize: "11px", opacity: 0.6, marginTop: "3px" }}>
+                {trailWidth === 0
+                  ? "꼬리 숨김"
+                  : trailWidth < 20
+                    ? "매우 얇음"
+                    : trailWidth < 40
+                      ? "보통"
+                      : "두꺼움"}
+              </div>
+            </div>
+
+            {/* 꼬리 길이 */}
+            <div>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  marginBottom: "5px",
+                }}
+              >
+                <span style={{ fontSize: "14px" }}>꼬리 길이</span>
+                <span
+                  style={{
+                    fontSize: "14px",
+                    fontWeight: "bold",
+                    minWidth: "30px",
+                    textAlign: "right",
+                  }}
+                >
+                  {trailLength}
+                </span>
+              </div>
+              <input
+                type="range"
+                min="0"
+                max="200"
+                step="10"
+                value={trailLength}
+                onChange={(e) =>
+                  onTrailLengthChange(parseFloat(e.target.value))
+                }
+                style={{
+                  width: "100%",
+                  cursor: "pointer",
+                  accentColor: "#f59e0b",
+                }}
+              />
+              <div style={{ fontSize: "11px", opacity: 0.6, marginTop: "3px" }}>
+                {trailLength === 0
+                  ? "꼬리 없음"
+                  : trailLength < 50
+                    ? "짧음"
+                    : trailLength < 100
+                      ? "보통"
+                      : "길음"}
+              </div>
+            </div>
+          </div>
+
           {/* 설명 */}
           <div
             style={{
@@ -959,17 +1097,17 @@ function ControlPanel({
 }
 
 // localStorage 키
-const STORAGE_KEY = "fiveElementsOrbitSettings_v4";
+const STORAGE_KEY = "fiveElementsOrbitSettings_v6";
 
 // 기본 설정값
 const DEFAULT_SETTINGS = {
   elementOrder: [...FIVE_ELEMENTS_BASE],
   elementSizes: {
-    월주: 3,
+    월주: 2.5,
     대운: 2,
-    일주: 1,
-    시주: 2,
-    년주: 1,
+    일주: 1.5,
+    시주: 1.5,
+    년주: 1.0,
   },
   elementColors: {
     월주: "#22c55e",
@@ -978,12 +1116,49 @@ const DEFAULT_SETTINGS = {
     시주: "#e5e7eb",
     년주: "#1e40af",
   },
-  speedMultiplier: 1.0,
+  speedMultiplier: 0.5,
   galaxyOrbitSpeed: 0.0,
   sunColor: "#fbbf24",
-  sunSize: 4,
+  sunSize: 3,
   beltDensity: 0.5,
-  beltOpacity: 0.8,
+  beltOpacity: 1.0,
+  trailWidth: 20,
+  trailLength: 200,
+};
+
+// 사주 정보에서 색깔 추출
+const getColorsFromSaju = (sajuInfo: SajuInfo | null): ElementColors | null => {
+  if (!sajuInfo) return null;
+
+  try {
+    const { pillars, daewoonPillars, daewoonNumber } = sajuInfo;
+
+    // 현재 대운 가져오기
+    const currentDaewoon = daewoonPillars[daewoonNumber];
+
+    return {
+      년주: OHAENG_COLOR_MAP[pillars.year.jiJi.ohaeng],      // 년지
+      월주: OHAENG_COLOR_MAP[pillars.month.jiJi.ohaeng],     // 월지
+      일주: OHAENG_COLOR_MAP[pillars.day.jiJi.ohaeng],       // 일지
+      시주: OHAENG_COLOR_MAP[pillars.hour.jiJi.ohaeng],      // 시지
+      대운: currentDaewoon ? OHAENG_COLOR_MAP[currentDaewoon.jiJi.ohaeng] : "#ef4444", // 대운 지지
+    };
+  } catch (error) {
+    console.error("사주 색깔 추출 실패:", error);
+    return null;
+  }
+};
+
+// 일간(태양) 색깔 추출
+const getSunColorFromSaju = (sajuInfo: SajuInfo | null): string | null => {
+  if (!sajuInfo) return null;
+
+  try {
+    return OHAENG_COLOR_MAP[sajuInfo.pillars.day.cheonGan.ohaeng]; // 일간
+  } catch (error) {
+    console.error("일간 색깔 추출 실패:", error);
+    return null;
+  }
 };
 
 // 메인 페이지 컴포넌트
@@ -1011,7 +1186,32 @@ export default function FiveElementsOrbit() {
     return DEFAULT_SETTINGS;
   };
 
+  // 사주 데이터 불러오기
+  const loadSajuData = (): SajuInfo | null => {
+    try {
+      const saved = localStorage.getItem('currentSajuData');
+      if (saved) {
+        return JSON.parse(saved);
+      }
+    } catch (error) {
+      console.error("사주 데이터 불러오기 실패:", error);
+    }
+    return null;
+  };
+
+  const sajuData = loadSajuData();
+  const sajuColors = getColorsFromSaju(sajuData);
+  const sajuSunColor = getSunColorFromSaju(sajuData);
+
   const initialSettings = loadSettings();
+
+  // 사주 데이터가 있으면 색깔을 사주 기반으로 설정
+  if (sajuColors) {
+    initialSettings.elementColors = sajuColors;
+  }
+  if (sajuSunColor) {
+    initialSettings.sunColor = sajuSunColor;
+  }
 
   // 행성 순서 상태
   const [elementOrder, setElementOrder] = useState<ElementConfig[]>(
@@ -1050,6 +1250,12 @@ export default function FiveElementsOrbit() {
     initialSettings.galaxyOrbitSpeed ?? 0.0
   );
 
+  // 행성 꼬리 두께 상태
+  const [trailWidth, setTrailWidth] = useState(initialSettings.trailWidth);
+
+  // 행성 꼬리 길이 상태
+  const [trailLength, setTrailLength] = useState(initialSettings.trailLength);
+
   // 설정값이 변경될 때마다 localStorage에 저장
   useEffect(() => {
     const settings = {
@@ -1062,6 +1268,8 @@ export default function FiveElementsOrbit() {
       sunSize,
       beltDensity,
       beltOpacity,
+      trailWidth,
+      trailLength,
     };
 
     try {
@@ -1079,6 +1287,8 @@ export default function FiveElementsOrbit() {
     sunSize,
     beltDensity,
     beltOpacity,
+    trailWidth,
+    trailLength,
   ]);
 
   const handleElementSizeChange = (element: string, value: number) => {
@@ -1107,6 +1317,8 @@ export default function FiveElementsOrbit() {
       setSunSize(DEFAULT_SETTINGS.sunSize);
       setBeltDensity(DEFAULT_SETTINGS.beltDensity);
       setBeltOpacity(DEFAULT_SETTINGS.beltOpacity);
+      setTrailWidth(DEFAULT_SETTINGS.trailWidth);
+      setTrailLength(DEFAULT_SETTINGS.trailLength);
       localStorage.removeItem(STORAGE_KEY);
     }
   };
@@ -1174,6 +1386,10 @@ export default function FiveElementsOrbit() {
         onBeltDensityChange={setBeltDensity}
         beltOpacity={beltOpacity}
         onBeltOpacityChange={setBeltOpacity}
+        trailWidth={trailWidth}
+        onTrailWidthChange={setTrailWidth}
+        trailLength={trailLength}
+        onTrailLengthChange={setTrailLength}
 
         onReset={handleReset}
       />
@@ -1192,6 +1408,8 @@ export default function FiveElementsOrbit() {
           beltDensity={beltDensity}
           beltOpacity={beltOpacity}
           galaxyOrbitSpeed={galaxyOrbitSpeed}
+          trailWidth={trailWidth}
+          trailLength={trailLength}
         />
       </Canvas>
     </div>
