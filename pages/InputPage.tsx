@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { SignedIn, SignedOut, SignInButton, UserButton, useUser } from "@clerk/clerk-react";
 import type { SajuInfo } from "../types";
 import { SajuInputForm } from "../components/SajuInputForm";
@@ -8,6 +8,7 @@ import { getUserSajuRecords } from "../utils/sajuStorage";
 
 const InputPage: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { user, isSignedIn } = useUser();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -16,6 +17,14 @@ const InputPage: React.FC = () => {
   // 로그인 후 사주 데이터 자동 확인 및 대시보드 이동
   useEffect(() => {
     const checkAndLoadSajuData = async () => {
+      // 강제로 입력을 원하는 경우 (대시보드에서 '다른 사주 입력' 클릭 시)
+      const shouldSkipAutoLoad = location.state?.skipAutoLoad;
+      if (shouldSkipAutoLoad) {
+        console.log("다른 사주 입력 모드: 자동 로드 스킵");
+        setHasCheckedSajuData(true);
+        return;
+      }
+
       // 로그인하지 않았거나, 이미 확인했으면 스킵
       if (!isSignedIn || !user || hasCheckedSajuData) {
         return;
@@ -60,7 +69,7 @@ const InputPage: React.FC = () => {
     };
 
     checkAndLoadSajuData();
-  }, [isSignedIn, user, hasCheckedSajuData, navigate]);
+  }, [isSignedIn, user, hasCheckedSajuData, navigate, location]);
 
   const handleAnalysis = useCallback(async (sajuInfo: SajuInfo) => {
     setIsLoading(true);

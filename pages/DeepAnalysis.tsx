@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/clerk-react';
 import type { SajuInfo, Ohaeng, Pillar } from '../types';
 import { GyeokgukDisplay } from '../components/GyeokgukDisplay';
 import OhaengForceDisplay from '../yongsin/OhaengForceDisplay';
@@ -46,9 +47,8 @@ const CharBox: React.FC<{ char: string }> = ({ char }) => {
 
   return (
     <div
-      className={`inline-flex items-center justify-center w-10 h-10 md:w-12 md:h-12 text-2xl font-bold rounded shadow-md ${
-        color.bg
-      } ${color.text} ${color.border ?? ""} saju-char-outline-small`}
+      className={`inline-flex items-center justify-center w-10 h-10 md:w-12 md:h-12 text-2xl font-bold rounded shadow-md ${color.bg
+        } ${color.text} ${color.border ?? ""} saju-char-outline-small`}
     >
       {char}
     </div>
@@ -93,9 +93,8 @@ const SibsinPositionDisplay: React.FC<{ sajuInfo: SajuInfo }> = ({
           </h4>
         </div>
         <ChevronDownIcon
-          className={`w-6 h-6 text-gray-500 transition-transform duration-300 ${
-            isOpen ? "transform rotate-180" : ""
-          }`}
+          className={`w-6 h-6 text-gray-500 transition-transform duration-300 ${isOpen ? "transform rotate-180" : ""
+            }`}
         />
       </button>
 
@@ -336,7 +335,14 @@ const DeepAnalysis: React.FC = () => {
   const [sajuData, setSajuData] = useState<SajuInfo | null>(null);
 
   useEffect(() => {
-    // localStorage에서 사주 데이터 불러오기
+    // 1. 로그인한 유저의 데이터 (currentSajuData) 확인
+    const currentData = localStorage.getItem('currentSajuData');
+    if (currentData) {
+      setSajuData(JSON.parse(currentData));
+      return;
+    }
+
+    // 2. 레거시/비로그인 흐름 데이터 (deepAnalysisSajuData) 확인
     const savedData = localStorage.getItem('deepAnalysisSajuData');
     if (savedData) {
       setSajuData(JSON.parse(savedData));
@@ -404,21 +410,19 @@ const DeepAnalysis: React.FC = () => {
         </div>
 
         <div className="flex justify-center items-center py-1.5 px-2 h-24 md:h-28">
-          <div className={`saju-char-outline flex items-center justify-center font-bold rounded-lg shadow-lg ${
-            pillar.cheonGan.sibsin.name === "일간"
-              ? "w-20 h-20 md:w-24 md:h-24 text-5xl md:text-6xl animate-heartbeat border-4 border-yellow-400 shadow-[0_0_20px_rgba(250,204,21,0.6)]"
-              : "w-16 h-16 md:w-20 md:h-20 text-4xl md:text-5xl"
-          } ${ganColor.bg} ${ganColor.text} ${pillar.cheonGan.sibsin.name === "일간" ? "" : ganColor.border ?? ""}`}>
+          <div className={`saju-char-outline flex items-center justify-center font-bold rounded-lg shadow-lg ${pillar.cheonGan.sibsin.name === "일간"
+            ? "w-20 h-20 md:w-24 md:h-24 text-5xl md:text-6xl animate-heartbeat border-4 border-yellow-400 shadow-[0_0_20px_rgba(250,204,21,0.6)]"
+            : "w-16 h-16 md:w-20 md:h-20 text-4xl md:text-5xl"
+            } ${ganColor.bg} ${ganColor.text} ${pillar.cheonGan.sibsin.name === "일간" ? "" : ganColor.border ?? ""}`}>
             {pillar.cheonGan.char}
           </div>
         </div>
 
         <div className="flex justify-center items-center py-1.5 px-2 h-24 md:h-28">
-          <div className={`saju-char-outline flex items-center justify-center font-bold rounded-lg shadow-lg ${
-            isMonthPillar
-              ? "w-20 h-20 md:w-24 md:h-24 text-5xl md:text-6xl animate-heartbeat border-4 border-purple-400 shadow-[0_0_20px_rgba(168,85,247,0.6)]"
-              : "w-16 h-16 md:w-20 md:h-20 text-4xl md:text-5xl"
-          } ${jiColor.bg} ${jiColor.text} ${isMonthPillar ? "" : jiColor.border ?? ""}`}>
+          <div className={`saju-char-outline flex items-center justify-center font-bold rounded-lg shadow-lg ${isMonthPillar
+            ? "w-20 h-20 md:w-24 md:h-24 text-5xl md:text-6xl animate-heartbeat border-4 border-purple-400 shadow-[0_0_20px_rgba(168,85,247,0.6)]"
+            : "w-16 h-16 md:w-20 md:h-20 text-4xl md:text-5xl"
+            } ${jiColor.bg} ${jiColor.text} ${isMonthPillar ? "" : jiColor.border ?? ""}`}>
             {pillar.jiJi.char}
           </div>
         </div>
@@ -448,16 +452,54 @@ const DeepAnalysis: React.FC = () => {
   const pillarOrder: (keyof SajuInfo["pillars"])[] = ["hour", "day", "month", "year"];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-indigo-50 to-blue-50 py-8 px-4 page-transition">
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-indigo-50 to-blue-50 pt-24 pb-8 px-4 page-transition">
+      {/* 헤더 */}
+      <div className="fixed top-0 left-0 right-0 bg-white/80 backdrop-blur-md border-b border-gray-200 z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate('/')}>
+              <img
+                src="/logo.png"
+                alt="아사주달 로고"
+                className="h-10 w-auto object-contain"
+              />
+              <h1 className="text-xl font-bold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">
+                아사주달
+              </h1>
+            </div>
+            <div className="flex gap-2 items-center">
+              <button
+                onClick={() => navigate('/input', { state: { skipAutoLoad: true } })}
+                className="hidden md:block px-4 py-2 text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition text-sm font-bold border border-indigo-200"
+              >
+                다른 사주 입력
+              </button>
+              <SignedOut>
+                <SignInButton mode="modal">
+                  <button className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition text-sm font-bold shadow-md cursor-pointer">
+                    로그인
+                  </button>
+                </SignInButton>
+              </SignedOut>
+              <SignedIn>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => navigate('/input', { state: { skipAutoLoad: true } })}
+                    className="md:hidden px-3 py-2 text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition text-xs font-bold border border-indigo-200"
+                  >
+                    새 사주
+                  </button>
+                  <UserButton afterSignOutUrl="/input" />
+                </div>
+              </SignedIn>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div className="max-w-6xl mx-auto">
-        {/* 헤더 */}
+        {/* 페이지 제목 */}
         <div className="text-center mb-8">
-          <button
-            onClick={() => navigate("/result")}
-            className="mb-4 text-purple-600 hover:text-purple-800 font-semibold text-lg"
-          >
-            ← 돌아가기
-          </button>
           <h1 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-indigo-600 mb-2">
             심층 사주 분석
           </h1>

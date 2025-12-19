@@ -205,7 +205,13 @@ const DashboardPage: React.FC = () => {
                 아사주달
               </h1>
             </div>
-            <div className="flex gap-2">
+            <div className="flex gap-2 items-center">
+              <button
+                onClick={() => navigate('/input', { state: { skipAutoLoad: true } })}
+                className="hidden md:block px-4 py-2 text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition text-sm font-bold border border-indigo-200"
+              >
+                다른 사주 입력
+              </button>
               <SignedOut>
                 <SignInButton mode="modal">
                   <button className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition text-sm font-bold shadow-md cursor-pointer">
@@ -214,7 +220,15 @@ const DashboardPage: React.FC = () => {
                 </SignInButton>
               </SignedOut>
               <SignedIn>
-                <UserButton afterSignOutUrl="/input" />
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => navigate('/input', { state: { skipAutoLoad: true } })}
+                    className="md:hidden px-3 py-2 text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition text-xs font-bold border border-indigo-200"
+                  >
+                    새 사주
+                  </button>
+                  <UserButton afterSignOutUrl="/input" />
+                </div>
               </SignedIn>
             </div>
           </div>
@@ -248,12 +262,11 @@ const DashboardPage: React.FC = () => {
                   <span className="text-white/80 text-lg">일간</span>
                   <div className="flex flex-col items-center">
                     <div
-                      className={`inline-flex items-center justify-center w-12 h-12 text-3xl font-bold rounded-md shadow-md ${
-                        (() => {
+                      className={`inline-flex items-center justify-center w-12 h-12 text-3xl font-bold rounded-md shadow-md ${(() => {
                           const info = earthlyBranchGanInfo[todayInfo.ilgan];
                           return info ? `${ohaengColorMap[info.ohaeng].bg} ${ohaengColorMap[info.ohaeng].text} ${ohaengColorMap[info.ohaeng].border}` : 'bg-gray-200 text-black border border-gray-800';
                         })()
-                      }`}
+                        }`}
                       style={{
                         WebkitTextStroke: '0.5px black',
                         textShadow: '0 0 1px rgba(0,0,0,0.5), 1px 1px 2px rgba(0,0,0,0.3)'
