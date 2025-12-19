@@ -1,0 +1,273 @@
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/clerk-react';
+import type { SajuInfo } from '../types';
+
+const DashboardPage: React.FC = () => {
+  const navigate = useNavigate();
+  const [sajuData, setSajuData] = useState<SajuInfo | null>(null);
+  const [userName, setUserName] = useState<string>('사용자');
+
+  useEffect(() => {
+    // localStorage에서 사주 데이터 불러오기
+    const savedData = localStorage.getItem('currentSajuData');
+    if (savedData) {
+      try {
+        const data = JSON.parse(savedData);
+        setSajuData(data);
+        // 이름 추출
+        if (data.name) {
+          setUserName(data.name);
+        }
+      } catch (error) {
+        console.error('사주 데이터 복원 실패:', error);
+      }
+    }
+  }, []);
+
+  // 메뉴 카드 데이터
+  const menuCards = [
+    {
+      title: '사주 분석 결과',
+      description: '나의 사주팔자 전체 분석 결과를 확인하세요',
+      icon: '🎯',
+      path: '/result',
+      gradient: 'from-blue-500 to-cyan-500',
+      bgGradient: 'from-blue-50 to-cyan-50',
+    },
+    {
+      title: '심층 사주 분석',
+      description: '오행 가중치, 신강신약, 용신 기반 정밀 분석',
+      icon: '🔮',
+      path: '/deep-analysis',
+      gradient: 'from-purple-500 to-indigo-500',
+      bgGradient: 'from-purple-50 to-indigo-50',
+    },
+    {
+      title: '대운 분석',
+      description: '10년 주기 대운의 흐름과 변화를 살펴보세요',
+      icon: '📈',
+      path: '/daewoon',
+      gradient: 'from-green-500 to-emerald-500',
+      bgGradient: 'from-green-50 to-emerald-50',
+    },
+    {
+      title: '만세력 캘린더',
+      description: '날짜별 천간지지와 길흉을 확인하세요',
+      icon: '📅',
+      path: '/calendar',
+      gradient: 'from-orange-500 to-red-500',
+      bgGradient: 'from-orange-50 to-red-50',
+    },
+  ];
+
+  // 통계 카드 데이터
+  const statsCards = [
+    {
+      label: '일간',
+      value: sajuData?.pillars.day.cheonGan.char || '-',
+      description: '나의 본질',
+      icon: '⭐',
+      color: 'text-amber-600',
+      bgColor: 'bg-amber-50',
+      borderColor: 'border-amber-200',
+    },
+    {
+      label: '월령',
+      value: sajuData?.pillars.month.jiJi.char || '-',
+      description: '운명의 사령관',
+      icon: '🌙',
+      color: 'text-purple-600',
+      bgColor: 'bg-purple-50',
+      borderColor: 'border-purple-200',
+    },
+    {
+      label: '격국',
+      value: sajuData?.gyeokguk?.name || '-',
+      description: '사주의 유형',
+      icon: '🎭',
+      color: 'text-blue-600',
+      bgColor: 'bg-blue-50',
+      borderColor: 'border-blue-200',
+    },
+    {
+      label: '용신',
+      value: '분석중',
+      description: '필요한 기운',
+      icon: '✨',
+      color: 'text-green-600',
+      bgColor: 'bg-green-50',
+      borderColor: 'border-green-200',
+    },
+  ];
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50 page-transition">
+      {/* 헤더 */}
+      <div className="fixed top-0 left-0 right-0 bg-white/80 backdrop-blur-md border-b border-gray-200 z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate('/')}>
+              <img
+                src="/logo.png"
+                alt="아사주달 로고"
+                className="h-10 w-auto object-contain"
+              />
+              <h1 className="text-xl font-bold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">
+                아사주달
+              </h1>
+            </div>
+            <div className="flex gap-2">
+              <SignedOut>
+                <SignInButton mode="modal">
+                  <button className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition text-sm font-bold shadow-md cursor-pointer">
+                    로그인
+                  </button>
+                </SignInButton>
+              </SignedOut>
+              <SignedIn>
+                <UserButton afterSignOutUrl={window.location.href} />
+              </SignedIn>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* 메인 컨텐츠 */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-16">
+        {/* 환영 메시지 */}
+        <div className="mb-12 text-center animate-fade-in">
+          <h2 className="text-4xl md:text-5xl font-extrabold text-gray-800 mb-4">
+            안녕하세요, <span className="bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">{userName}</span>님! 👋
+          </h2>
+          <p className="text-lg text-gray-600">
+            나의 운명을 탐험하고 인생의 지도를 그려보세요
+          </p>
+        </div>
+
+        {/* 통계 카드 섹션 */}
+        {sajuData && (
+          <div className="mb-12 animate-fade-in" style={{ animationDelay: '0.1s' }}>
+            <h3 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2">
+              <span>📊</span>
+              <span>나의 사주 핵심 정보</span>
+            </h3>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {statsCards.map((stat, index) => (
+                <div
+                  key={index}
+                  className={`${stat.bgColor} ${stat.borderColor} border-2 rounded-2xl p-6 text-center shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1`}
+                >
+                  <div className="text-3xl mb-2">{stat.icon}</div>
+                  <div className="text-sm text-gray-600 font-semibold mb-1">{stat.label}</div>
+                  <div className={`text-3xl font-bold ${stat.color} mb-2`}>
+                    {stat.value}
+                  </div>
+                  <div className="text-xs text-gray-500">{stat.description}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* 메뉴 카드 섹션 */}
+        <div className="animate-fade-in" style={{ animationDelay: '0.2s' }}>
+          <h3 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2">
+            <span>🗂️</span>
+            <span>메뉴</span>
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {menuCards.map((card, index) => (
+              <div
+                key={index}
+                onClick={() => {
+                  if (card.path) {
+                    navigate(card.path);
+                  }
+                }}
+                className={`bg-gradient-to-br ${card.bgGradient} rounded-2xl p-8 border-2 border-gray-200 cursor-pointer transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 group`}
+              >
+                <div className="flex items-start gap-4">
+                  <div className={`text-5xl transform group-hover:scale-110 transition-transform duration-300`}>
+                    {card.icon}
+                  </div>
+                  <div className="flex-1">
+                    <h4 className={`text-2xl font-bold bg-gradient-to-r ${card.gradient} bg-clip-text text-transparent mb-2`}>
+                      {card.title}
+                    </h4>
+                    <p className="text-gray-600 text-base leading-relaxed">
+                      {card.description}
+                    </p>
+                  </div>
+                  <div className="text-gray-400 group-hover:text-gray-600 group-hover:translate-x-1 transition-all duration-300">
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* 사주 데이터가 없을 때 안내 */}
+        {!sajuData && (
+          <div className="mt-12 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-8 border-2 border-blue-200 text-center animate-fade-in">
+            <div className="text-4xl mb-4">🎯</div>
+            <h3 className="text-2xl font-bold text-gray-800 mb-3">
+              아직 사주 분석을 시작하지 않으셨네요!
+            </h3>
+            <p className="text-gray-600 mb-6 text-lg">
+              나의 사주를 분석하고 운명의 비밀을 알아보세요
+            </p>
+            <button
+              onClick={() => navigate('/input')}
+              className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-full font-bold hover:from-blue-700 hover:to-indigo-700 transition shadow-xl text-lg"
+            >
+              <span>✨</span>
+              <span>사주 분석 시작하기</span>
+              <span>✨</span>
+            </button>
+          </div>
+        )}
+
+        {/* 추가 정보 섹션 */}
+        <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6 animate-fade-in" style={{ animationDelay: '0.3s' }}>
+          <div className="bg-white rounded-2xl p-6 border-2 border-gray-200 shadow-lg">
+            <div className="text-3xl mb-3">💡</div>
+            <h4 className="text-lg font-bold text-gray-800 mb-2">사주란?</h4>
+            <p className="text-sm text-gray-600 leading-relaxed">
+              태어난 년, 월, 일, 시의 천간지지로 구성된 8글자로, 인생의 운명과 성격, 적성 등을 분석하는 동양 철학입니다.
+            </p>
+          </div>
+          <div className="bg-white rounded-2xl p-6 border-2 border-gray-200 shadow-lg">
+            <div className="text-3xl mb-3">🎯</div>
+            <h4 className="text-lg font-bold text-gray-800 mb-2">격국이란?</h4>
+            <p className="text-sm text-gray-600 leading-relaxed">
+              사주팔자의 기본 틀을 결정하는 핵심 요소로, 직업운, 재물운, 명예운 등을 판단하는 기준이 됩니다.
+            </p>
+          </div>
+          <div className="bg-white rounded-2xl p-6 border-2 border-gray-200 shadow-lg">
+            <div className="text-3xl mb-3">✨</div>
+            <h4 className="text-lg font-bold text-gray-800 mb-2">용신이란?</h4>
+            <p className="text-sm text-gray-600 leading-relaxed">
+              사주의 균형을 맞추고 부족한 부분을 보완해주는 오행으로, 인생의 방향성을 제시해줍니다.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* 푸터 */}
+      <footer className="text-center py-8 border-t border-gray-200 bg-white/50">
+        <p className="text-sm text-gray-500 mb-2">
+          아사주달의 분석을 통해 건강과 행복이 함께 하시길 기원합니다.
+        </p>
+        <p className="text-xs text-gray-400">
+          &copy; {new Date().getFullYear()} asajudal.com. All rights reserved.
+        </p>
+      </footer>
+    </div>
+  );
+};
+
+export default DashboardPage;

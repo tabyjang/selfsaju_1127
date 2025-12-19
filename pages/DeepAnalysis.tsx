@@ -87,7 +87,7 @@ const SibsinPositionDisplay: React.FC<{ sajuInfo: SajuInfo }> = ({
           <div className="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-br from-purple-400 to-indigo-400 rounded-full shadow-lg">
             <span className="text-2xl">📋</span>
           </div>
-          <h4 className="text-xl md:text-2xl font-bold bg-gradient-to-r from-purple-600 via-violet-600 to-indigo-500 bg-clip-text text-transparent">
+          <h4 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-purple-600 via-violet-600 to-indigo-500 bg-clip-text text-transparent">
             월령(月令) - 운명을 지휘하는{" "}
             <span className="text-red-600 font-bold">사령관</span>
           </h4>
@@ -104,7 +104,7 @@ const SibsinPositionDisplay: React.FC<{ sajuInfo: SajuInfo }> = ({
           <div className="bg-gradient-to-br from-purple-50 via-violet-50 to-indigo-50 rounded-2xl border-2 border-purple-200 shadow-lg">
             <div className="text-center">
               <div className="bg-white/80 p-6 rounded-xl border-2 border-purple-200 shadow-lg">
-                <div className="space-y-4 text-base font-normal leading-relaxed text-gray-700">
+                <div className="space-y-4 text-lg font-normal leading-relaxed text-gray-700">
                   <p>
                     <strong className="text-purple-700 font-bold">
                       월령(月令)
@@ -170,7 +170,7 @@ const SibsinPositionDisplay: React.FC<{ sajuInfo: SajuInfo }> = ({
                         d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"
                       />
                     </svg>
-                    <span className="text-lg font-bold">월령 십신 보기</span>
+                    <span className="text-xl font-bold">월령 십신 보기</span>
                     <span className="text-2xl">🌟</span>
                     <ChevronDownIcon className="w-5 h-5" />
                   </button>
@@ -184,10 +184,10 @@ const SibsinPositionDisplay: React.FC<{ sajuInfo: SajuInfo }> = ({
                   <div className="inline-block px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm font-semibold mb-2">
                     핵심 십신 분석
                   </div>
-                  <h3 className="text-2xl font-extrabold text-gray-800">
+                  <h3 className="text-3xl font-extrabold text-gray-800">
                     월령(月令) - 계절의 기운이 만든 나의 운명
                   </h3>
-                  <p className="text-gray-600 mt-2">
+                  <p className="text-gray-600 mt-2 text-lg">
                     월령은 태어난 달의 계절 기운으로, 나의 직업운과 사회적
                     성공을 결정합니다. 봄의 따뜻함, 여름의 열정, 가을의 차분함,
                     겨울의 침착함이 각각 다른 기운을 만들어냅니다.
@@ -202,7 +202,7 @@ const SibsinPositionDisplay: React.FC<{ sajuInfo: SajuInfo }> = ({
                         <div className="bg-blue-500 text-white px-3 py-1.5 rounded-lg font-bold text-sm">
                           월령 (月令)
                         </div>
-                        <h4 className="text-2xl font-bold text-blue-900">
+                        <h4 className="text-3xl font-bold text-blue-900">
                           {wollyeongSibsin}
                         </h4>
                         <CharBox char={wollyeongChar} />
@@ -212,11 +212,11 @@ const SibsinPositionDisplay: React.FC<{ sajuInfo: SajuInfo }> = ({
                     {/* 십신 기본 정보 - 숨김 */}
                     {sibsinDescriptions[wollyeongSibsin] && (
                       <div className="hidden bg-white/80 p-5 rounded-xl mb-5 border border-blue-200">
-                        <h5 className="font-bold text-blue-800 mb-3 flex items-center gap-2 text-lg">
+                        <h5 className="font-bold text-blue-800 mb-3 flex items-center gap-2 text-xl">
                           <span>📘</span>{" "}
                           {sibsinDescriptions[wollyeongSibsin].title}
                         </h5>
-                        <p className="text-gray-700 leading-relaxed whitespace-pre-line word-keep-all">
+                        <p className="text-gray-700 text-lg leading-relaxed whitespace-pre-line word-keep-all">
                           {getSibsinDescriptionBeforePersonality(
                             sibsinDescriptions[wollyeongSibsin].description
                           )}
@@ -227,12 +227,12 @@ const SibsinPositionDisplay: React.FC<{ sajuInfo: SajuInfo }> = ({
                     {/* 월주 위치별 해석 */}
                     {sibsinPositionDescriptions[wollyeongSibsin] && (
                       <div className="bg-gradient-to-r from-blue-100/50 to-white p-5 rounded-xl border border-blue-300 mb-5">
-                        <h5 className="font-bold text-blue-900 mb-3 flex items-center gap-2 text-lg">
+                        <h5 className="font-bold text-blue-900 mb-3 flex items-center gap-2 text-xl">
                           <span>🎯</span> 월주에 위치한 의미
                         </h5>
                         <div className="space-y-3">
                           <div>
-                            <p className="font-bold text-blue-800 text-base mb-2">
+                            <p className="font-bold text-blue-800 text-lg mb-2">
                               {
                                 sibsinPositionDescriptions[wollyeongSibsin][
                                   "월주"
@@ -252,7 +252,7 @@ const SibsinPositionDisplay: React.FC<{ sajuInfo: SajuInfo }> = ({
                               ))}
                             </div>
                           </div>
-                          <div className="text-base font-normal leading-relaxed text-gray-700 whitespace-pre-line word-keep-all bg-white/70 p-4 rounded-lg">
+                          <div className="text-lg font-normal leading-relaxed text-gray-700 whitespace-pre-line word-keep-all bg-white/70 p-4 rounded-lg">
                             {
                               sibsinPositionDescriptions[wollyeongSibsin][
                                 "월주"
@@ -270,13 +270,13 @@ const SibsinPositionDisplay: React.FC<{ sajuInfo: SajuInfo }> = ({
                           <div className="bg-amber-500 text-white px-3 py-1.5 rounded-lg font-bold text-sm">
                             십이운성 (十二運星)
                           </div>
-                          <h4 className="text-xl font-bold text-amber-900">
+                          <h4 className="text-2xl font-bold text-amber-900">
                             {wollyeongUnseong.name} ({wollyeongUnseong.hanja})
                           </h4>
                         </div>
 
                         <div className="bg-white/80 p-4 rounded-lg border border-amber-200 mb-4">
-                          <h5 className="font-bold text-amber-800 mb-2 flex items-center gap-2">
+                          <h5 className="font-bold text-amber-800 mb-2 flex items-center gap-2 text-xl">
                             <span>⭐</span>{" "}
                             {unseongDescriptions[wollyeongUnseong.name].title}
                           </h5>
@@ -292,7 +292,7 @@ const SibsinPositionDisplay: React.FC<{ sajuInfo: SajuInfo }> = ({
                               </span>
                             ))}
                           </div>
-                          <p className="text-base font-normal leading-relaxed text-gray-700 whitespace-pre-line word-keep-all">
+                          <p className="text-lg font-normal leading-relaxed text-gray-700 whitespace-pre-line word-keep-all">
                             {
                               unseongDescriptions[wollyeongUnseong.name]
                                 .description
@@ -303,14 +303,14 @@ const SibsinPositionDisplay: React.FC<{ sajuInfo: SajuInfo }> = ({
                         {/* 월지 십이운성 정보 */}
                         {unseongDescriptions[wollyeongUnseong.name].월지 && (
                           <div className="bg-gradient-to-r from-blue-100/50 to-amber-100/50 p-5 rounded-xl border border-blue-300">
-                            <h5 className="font-bold text-blue-900 mb-3 flex items-center gap-2 text-lg">
+                            <h5 className="font-bold text-blue-900 mb-3 flex items-center gap-2 text-xl">
                               <span>🌙</span>{" "}
                               {
                                 unseongDescriptions[wollyeongUnseong.name].월지
                                   .title
                               }
                             </h5>
-                            <p className="text-base font-normal leading-relaxed text-gray-700 whitespace-pre-line word-keep-all bg-white/70 p-4 rounded-lg">
+                            <p className="text-lg font-normal leading-relaxed text-gray-700 whitespace-pre-line word-keep-all bg-white/70 p-4 rounded-lg">
                               {
                                 unseongDescriptions[wollyeongUnseong.name].월지
                                   .description
@@ -350,8 +350,8 @@ const DeepAnalysis: React.FC = () => {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 to-indigo-50 page-fade-in">
         <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-800 mb-4">사주 데이터를 불러오는 중...</h2>
-          <p className="text-gray-600">잠시만 기다려주세요.</p>
+          <h2 className="text-3xl font-bold text-gray-800 mb-4">사주 데이터를 불러오는 중...</h2>
+          <p className="text-gray-600 text-lg">잠시만 기다려주세요.</p>
         </div>
       </div>
     );
@@ -360,7 +360,7 @@ const DeepAnalysis: React.FC = () => {
   const renderPillar = (pillar: Pillar, isEmpty: boolean = false, isMonthPillar: boolean = false) => {
     if (isEmpty) {
       return (
-        <div className="flex flex-col text-center text-sm md:text-base">
+        <div className="flex flex-col text-center text-base md:text-lg">
           <div className="font-bold text-gray-400 py-2.5">시주</div>
           <div className="py-2 h-14 flex items-center justify-center border-t border-gray-200">
             <span className="text-gray-400 text-sm">-</span>
@@ -391,14 +391,14 @@ const DeepAnalysis: React.FC = () => {
     const jiColor = ohaengColorMap[pillar.jiJi.ohaeng];
 
     return (
-      <div className="flex flex-col text-center text-sm md:text-base">
+      <div className="flex flex-col text-center text-base md:text-lg">
         <div className="font-bold text-gray-700 py-2.5">
           {pillar.label}
           <span className="font-normal text-gray-400">({pillar.ganji})</span>
         </div>
 
         <div className="py-2 h-14 flex items-center justify-center border-t border-gray-200">
-          <span className={`font-semibold text-base saju-text-outline ${pillar.cheonGan.sibsin.name === "일간" ? "text-amber-600" : "text-gray-700"}`}>
+          <span className={`font-semibold text-lg saju-text-outline ${pillar.cheonGan.sibsin.name === "일간" ? "text-amber-600" : "text-gray-700"}`}>
             {pillar.cheonGan.sibsin.name === "일간" ? "일간(日干)" : pillar.cheonGan.sibsin.name}
           </span>
         </div>
@@ -423,22 +423,22 @@ const DeepAnalysis: React.FC = () => {
           </div>
         </div>
 
-        <div className="py-2 h-14 flex items-center justify-center font-semibold text-gray-700 text-base saju-text-outline">
+        <div className="py-2 h-14 flex items-center justify-center font-semibold text-gray-700 text-lg saju-text-outline">
           {pillar.jiJi.sibsin.name}
         </div>
 
         <div className="py-2 flex-grow bg-black/5 border-t border-b border-gray-200 flex flex-col justify-center min-h-[110px]">
-          <div className="font-semibold text-xs text-gray-400 mb-1 saju-text-outline">지장간(支藏干)</div>
+          <div className="font-semibold text-sm text-gray-400 mb-1 saju-text-outline">지장간(支藏干)</div>
           {pillar.jiJi.jijanggan.map((j, index) => (
-            <div key={index} className="text-gray-700 text-base my-1 saju-text-outline">
-              {j.char} <span className="text-gray-500 font-medium text-sm">{j.sibsin.name}</span>
+            <div key={index} className="text-gray-700 text-lg my-1 saju-text-outline">
+              {j.char} <span className="text-gray-500 font-medium text-base">{j.sibsin.name}</span>
             </div>
           ))}
         </div>
 
-        <div className="py-2 font-semibold text-gray-700 saju-text-outline">
+        <div className="py-2 font-semibold text-gray-700 text-lg saju-text-outline">
           {pillar.jiJi.unseong.name}
-          <span className="text-gray-400 text-xs ml-1 font-normal">({pillar.jiJi.unseong.hanja})</span>
+          <span className="text-gray-400 text-sm ml-1 font-normal">({pillar.jiJi.unseong.hanja})</span>
         </div>
       </div>
     );
@@ -454,19 +454,19 @@ const DeepAnalysis: React.FC = () => {
         <div className="text-center mb-8">
           <button
             onClick={() => navigate("/result")}
-            className="mb-4 text-purple-600 hover:text-purple-800 font-semibold"
+            className="mb-4 text-purple-600 hover:text-purple-800 font-semibold text-lg"
           >
             ← 돌아가기
           </button>
           <h1 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-indigo-600 mb-2">
             심층 사주 분석
           </h1>
-          <p className="text-gray-600">오행 가중치·신강신약·용신 기반 정밀 분석</p>
+          <p className="text-gray-600 text-lg">오행 가중치·신강신약·용신 기반 정밀 분석</p>
         </div>
 
         {/* 사주 원국 정보 */}
         <div className="glass-card p-6 mb-8">
-          <h2 className="text-3xl font-bold text-gray-800 mb-5 text-center">사주 원국 정보</h2>
+          <h2 className="text-4xl font-bold text-gray-800 mb-5 text-center">사주 원국 정보</h2>
           <div className="p-1 md:p-2 glass-card">
             <div className="grid grid-cols-4 divide-x divide-gray-200">
               {pillarOrder.map((key) => {
@@ -493,8 +493,8 @@ const DeepAnalysis: React.FC = () => {
 
         {/* 용신 추출 (개발 예정) */}
         <div className="glass-card p-6 text-center mt-8">
-          <h3 className="text-2xl font-bold text-gray-800 mb-4">🚧 용신 추출 기능</h3>
-          <p className="text-gray-600 mb-4">
+          <h3 className="text-3xl font-bold text-gray-800 mb-4">🚧 용신 추출 기능</h3>
+          <p className="text-gray-600 text-lg mb-4">
             신강신약 판정을 기반으로 한 용신 추출 기능이<br />
             곧 추가될 예정입니다.
           </p>
