@@ -26,16 +26,16 @@ const COLOR_PALETTE = [
   { name: "화 (빨강)", color: "#ef4444" },
   { name: "토 (주황)", color: "#f59e0b" },
   { name: "금 (흰색)", color: "#e5e7eb" },
-  { name: "수 (흑색)", color: "#0a0a0a" },
+  { name: "수 (남색)", color: "#1e40af" },
 ];
 
 // 5행 에너지 기본 정의
 const FIVE_ELEMENTS_BASE: ElementConfig[] = [
-  { id: "wood", name: "목", color: "#22c55e", baseRadius: 1, baseSpeed: 0.5 },
-  { id: "fire", name: "화", color: "#ef4444", baseRadius: 1, baseSpeed: 0.7 },
-  { id: "earth", name: "토", color: "#f59e0b", baseRadius: 1, baseSpeed: 0.4 },
-  { id: "metal", name: "금", color: "#e5e7eb", baseRadius: 1, baseSpeed: 0.6 },
-  { id: "water", name: "수", color: "#0a0a0a", baseRadius: 1, baseSpeed: 0.8 },
+  { id: "wood", name: "월주", color: "#22c55e", baseRadius: 1, baseSpeed: 0.5 },
+  { id: "fire", name: "대운", color: "#ef4444", baseRadius: 1, baseSpeed: 0.7 },
+  { id: "earth", name: "일주", color: "#f59e0b", baseRadius: 1, baseSpeed: 0.4 },
+  { id: "metal", name: "시주", color: "#e5e7eb", baseRadius: 1, baseSpeed: 0.6 },
+  { id: "water", name: "년주", color: "#1e40af", baseRadius: 1, baseSpeed: 0.8 },
 ];
 
 // 궤도를 도는 행성 컴포넌트
@@ -82,16 +82,15 @@ function OrbitingPlanet({
 
   const actualRadius = element.baseRadius * sizeMultiplier;
 
-  // 어두운 색상인지 확인 (검은색 계열)
+  // 어두운 색상인지 확인 (검은색 계열 - #0으로 시작하는 경우만)
   const isDarkColor =
     planetColor === "#0a0a0a" ||
-    planetColor.toLowerCase().startsWith("#0") ||
-    planetColor.toLowerCase().startsWith("#1");
+    planetColor.toLowerCase().startsWith("#0");
 
   return (
     <Trail
-      width={hovered ? 5 : 2}
-      length={10}
+      width={hovered ? 60 : 24}
+      length={20}
       color={planetColor}
       attenuation={(t) => t * t}
     >
@@ -101,19 +100,6 @@ function OrbitingPlanet({
         onPointerOut={() => setHovered(false)}
         scale={hovered ? 1.2 : 1}
       >
-        {/* 어두운 색상일 경우 밝은 테두리 추가 */}
-        {isDarkColor && (
-          <mesh>
-            <sphereGeometry args={[actualRadius * 1.05, 32, 32]} />
-            <meshBasicMaterial
-              color="#60a5fa"
-              transparent
-              opacity={0.6}
-              side={THREE.BackSide}
-            />
-          </mesh>
-        )}
-
         {/* 메인 행성 */}
         <mesh>
           <sphereGeometry args={[actualRadius, 32, 32]} />
@@ -315,10 +301,10 @@ function Particles() {
         />
       </bufferGeometry>
       <pointsMaterial
-        size={0.1}
+        size={0.15}
         color="#ffffff"
         transparent
-        opacity={0.6}
+        opacity={0.9}
         sizeAttenuation
       />
     </points>
@@ -335,6 +321,7 @@ function Scene({
   sunSize,
   beltDensity,
   beltOpacity,
+  galaxyOrbitSpeed,
 }: {
   elementOrder: ElementConfig[];
   elementSizes: ElementSizes;
@@ -344,13 +331,21 @@ function Scene({
   sunSize: number;
   beltDensity: number;
   beltOpacity: number;
+  galaxyOrbitSpeed: number;
 }) {
   const sunPosition = new THREE.Vector3(0, 0, 0); // 고정 위치
+  const groupRef = useRef<THREE.Group>(null);
+
+  useFrame(({ clock }) => {
+    if (groupRef.current) {
+      groupRef.current.rotation.y = clock.getElapsedTime() * galaxyOrbitSpeed;
+    }
+  });
 
   return (
     <>
-      <ambientLight intensity={0.3} />
-      <pointLight position={[10, 10, 10]} intensity={0.5} />
+      <ambientLight intensity={0.6} />
+      <pointLight position={[10, 10, 10]} intensity={1.5} />
 
       <Stars
         radius={100}
@@ -362,37 +357,40 @@ function Scene({
         speed={1}
       />
 
-      <CentralSun sunColor={sunColor} sunSize={sunSize} />
+      <group ref={groupRef}>
+        <CentralSun sunColor={sunColor} sunSize={sunSize} />
 
-      {elementOrder.map((element, index) => {
-        const orbitRadius = 4 + index * 3;
-        const sizeMultiplier = elementSizes[element.name] || 1;
-        const planetColor = elementColors[element.name] || element.color;
+        {elementOrder.map((element, index) => {
+          const orbitRadius = 4 + index * 3;
+          const sizeMultiplier = elementSizes[element.name] || 1;
+          const planetColor = elementColors[element.name] || element.color;
+          // 수성(Water)의 경우 파티클을 더 밝은 파란색으로 설정
+          const beltColor = element.id === "water" ? "#60a5fa" : planetColor;
 
-        return (
-          <React.Fragment key={element.id}>
-            <OrbitRing radius={orbitRadius} sunPosition={sunPosition} />
-            <OrbitBelt
-              radius={orbitRadius}
-              color={planetColor}
-              sunPosition={sunPosition}
-              density={beltDensity}
-              opacity={beltOpacity}
-            />
-            <OrbitingPlanet
-              element={element}
-              index={index}
-              totalCount={elementOrder.length}
-              sizeMultiplier={sizeMultiplier}
-              speedMultiplier={speedMultiplier}
-              sunPosition={sunPosition}
-              planetColor={planetColor}
-            />
-          </React.Fragment>
-        );
-      })}
-
-      <Particles />
+          return (
+            <React.Fragment key={element.id}>
+              <OrbitRing radius={orbitRadius} sunPosition={sunPosition} />
+              <OrbitBelt
+                radius={orbitRadius}
+                color={beltColor}
+                sunPosition={sunPosition}
+                density={beltDensity}
+                opacity={beltOpacity}
+              />
+              <OrbitingPlanet
+                element={element}
+                index={index}
+                totalCount={elementOrder.length}
+                sizeMultiplier={sizeMultiplier}
+                speedMultiplier={speedMultiplier}
+                sunPosition={sunPosition}
+                planetColor={planetColor}
+              />
+            </React.Fragment>
+          );
+        })}
+        <Particles />
+      </group>
 
       <OrbitControls
         enableDamping
@@ -407,7 +405,7 @@ function Scene({
 // 컨트롤 패널 컴포넌트
 function ControlPanel({
   elementOrder,
-  onElementOrderChange,
+
   elementSizes,
   onElementSizeChange,
   elementColors,
@@ -422,18 +420,15 @@ function ControlPanel({
   onBeltDensityChange,
   beltOpacity,
   onBeltOpacityChange,
+
   onReset,
 }: {
   elementOrder: ElementConfig[];
-  onElementOrderChange: (newOrder: ElementConfig[]) => void;
+
   elementSizes: ElementSizes;
   onElementSizeChange: (element: string, value: number) => void;
   elementColors: ElementColors;
-  onElementColorChange: (
-    element: string,
-    color: string,
-    position: "top" | "bottom"
-  ) => void;
+  onElementColorChange: (element: string, color: string) => void;
   speedMultiplier: number;
   onSpeedChange: (value: number) => void;
   sunColor: string;
@@ -444,22 +439,12 @@ function ControlPanel({
   onBeltDensityChange: (value: number) => void;
   beltOpacity: number;
   onBeltOpacityChange: (value: number) => void;
+
   onReset: () => void;
 }) {
   const [isOpen, setIsOpen] = useState(true);
 
-  const moveElement = (index: number, direction: "up" | "down") => {
-    const newOrder = [...elementOrder];
-    const newIndex = direction === "up" ? index - 1 : index + 1;
 
-    if (newIndex < 0 || newIndex >= newOrder.length) return;
-
-    [newOrder[index], newOrder[newIndex]] = [
-      newOrder[newIndex],
-      newOrder[index],
-    ];
-    onElementOrderChange(newOrder);
-  };
 
   return (
     <div
@@ -607,93 +592,7 @@ function ControlPanel({
           </div>
 
           {/* 행성 순서 조절 */}
-          <div style={{ marginBottom: "20px" }}>
-            <h3
-              style={{
-                margin: "0 0 10px 0",
-                fontSize: "16px",
-                borderBottom: "1px solid rgba(255,255,255,0.3)",
-                paddingBottom: "5px",
-              }}
-            >
-              🔄 행성 궤도 순서
-            </h3>
-            <div
-              style={{ fontSize: "12px", opacity: 0.7, marginBottom: "10px" }}
-            >
-              안쪽 궤도부터 바깥쪽 궤도 순서
-            </div>
-            {elementOrder.map((element, index) => (
-              <div
-                key={element.id}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "8px",
-                  marginBottom: "8px",
-                  padding: "8px",
-                  background: "rgba(255,255,255,0.05)",
-                  borderRadius: "8px",
-                }}
-              >
-                <div
-                  style={{
-                    width: "15px",
-                    height: "15px",
-                    borderRadius: "50%",
-                    background: element.color,
-                    boxShadow: `0 0 8px ${element.color}`,
-                  }}
-                />
-                <span style={{ fontSize: "14px", flex: 1 }}>
-                  {index + 1}. {element.name}
-                </span>
-                <div style={{ display: "flex", gap: "4px" }}>
-                  <button
-                    onClick={() => moveElement(index, "up")}
-                    disabled={index === 0}
-                    style={{
-                      background:
-                        index === 0
-                          ? "rgba(255,255,255,0.1)"
-                          : "rgba(255,255,255,0.2)",
-                      border: "none",
-                      color: "white",
-                      padding: "4px 8px",
-                      borderRadius: "4px",
-                      cursor: index === 0 ? "not-allowed" : "pointer",
-                      fontSize: "12px",
-                      opacity: index === 0 ? 0.3 : 1,
-                    }}
-                  >
-                    ▲
-                  </button>
-                  <button
-                    onClick={() => moveElement(index, "down")}
-                    disabled={index === elementOrder.length - 1}
-                    style={{
-                      background:
-                        index === elementOrder.length - 1
-                          ? "rgba(255,255,255,0.1)"
-                          : "rgba(255,255,255,0.2)",
-                      border: "none",
-                      color: "white",
-                      padding: "4px 8px",
-                      borderRadius: "4px",
-                      cursor:
-                        index === elementOrder.length - 1
-                          ? "not-allowed"
-                          : "pointer",
-                      fontSize: "12px",
-                      opacity: index === elementOrder.length - 1 ? 0.3 : 1,
-                    }}
-                  >
-                    ▼
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
+
 
           {/* 5행 크기 및 색깔 조절 */}
           <div style={{ marginBottom: "20px" }}>
@@ -881,52 +780,7 @@ function ControlPanel({
             />
           </div>
 
-          {/* 태양 은하 궤도 속도 */}
-          <div style={{ marginBottom: "10px" }}>
-            <h3
-              style={{
-                margin: "0 0 10px 0",
-                fontSize: "16px",
-                borderBottom: "1px solid rgba(255,255,255,0.3)",
-                paddingBottom: "5px",
-              }}
-            >
-              🌌 태양 은하 궤도 속도
-            </h3>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                marginBottom: "5px",
-              }}
-            >
-              <span style={{ fontSize: "14px" }}>은하 공전 속도</span>
-              <span
-                style={{
-                  fontSize: "14px",
-                  fontWeight: "bold",
-                  minWidth: "30px",
-                  textAlign: "right",
-                }}
-              >
-                {galaxyOrbitSpeed.toFixed(2)}
-              </span>
-            </div>
-            <input
-              type="range"
-              min="0"
-              max="0.5"
-              step="0.01"
-              value={galaxyOrbitSpeed}
-              onChange={(e) => onGalaxySpeedChange(parseFloat(e.target.value))}
-              style={{
-                width: "100%",
-                cursor: "pointer",
-                accentColor: "#fbbf24",
-              }}
-            />
-          </div>
+
 
           {/* 궤도 벨트 설정 */}
           <div style={{ marginBottom: "20px" }}>
@@ -982,10 +836,10 @@ function ControlPanel({
                 {beltDensity === 0
                   ? "벨트 숨김"
                   : beltDensity < 0.3
-                  ? "흐리게"
-                  : beltDensity < 0.7
-                  ? "보통"
-                  : "엄청 짙게"}
+                    ? "흐리게"
+                    : beltDensity < 0.7
+                      ? "보통"
+                      : "엄청 짙게"}
               </div>
             </div>
 
@@ -1030,10 +884,10 @@ function ControlPanel({
                 {beltOpacity === 0
                   ? "투명"
                   : beltOpacity < 0.3
-                  ? "희미함"
-                  : beltOpacity < 0.7
-                  ? "보통"
-                  : "선명함"}
+                    ? "희미함"
+                    : beltOpacity < 0.7
+                      ? "보통"
+                      : "선명함"}
               </div>
             </div>
           </div>
@@ -1105,30 +959,31 @@ function ControlPanel({
 }
 
 // localStorage 키
-const STORAGE_KEY = "fiveElementsOrbitSettings";
+const STORAGE_KEY = "fiveElementsOrbitSettings_v4";
 
 // 기본 설정값
 const DEFAULT_SETTINGS = {
   elementOrder: [...FIVE_ELEMENTS_BASE],
   elementSizes: {
-    목: 3,
-    화: 2,
-    토: 1,
-    금: 2,
-    수: 1,
+    월주: 3,
+    대운: 2,
+    일주: 1,
+    시주: 2,
+    년주: 1,
   },
   elementColors: {
-    목: { top: "#22c55e", bottom: "#22c55e" },
-    화: { top: "#ef4444", bottom: "#ef4444" },
-    토: { top: "#f59e0b", bottom: "#f59e0b" },
-    금: { top: "#e5e7eb", bottom: "#e5e7eb" },
-    수: { top: "#3b82f6", bottom: "#3b82f6" },
+    월주: "#22c55e",
+    대운: "#ef4444",
+    일주: "#f59e0b",
+    시주: "#e5e7eb",
+    년주: "#1e40af",
   },
   speedMultiplier: 1.0,
+  galaxyOrbitSpeed: 0.0,
   sunColor: "#fbbf24",
   sunSize: 4,
   beltDensity: 0.5,
-  beltOpacity: 0.6,
+  beltOpacity: 0.8,
 };
 
 // 메인 페이지 컴포넌트
@@ -1190,6 +1045,11 @@ export default function FiveElementsOrbit() {
   // 벨트 투명도 상태
   const [beltOpacity, setBeltOpacity] = useState(initialSettings.beltOpacity);
 
+  // 태양 은하 궤도 속도 상태
+  const [galaxyOrbitSpeed, setGalaxyOrbitSpeed] = useState(
+    initialSettings.galaxyOrbitSpeed ?? 0.0
+  );
+
   // 설정값이 변경될 때마다 localStorage에 저장
   useEffect(() => {
     const settings = {
@@ -1197,6 +1057,7 @@ export default function FiveElementsOrbit() {
       elementSizes,
       elementColors,
       speedMultiplier,
+      galaxyOrbitSpeed,
       sunColor,
       sunSize,
       beltDensity,
@@ -1213,6 +1074,7 @@ export default function FiveElementsOrbit() {
     elementSizes,
     elementColors,
     speedMultiplier,
+    galaxyOrbitSpeed,
     sunColor,
     sunSize,
     beltDensity,
@@ -1226,17 +1088,10 @@ export default function FiveElementsOrbit() {
     }));
   };
 
-  const handleElementColorChange = (
-    element: string,
-    color: string,
-    position: "top" | "bottom"
-  ) => {
+  const handleElementColorChange = (element: string, color: string) => {
     setElementColors((prev) => ({
       ...prev,
-      [element]: {
-        ...prev[element],
-        [position]: color,
-      },
+      [element]: color,
     }));
   };
 
@@ -1247,6 +1102,7 @@ export default function FiveElementsOrbit() {
       setElementSizes({ ...DEFAULT_SETTINGS.elementSizes });
       setElementColors({ ...DEFAULT_SETTINGS.elementColors });
       setSpeedMultiplier(DEFAULT_SETTINGS.speedMultiplier);
+      setGalaxyOrbitSpeed(DEFAULT_SETTINGS.galaxyOrbitSpeed);
       setSunColor(DEFAULT_SETTINGS.sunColor);
       setSunSize(DEFAULT_SETTINGS.sunSize);
       setBeltDensity(DEFAULT_SETTINGS.beltDensity);
@@ -1303,7 +1159,7 @@ export default function FiveElementsOrbit() {
       {/* 컨트롤 패널 */}
       <ControlPanel
         elementOrder={elementOrder}
-        onElementOrderChange={setElementOrder}
+
         elementSizes={elementSizes}
         onElementSizeChange={handleElementSizeChange}
         elementColors={elementColors}
@@ -1318,6 +1174,7 @@ export default function FiveElementsOrbit() {
         onBeltDensityChange={setBeltDensity}
         beltOpacity={beltOpacity}
         onBeltOpacityChange={setBeltOpacity}
+
         onReset={handleReset}
       />
 
@@ -1334,6 +1191,7 @@ export default function FiveElementsOrbit() {
           sunSize={sunSize}
           beltDensity={beltDensity}
           beltOpacity={beltOpacity}
+          galaxyOrbitSpeed={galaxyOrbitSpeed}
         />
       </Canvas>
     </div>
