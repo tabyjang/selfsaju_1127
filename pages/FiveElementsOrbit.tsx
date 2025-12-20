@@ -368,7 +368,7 @@ function Scene({
   trailWidth: number;
   trailLength: number;
 }) {
-  const sunPosition = new THREE.Vector3(0, 0, 0); // 고정 위치
+  const sunPosition = new THREE.Vector3(0, 0, 0); // 태양을 정 가운데에 배치
   const groupRef = useRef<THREE.Group>(null);
 
   useFrame(({ clock }) => {
@@ -1064,6 +1064,9 @@ export default function FiveElementsOrbit() {
   // 행성 꼬리 길이 상태
   const [trailLength, setTrailLength] = useState(initialSettings.trailLength);
 
+  // 왼쪽 패널 접기/펼치기 상태
+  const [isLeftPanelOpen, setIsLeftPanelOpen] = useState(true);
+
   // 설정값이 변경될 때마다 localStorage에 저장
   useEffect(() => {
     const settings = {
@@ -1153,46 +1156,80 @@ export default function FiveElementsOrbit() {
           boxShadow: "0 8px 32px rgba(0,0,0,0.4)",
         }}
       >
-        <div style={{ marginBottom: "16px" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
-            <h2
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: "15px",
+          }}
+        >
+          <div style={{ flex: 1 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
+              <h2
+                style={{
+                  margin: 0,
+                  fontSize: "20px",
+                  background: "linear-gradient(135deg, #a855f7, #6366f1)",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                  fontWeight: "bold",
+                }}
+              >
+                아사주달
+              </h2>
+              <span
+                style={{
+                  fontSize: "11px",
+                  color: "#a855f7",
+                  fontWeight: "600",
+                  animation: "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+                }}
+              >
+                (아! 사주 보여달라고?)
+              </span>
+            </div>
+            <h1
               style={{
                 margin: 0,
-                fontSize: "20px",
-                background: "linear-gradient(135deg, #a855f7, #6366f1)",
+                fontSize: "26px",
+                background: "linear-gradient(135deg, #60a5fa, #fbbf24, #ec4899)",
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent",
                 fontWeight: "bold",
+                letterSpacing: "-0.5px",
               }}
             >
-              아사주달
-            </h2>
-            <span
-              style={{
-                fontSize: "11px",
-                color: "#a855f7",
-                fontWeight: "600",
-                animation: "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
-              }}
-            >
-              (아! 사주 보여달라고?)
-            </span>
+               🌌 5행 에너지 궤도: 당신을 중심으로 움직이는 우주의 지도
+            </h1>
           </div>
-          <h1
+          <button
+            onClick={() => setIsLeftPanelOpen(!isLeftPanelOpen)}
             style={{
-              margin: 0,
-              fontSize: "26px",
-              background: "linear-gradient(135deg, #60a5fa, #fbbf24, #ec4899)",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
+              background: "rgba(255,255,255,0.2)",
+              border: "none",
+              color: "white",
+              padding: "8px 12px",
+              borderRadius: "8px",
+              cursor: "pointer",
+              fontSize: "14px",
               fontWeight: "bold",
-              letterSpacing: "-0.5px",
+              transition: "all 0.3s",
+              marginLeft: "10px",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = "rgba(255,255,255,0.3)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = "rgba(255,255,255,0.2)";
             }}
           >
-             🌌 5행 에너지 궤도: 당신을 중심으로 움직이는 우주의 지도
-          </h1>
+            {isLeftPanelOpen ? "접기" : "펼치기"}
+          </button>
         </div>
 
+        {isLeftPanelOpen && (
+        <>
         <div
           style={{
             fontSize: "13px",
@@ -1400,6 +1437,8 @@ export default function FiveElementsOrbit() {
             </div>
           </div>
         </div>
+        </>
+        )}
       </div>
 
       {/* 대시보드로 이동 버튼 */}

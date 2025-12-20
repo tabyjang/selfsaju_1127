@@ -120,7 +120,7 @@ const InputPage: React.FC = () => {
             className="h-28 sm:h-36 md:h-44 w-auto object-contain cursor-pointer"
             onClick={() => navigate("/")}
           />
-          <div className="flex items-center gap-2 mt-3">
+          <div className="flex items-center gap-2 mt-3 cursor-pointer" onClick={() => navigate("/dashboard")}>
             <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">
               아사주달
             </h1>

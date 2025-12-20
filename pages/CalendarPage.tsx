@@ -155,13 +155,14 @@ const CalendarPage: React.FC = () => {
       <div className="fixed top-0 left-0 right-0 bg-white/80 backdrop-blur-md border-b border-gray-200 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate('/')}>
+            <div className="flex items-center gap-3">
               <img
                 src="/logo.png"
                 alt="아사주달 로고"
-                className="h-10 w-auto object-contain"
+                className="h-10 w-auto object-contain cursor-pointer"
+                onClick={() => navigate('/')}
               />
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate('/dashboard')}>
                 <h1 className="text-xl font-bold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">
                   아사주달
                 </h1>
@@ -743,13 +744,13 @@ const CalendarPage: React.FC = () => {
           </div>
         </div>
 
-        {/* 다시 분석하기 버튼 */}
+        {/* 대시보드로 이동 버튼 */}
         <div className="mt-8 text-center">
           <button
-            onClick={() => navigate('/input')}
-            className="px-6 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition font-semibold"
+            onClick={() => navigate('/dashboard')}
+            className="px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-full font-bold hover:from-indigo-700 hover:to-purple-700 transition shadow-lg"
           >
-            ← 다시 분석하기
+            대시보드로 이동 →
           </button>
         </div>
       </main>

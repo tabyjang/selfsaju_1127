@@ -10,6 +10,7 @@ import { loadIljuBundle } from '../utils/ilju/loadIljuBundle';
 import type { IljuBundle } from '../utils/ilju/types';
 import { sibsinPositionDescriptions } from '../utils/sibsinPositionDescriptions';
 import { unseongDescriptions } from '../utils/unseongDescriptions';
+import { getTodayUnseData, type TodayUnseData } from '../utils/todayUnse';
 
 // 오행 색상 맵 (캘린더와 동일)
 const ohaengColorMap: Record<Ohaeng, { bg: string; text: string; border: string }> = {
@@ -67,6 +68,7 @@ const DashboardPage: React.FC = () => {
   const [iljuLoading, setIljuLoading] = useState<boolean>(false);
   const [showWollyeongModal, setShowWollyeongModal] = useState<boolean>(false);
   const [checkedPlans, setCheckedPlans] = useState<boolean[]>([false, false, false]);
+  const [todayUnseData, setTodayUnseData] = useState<TodayUnseData | null>(null);
 
   // 페이지 로드 시 스크롤을 최상단으로 이동
   useEffect(() => {
@@ -159,6 +161,17 @@ const DashboardPage: React.FC = () => {
       return null;
     }
   }, [sajuData]);
+
+  // 오늘의 운세 데이터 로드
+  useEffect(() => {
+    const loadTodayUnse = async () => {
+      if (sajuData && todayInfo && todayInfo.unseong) {
+        const unseData = await getTodayUnseData(sajuData, todayInfo.ji, todayInfo.unseong.name);
+        setTodayUnseData(unseData);
+      }
+    };
+    loadTodayUnse();
+  }, [sajuData, todayInfo]);
 
   // 메뉴 카드 데이터
   const menuCards = [
@@ -512,7 +525,7 @@ const DashboardPage: React.FC = () => {
                           <span
                             key={idx}
                             className={`text-2xl transition-all duration-300 ${
-                              idx < 1 ? 'text-yellow-400 drop-shadow-lg' : 'text-gray-200'
+                              idx < (todayUnseData?.AE || 0) ? 'text-yellow-400 drop-shadow-lg' : 'text-gray-200'
                             }`}
                           >
                             ⭐
@@ -537,7 +550,7 @@ const DashboardPage: React.FC = () => {
                           <span
                             key={idx}
                             className={`text-2xl transition-all duration-300 ${
-                              idx < 5 ? 'text-yellow-400 drop-shadow-lg' : 'text-gray-200'
+                              idx < (todayUnseData?.ME || 0) ? 'text-yellow-400 drop-shadow-lg' : 'text-gray-200'
                             }`}
                           >
                             ⭐
@@ -559,11 +572,7 @@ const DashboardPage: React.FC = () => {
                       </h3>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      {[
-                        "조용히 혼자 커피를 마시며 인간관계의 우선순위 정리하기",
-                        "명상이나 산책으로 마음을 정리하기",
-                        "오래된 연락처 정리하고 연락 끊기"
-                      ].map((plan, idx) => {
+                      {(todayUnseData?.액션플랜 || ["조용히 혼자 커피를 마시며 인간관계의 우선순위 정리하기", "명상이나 산책으로 마음을 정리하기", "오래된 연락처 정리하고 연락 끊기"]).map((plan, idx) => {
                         const isChecked = checkedPlans[idx];
                         return (
                           <div
@@ -625,9 +634,7 @@ const DashboardPage: React.FC = () => {
                       {/* 운세 내용 */}
                       <div className="bg-white/80 backdrop-blur-sm rounded-xl p-4 border border-purple-100 shadow-inner">
                         <p className="text-lg md:text-xl text-gray-800 leading-relaxed font-medium whitespace-pre-line">
-                          과거의 인연이 정리되고 새로운 조력자가 나타납니다. 정신적 각성을 통해 진정한 내 편을 알아보는 날입니다.
-
-                          오늘은 내면의 목소리에 귀 기울이며, 주변 사람들과의 관계를 재정립하는 시간을 가져보세요. 불필요한 인연은 과감히 정리하고, 나에게 진심으로 힘이 되어주는 사람들과 더 깊은 유대를 형성할 수 있는 날입니다.
+                          {todayUnseData?.운세전반 || "과거의 인연이 정리되고 새로운 조력자가 나타납니다. 정신적 각성을 통해 진정한 내 편을 알아보는 날입니다.\n\n오늘은 내면의 목소리에 귀 기울이며, 주변 사람들과의 관계를 재정립하는 시간을 가져보세요. 불필요한 인연은 과감히 정리하고, 나에게 진심으로 힘이 되어주는 사람들과 더 깊은 유대를 형성할 수 있는 날입니다."}
                         </p>
                       </div>
                     </div>

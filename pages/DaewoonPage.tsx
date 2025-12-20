@@ -215,13 +215,14 @@ const DaewoonPage: React.FC = () => {
       <div className="fixed top-0 left-0 right-0 bg-white/80 backdrop-blur-md border-b border-gray-200 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate('/')}>
+            <div className="flex items-center gap-3">
               <img
                 src="/logo.png"
                 alt="아사주달 로고"
-                className="h-10 w-auto object-contain"
+                className="h-10 w-auto object-contain cursor-pointer"
+                onClick={() => navigate('/')}
               />
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate('/dashboard')}>
                 <h1 className="text-xl font-bold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">
                   아사주달
                 </h1>
