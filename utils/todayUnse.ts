@@ -87,7 +87,7 @@ export const getTodayUnseData = async (
     const key = `${sibsinName}_${gwiinStr}_${unseongName}`;
 
     console.log('🔑 운세 조회 키:', {
-      일간,
+      일간: ilgan,
       월지: woljee,
       십성: sibsinName,
       귀인: gwiinStr,
