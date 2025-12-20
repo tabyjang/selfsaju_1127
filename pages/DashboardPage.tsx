@@ -520,7 +520,7 @@ const DashboardPage: React.FC = () => {
                           <span>활동 에너지</span>
                         </div>
                       </div>
-                      <div className="flex justify-center items-center gap-1 bg-white rounded-lg py-3 px-2 shadow-inner">
+                      <div className="flex justify-center items-center -space-x-2 bg-white rounded-lg py-3 px-2 shadow-inner">
                         {[...Array(todayUnseData?.AE || 0)].map((_, idx) => (
                           <span
                             key={idx}
@@ -543,7 +543,7 @@ const DashboardPage: React.FC = () => {
                           <span>마음 에너지</span>
                         </div>
                       </div>
-                      <div className="flex justify-center items-center gap-1 bg-white rounded-lg py-3 px-2 shadow-inner">
+                      <div className="flex justify-center items-center -space-x-2 bg-white rounded-lg py-3 px-2 shadow-inner">
                         {[...Array(todayUnseData?.ME || 0)].map((_, idx) => (
                           <span
                             key={idx}
