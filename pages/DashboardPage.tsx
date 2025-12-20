@@ -166,13 +166,7 @@ const DashboardPage: React.FC = () => {
   useEffect(() => {
     const loadTodayUnse = async () => {
       if (sajuData && todayInfo && todayInfo.unseong) {
-        console.log('🔍 운세 데이터 로딩 시작:', {
-          일간: sajuData.pillars.day.cheonGan.char,
-          오늘지지: todayInfo.ji,
-          십이운성: todayInfo.unseong.name
-        });
         const unseData = await getTodayUnseData(sajuData, todayInfo.ji, todayInfo.unseong.name);
-        console.log('📊 로드된 운세 데이터:', unseData);
         setTodayUnseData(unseData);
       }
     };
@@ -526,13 +520,11 @@ const DashboardPage: React.FC = () => {
                           <span>활동 에너지</span>
                         </div>
                       </div>
-                      <div className="flex justify-center items-center -space-x-2 bg-white rounded-lg py-3 px-2 shadow-inner">
-                        {[...Array(7)].map((_, idx) => (
+                      <div className="flex justify-center items-center gap-1 bg-white rounded-lg py-3 px-2 shadow-inner">
+                        {[...Array(todayUnseData?.AE || 0)].map((_, idx) => (
                           <span
                             key={idx}
-                            className={`text-2xl transition-all duration-300 ${
-                              idx < (todayUnseData?.AE || 0) ? 'text-yellow-400 drop-shadow-lg' : 'text-gray-200'
-                            }`}
+                            className="text-2xl text-yellow-400 drop-shadow-lg transition-all duration-300"
                           >
                             ⭐
                           </span>
@@ -551,13 +543,11 @@ const DashboardPage: React.FC = () => {
                           <span>마음 에너지</span>
                         </div>
                       </div>
-                      <div className="flex justify-center items-center -space-x-2 bg-white rounded-lg py-3 px-2 shadow-inner">
-                        {[...Array(7)].map((_, idx) => (
+                      <div className="flex justify-center items-center gap-1 bg-white rounded-lg py-3 px-2 shadow-inner">
+                        {[...Array(todayUnseData?.ME || 0)].map((_, idx) => (
                           <span
                             key={idx}
-                            className={`text-2xl transition-all duration-300 ${
-                              idx < (todayUnseData?.ME || 0) ? 'text-yellow-400 drop-shadow-lg' : 'text-gray-200'
-                            }`}
+                            className="text-2xl text-yellow-400 drop-shadow-lg transition-all duration-300"
                           >
                             ⭐
                           </span>
