@@ -154,7 +154,7 @@ const CalendarPage: React.FC = () => {
       {/* 헤더 */}
       <div className="fixed top-0 left-0 right-0 bg-white/80 backdrop-blur-md border-b border-gray-200 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
+          <div className="flex justify-between items-center h-12">
             <div className="flex items-center gap-3">
               <img
                 src="/logo.png"
@@ -233,7 +233,7 @@ const CalendarPage: React.FC = () => {
         </div>
       )}
 
-      <main className="max-w-7xl mx-auto relative pt-24 px-4 sm:px-6 lg:px-8 pb-8">
+      <main className="max-w-7xl mx-auto relative pt-16 px-4 sm:px-6 lg:px-8 pb-8">
 
         {/* 캘린더 */}
         <div className="max-w-6xl mx-auto">

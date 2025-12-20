@@ -318,7 +318,7 @@ const DashboardPage: React.FC = () => {
       {/* 헤더 */}
       <div className="fixed top-0 left-0 right-0 bg-white/80 backdrop-blur-md border-b border-gray-200 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
+          <div className="flex justify-between items-center h-12">
             <div className="flex items-center gap-3">
               <img
                 src="/logo.png"
@@ -398,7 +398,7 @@ const DashboardPage: React.FC = () => {
       )}
 
       {/* 메인 컨텐츠 */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-16">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-12">
         {/* 환영 메시지 */}
         <div className="mb-12 animate-fade-in">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
@@ -459,7 +459,7 @@ const DashboardPage: React.FC = () => {
           <div className="mb-12 animate-fade-in" style={{ animationDelay: '0.1s' }}>
             <div className="bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 rounded-2xl border-2 border-indigo-200 overflow-hidden shadow-2xl">
               {/* 상단 헤더 */}
-              <div className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 px-6 py-5 flex items-center relative">
+              <div className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 px-6 py-3 flex items-center relative">
                 {/* 왼쪽: 날짜 + 오늘의 일주 */}
                 <div className="flex items-center gap-6">
                   {/* 날짜 강조 */}
@@ -508,7 +508,7 @@ const DashboardPage: React.FC = () => {
               </div>
 
               {/* 메인 컨텐츠 */}
-              <div className="grid grid-cols-1 md:grid-cols-5 gap-6 p-6">
+              <div className="grid grid-cols-1 md:grid-cols-5 gap-6 p-4">
                 {/* 왼쪽: 에너지 표시 (1/5) */}
                 <div className="bg-gradient-to-br from-white to-indigo-50 rounded-xl p-6 shadow-lg border-2 border-indigo-100">
                   <div className="space-y-8">
