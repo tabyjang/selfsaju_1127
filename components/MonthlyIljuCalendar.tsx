@@ -8,6 +8,7 @@ import {
   getSibsinByIlganAndTarget,
 } from "../utils/manse";
 import { cheonEulGwiInMap, getGongmangByGanji } from "../utils/sinsal";
+import { getTodayUnseData, type TodayUnseData } from "../utils/todayUnse";
 
 const weekdayLabels = ["일", "월", "화", "수", "목", "금", "토"] as const;
 const weekdayFullLabels = [
@@ -127,6 +128,7 @@ export const MonthlyIljuCalendar: React.FC<{ sajuInfo: SajuInfo }> = ({
   const [viewYear, setViewYear] = useState<number>(initialYM.year);
   const [viewMonth, setViewMonth] = useState<number>(initialYM.month); // 1-12
   const [selectedDay, setSelectedDay] = useState<number>(today.getDate());
+  const [todayUnseData, setTodayUnseData] = useState<TodayUnseData | null>(null);
 
   // 체크박스 상태 관리 (localStorage 연동)
   // localStorage에서 초기값 직접 로드 (기본값: 천을귀인 true, 용신 false)
@@ -199,6 +201,17 @@ export const MonthlyIljuCalendar: React.FC<{ sajuInfo: SajuInfo }> = ({
     return { d, gan, ji, ganji, unseong, sibsinGan, sibsinJi };
   }, [ilgan, viewYear, viewMonth, selectedDay, daysInMonth]);
 
+  // 선택된 날짜의 운세 데이터 로드
+  useEffect(() => {
+    const loadUnseData = async () => {
+      if (sajuInfo && selectedDayInfo && selectedDayInfo.unseong) {
+        const unseData = await getTodayUnseData(sajuInfo, selectedDayInfo.ji, selectedDayInfo.unseong.name);
+        setTodayUnseData(unseData);
+      }
+    };
+    loadUnseData();
+  }, [sajuInfo, selectedDayInfo]);
+
   const selectedMonthInfo = useMemo(() => {
     try {
       return getMonthGanjiByDateKST(selectedDate);
@@ -249,101 +262,96 @@ export const MonthlyIljuCalendar: React.FC<{ sajuInfo: SajuInfo }> = ({
 
   return (
     <div className="mt-8 p-4 md:p-6 glass-card animate-fade-in">
-      {/* 헤더(선택 날짜 + 일주) */}
-      <div className="flex items-center gap-3 mb-4">
-        <div className="text-lg md:text-xl font-bold text-gray-800 whitespace-nowrap">
-          {headerText}
-        </div>
-        <div className="flex-1 flex justify-center">
-          <div className="flex items-center justify-center gap-2 flex-wrap">
-            <span className="text-sm md:text-base font-semibold text-gray-800 whitespace-nowrap">
+      {/* 헤더(선택 날짜 + 일주 + 월주) */}
+      <div className="relative bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 rounded-2xl p-4 md:p-6 mb-6 shadow-lg border-2 border-indigo-200">
+        {/* 배경 장식 */}
+        <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-indigo-200/20 to-purple-200/20 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-purple-200/20 to-pink-200/20 rounded-full blur-3xl"></div>
+
+        <div className="relative z-10 flex items-center justify-between gap-3 flex-wrap">
+          {/* 왼쪽: 날짜 */}
+          <div className="flex items-center gap-2">
+            <span className="text-2xl">📅</span>
+            <div className="text-lg md:text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600 whitespace-nowrap">
+              {headerText}
+            </div>
+          </div>
+
+          {/* 중앙: 일주 */}
+          <div className="flex items-center justify-center gap-2 flex-wrap bg-white/60 backdrop-blur-sm rounded-xl px-4 py-3 shadow-md border border-purple-200">
+            <span className="text-sm md:text-base font-semibold text-gray-700 whitespace-nowrap">
               ({selectedDayInfo.sibsinGan.name})
             </span>
             <BigCharBox char={selectedDayInfo.gan} />
             <BigCharBox char={selectedDayInfo.ji} />
-            <span className="text-sm md:text-base font-semibold text-gray-800 whitespace-nowrap">
+            <span className="text-sm md:text-base font-semibold text-gray-700 whitespace-nowrap">
               ({selectedDayInfo.sibsinJi.name}) ({selectedDayInfo.unseong.name})
             </span>
           </div>
-        </div>
-      </div>
 
-      {/* 캘린더 바깥 정보 박스(월/월주) */}
-      <div className="mb-4 flex items-stretch gap-3">
-        {/* 왼쪽: 월주 박스 */}
-        <div className="glass-card p-3 md:p-4 flex flex-col justify-center min-w-[140px]">
-          <div className="flex items-center justify-between gap-2">
-            <button
-              type="button"
-              onClick={goPrevMonth}
-              disabled={!canPrev}
-              className={`px-2 py-1 rounded-md border text-sm font-bold ${
-                canPrev
-                  ? "border-gray-300 bg-white/60 hover:bg-white text-gray-700"
-                  : "border-gray-200 bg-gray-100/60 text-gray-400 cursor-not-allowed"
-              }`}
-              aria-label="이전 달"
-            >
-              ‹
-            </button>
-            <div className="text-gray-700 font-bold text-base md:text-lg">
-              {viewYear}년 {viewMonth}월
+          {/* 오른쪽: 월주 + 이전/다음 버튼 */}
+          <div className="bg-white/60 backdrop-blur-sm rounded-xl p-3 md:p-4 flex flex-col justify-center min-w-[200px] shadow-md border border-indigo-200">
+            <div className="flex items-center justify-between gap-2 mb-2">
+              <button
+                type="button"
+                onClick={goPrevMonth}
+                disabled={!canPrev}
+                className={`px-3 py-1.5 rounded-lg border text-sm font-bold transition-all ${
+                  canPrev
+                    ? "border-indigo-300 bg-white hover:bg-indigo-50 text-indigo-700 hover:shadow-md"
+                    : "border-gray-200 bg-gray-100/60 text-gray-400 cursor-not-allowed"
+                }`}
+                aria-label="이전 달"
+              >
+                ‹
+              </button>
+              <div className="text-indigo-700 font-bold text-sm md:text-base whitespace-nowrap">
+                {viewYear}년 {viewMonth}월
+              </div>
+              <button
+                type="button"
+                onClick={goNextMonth}
+                disabled={!canNext}
+                className={`px-3 py-1.5 rounded-lg border text-sm font-bold transition-all ${
+                  canNext
+                    ? "border-indigo-300 bg-white hover:bg-indigo-50 text-indigo-700 hover:shadow-md"
+                    : "border-gray-200 bg-gray-100/60 text-gray-400 cursor-not-allowed"
+                }`}
+                aria-label="다음 달"
+              >
+                ›
+              </button>
             </div>
-            <button
-              type="button"
-              onClick={goNextMonth}
-              disabled={!canNext}
-              className={`px-2 py-1 rounded-md border text-sm font-bold ${
-                canNext
-                  ? "border-gray-300 bg-white/60 hover:bg-white text-gray-700"
-                  : "border-gray-200 bg-gray-100/60 text-gray-400 cursor-not-allowed"
-              }`}
-              aria-label="다음 달"
-            >
-              ›
-            </button>
-          </div>
-          <div className="mt-2 flex items-center gap-2 text-gray-600 text-sm md:text-base">
-            <span className="font-semibold text-gray-700 whitespace-nowrap">월주:</span>
-            {selectedMonthInfo?.monthGanji ? (
-              <>
-                <SmallCharBox char={selectedMonthInfo.monthGanji[0]} />
-                <SmallCharBox char={selectedMonthInfo.monthGanji[1]} />
-              </>
-            ) : (
-              <span className="font-semibold text-gray-800">-</span>
-            )}
-            {selectedMonthInfo?.monthName ? (
-              <span className="text-gray-500">({selectedMonthInfo.monthName})</span>
-            ) : null}
-          </div>
-        </div>
-
-        {/* 오른쪽: 오늘의 운세 */}
-        <div className="glass-card p-4 md:p-6 flex flex-col justify-center flex-1 bg-gradient-to-br from-purple-50 via-pink-50 to-yellow-50 border-2 border-purple-200 shadow-lg">
-          <div className="flex items-center justify-center gap-3 mb-3">
-            <span className="text-3xl md:text-4xl">✨</span>
-            <h3 className="text-xl md:text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500">
-              오늘의 운세
-            </h3>
-            <span className="text-3xl md:text-4xl">✨</span>
-          </div>
-          <div className="text-center">
-            <div className="inline-block px-4 py-2 bg-white/70 rounded-lg border border-purple-300 shadow-sm">
-              <p className="text-sm md:text-base text-gray-600 font-medium">
-                메시지가 여기에 표시됩니다
-              </p>
+            <div className="flex items-center gap-2 text-gray-600 text-xs md:text-sm justify-center">
+              <span className="font-semibold text-gray-700 whitespace-nowrap">월주:</span>
+              {selectedMonthInfo?.monthGanji ? (
+                <>
+                  <SmallCharBox char={selectedMonthInfo.monthGanji[0]} />
+                  <SmallCharBox char={selectedMonthInfo.monthGanji[1]} />
+                </>
+              ) : (
+                <span className="font-semibold text-gray-800">-</span>
+              )}
+              {selectedMonthInfo?.monthName ? (
+                <span className="text-gray-500">({selectedMonthInfo.monthName})</span>
+              ) : null}
             </div>
           </div>
         </div>
       </div>
 
       {/* 요일 헤더 */}
-      <div className="grid grid-cols-7 gap-1.5 mb-2">
-        {weekdayLabels.map((w) => (
+      <div className="grid grid-cols-7 gap-1.5 mb-3">
+        {weekdayLabels.map((w, idx) => (
           <div
             key={w}
-            className="text-center text-sm md:text-base font-extrabold text-gray-800 tracking-wide"
+            className={`text-center text-sm md:text-base font-extrabold py-3 rounded-lg shadow-sm border tracking-wide ${
+              idx === 0
+                ? 'bg-gradient-to-br from-red-50 to-pink-50 text-red-600 border-red-200'
+                : idx === 6
+                ? 'bg-gradient-to-br from-blue-50 to-indigo-50 text-blue-600 border-blue-200'
+                : 'bg-gradient-to-br from-gray-50 to-slate-50 text-gray-700 border-gray-200'
+            }`}
           >
             {w}
           </div>

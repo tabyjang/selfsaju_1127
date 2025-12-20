@@ -21,7 +21,13 @@
       "mcp__ide__getDiagnostics",
       "Bash(pnpm install:*)",
       "WebFetch(domain:www.figma.com)",
-      "Bash(git stash:*)"
+      "Bash(git stash:*)",
+      "Bash(node -e:*)",
+      "Bash(python convert_gito.py:*)",
+      "Bash(python:*)",
+      "Bash(del convert_gito.py)",
+      "Bash(git restore:*)",
+      "Bash(ls:*)"
     ],
     "deny": [],
     "ask": []
