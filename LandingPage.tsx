@@ -1,10 +1,14 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useUser } from '@clerk/clerk-react';
+import { getUserSajuRecords } from './utils/sajuStorage';
 import './LandingPage.css';
 
 const LandingPage: React.FC = () => {
   const navigate = useNavigate();
+  const { user, isSignedIn, isLoaded } = useUser();
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -94,6 +98,43 @@ const LandingPage: React.FC = () => {
     };
   }, []);
 
+  // 무료 사주 분석하기 버튼 클릭 핸들러
+  const handleStartAnalysis = async () => {
+    // Clerk 로딩 중이면 대기
+    if (!isLoaded) {
+      return;
+    }
+
+    // 로그인하지 않은 경우 → 입력 페이지로 이동
+    if (!isSignedIn || !user) {
+      navigate('/input');
+      return;
+    }
+
+    // 로그인한 경우 → DB에서 "내 사주" 불러오기
+    try {
+      setIsLoading(true);
+
+      const result = await getUserSajuRecords(user.id);
+
+      if (result.success && result.data && result.data.length > 0) {
+        // DB에 저장된 사주가 있으면 → localStorage에 저장하고 대시보드로 이동
+        const mySaju = result.data[0].saju_data; // 가장 최신 사주
+        localStorage.setItem('currentSajuData', JSON.stringify(mySaju));
+        navigate('/dashboard');
+      } else {
+        // DB에 사주가 없으면 → 입력 페이지로 이동 (처음 사용하는 유저)
+        navigate('/input');
+      }
+    } catch (error) {
+      console.error('사주 불러오기 실패:', error);
+      // 에러 발생 시에도 입력 페이지로 이동
+      navigate('/input');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="landing-page-wrapper page-fade-in">
       <canvas ref={canvasRef} id="particles-canvas"></canvas>
@@ -114,7 +155,13 @@ const LandingPage: React.FC = () => {
           아낌 없는 사주 정보가 기다립니다.
         </p>
         <div className="cta-container fade-in delay-3">
-          <button onClick={() => navigate('/dashboard')} className="glow-button">무료 사주 분석하기</button>
+          <button
+            onClick={handleStartAnalysis}
+            disabled={isLoading}
+            className="glow-button"
+          >
+            {isLoading ? '불러오는 중...' : '무료 사주 분석하기'}
+          </button>
         </div>
       </main>
 

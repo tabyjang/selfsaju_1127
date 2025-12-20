@@ -463,9 +463,14 @@ const DeepAnalysis: React.FC = () => {
                 alt="아사주달 로고"
                 className="h-10 w-auto object-contain"
               />
-              <h1 className="text-xl font-bold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">
-                아사주달
-              </h1>
+              <div className="flex items-center gap-2">
+                <h1 className="text-xl font-bold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">
+                  아사주달
+                </h1>
+                <span className="text-xs font-semibold text-purple-500 animate-pulse">
+                  (아! 사주 보여달라고?)
+                </span>
+              </div>
             </div>
             <div className="flex gap-2 items-center">
               <button

@@ -210,16 +210,39 @@ const DaewoonPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-yellow-50 py-8 px-4 page-transition">
-      <div className="max-w-6xl mx-auto">
-        {/* 헤더 */}
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-yellow-50 page-transition">
+      {/* 상단 고정 헤더 */}
+      <div className="fixed top-0 left-0 right-0 bg-white/80 backdrop-blur-md border-b border-gray-200 z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate('/')}>
+              <img
+                src="/logo.png"
+                alt="아사주달 로고"
+                className="h-10 w-auto object-contain"
+              />
+              <div className="flex items-center gap-2">
+                <h1 className="text-xl font-bold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">
+                  아사주달
+                </h1>
+                <span className="text-xs font-semibold text-purple-500 animate-pulse">
+                  (아! 사주 보여달라고?)
+                </span>
+              </div>
+            </div>
+            <button
+              onClick={() => navigate('/result')}
+              className="px-4 py-2 text-purple-600 bg-purple-50 hover:bg-purple-100 rounded-lg transition text-sm font-bold border border-purple-200"
+            >
+              ← 돌아가기
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div className="max-w-6xl mx-auto px-4 pt-24 pb-8">
+        {/* 페이지 제목 */}
         <div className="text-center mb-8">
-          <button
-            onClick={() => navigate("/result")}
-            className="mb-4 text-purple-600 hover:text-purple-800 font-semibold"
-          >
-            ← 돌아가기
-          </button>
           <h1 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500 mb-2">
             대운·세운·월운 흐름
           </h1>

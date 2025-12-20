@@ -113,13 +113,21 @@ const InputPage: React.FC = () => {
       {isLoading && <OhaengLoading />}
 
       <main className="max-w-7xl mx-auto relative pt-12">
-        <header className="text-center mb-12 relative flex justify-center">
+        <header className="text-center mb-12 relative flex flex-col items-center">
           <img
             src="/logo.png"
             alt="아사주달 로고"
             className="h-28 sm:h-36 md:h-44 w-auto object-contain cursor-pointer"
             onClick={() => navigate("/")}
           />
+          <div className="flex items-center gap-2 mt-3">
+            <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">
+              아사주달
+            </h1>
+            <span className="text-sm font-semibold text-purple-500 animate-pulse">
+              (아! 사주 보여달라고?)
+            </span>
+          </div>
         </header>
 
         <SajuInputForm onAnalyze={handleAnalysis} isLoading={isLoading} />

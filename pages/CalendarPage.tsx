@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/clerk-react';
+import { SignedIn, SignedOut, SignInButton, UserButton, useUser } from '@clerk/clerk-react';
 import type { SajuInfo, Ohaeng } from '../types';
 import { MonthlyIljuCalendar } from '../components/MonthlyIljuCalendar';
+import { upsertMySaju } from '../utils/sajuStorage';
 
 // 오행 색상 맵 (달력과 동일)
 const ohaengColorMap: Record<Ohaeng, { bg: string; text: string; border?: string }> = {
@@ -72,7 +73,10 @@ const JijiCharBox: React.FC<{ char: string }> = ({ char }) => {
 const CalendarPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { user, isSignedIn } = useUser();
   const [sajuData, setSajuData] = useState<SajuInfo | null>(null);
+  const [isSaving, setIsSaving] = useState<boolean>(false);
+  const [saveMessage, setSaveMessage] = useState<string>('');
 
   useEffect(() => {
     // location state에서 먼저 가져오기
@@ -91,14 +95,48 @@ const CalendarPage: React.FC = () => {
         setSajuData(JSON.parse(savedData));
       } catch (error) {
         console.error('사주 데이터 복원 실패:', error);
-        // 데이터가 없으면 결과 페이지로 리다이렉트
-        navigate('/result');
+        // 데이터가 없으면 대시보드로 리다이렉트
+        navigate('/dashboard');
       }
     } else {
-      // 데이터가 없으면 결과 페이지로 리다이렉트
-      navigate('/result');
+      // 데이터가 없으면 대시보드로 리다이렉트
+      navigate('/dashboard');
     }
   }, [location, navigate]);
+
+  // "내 사주로 저장" 핸들러
+  const handleSaveMySaju = async () => {
+    if (!isSignedIn || !user || !sajuData) {
+      alert('로그인이 필요합니다.');
+      return;
+    }
+
+    try {
+      setIsSaving(true);
+      setSaveMessage('');
+
+      const result = await upsertMySaju(user.id, sajuData);
+
+      if (result.success) {
+        const name = sajuData.name || '사주 정보';
+        const message = result.isUpdate
+          ? `✅ ${name}님의 사주가 업데이트되었습니다!`
+          : `✅ ${name}님의 사주가 저장되었습니다!`;
+        setSaveMessage(message);
+
+        // 3초 후 메시지 제거
+        setTimeout(() => setSaveMessage(''), 3000);
+      } else {
+        setSaveMessage('❌ 저장 중 오류가 발생했습니다.');
+        console.error('저장 실패:', result.error);
+      }
+    } catch (error) {
+      setSaveMessage('❌ 저장 중 오류가 발생했습니다.');
+      console.error('저장 오류:', error);
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   if (!sajuData) {
     return (
@@ -112,50 +150,89 @@ const CalendarPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen font-sans p-4 sm:p-6 lg:p-8 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 page-transition">
-      {/* 우측 상단 로그인 버튼 */}
-      <div className="fixed top-4 right-4 z-50 flex gap-2">
-        <SignedOut>
-          <SignInButton mode="modal">
-            <button className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition text-sm font-bold shadow-md cursor-pointer">
-              로그인
-            </button>
-          </SignInButton>
-        </SignedOut>
-        <SignedIn>
-          <UserButton afterSignOutUrl="/input" />
-        </SignedIn>
+    <div className="min-h-screen font-sans bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 page-transition">
+      {/* 헤더 */}
+      <div className="fixed top-0 left-0 right-0 bg-white/80 backdrop-blur-md border-b border-gray-200 z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate('/')}>
+              <img
+                src="/logo.png"
+                alt="아사주달 로고"
+                className="h-10 w-auto object-contain"
+              />
+              <div className="flex items-center gap-2">
+                <h1 className="text-xl font-bold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">
+                  아사주달
+                </h1>
+                <span className="text-xs font-semibold text-purple-500 animate-pulse">
+                  (아! 사주 보여달라고?)
+                </span>
+              </div>
+            </div>
+            <div className="flex gap-2 items-center">
+              <button
+                onClick={() => navigate('/input', { state: { skipAutoLoad: true } })}
+                className="hidden md:block px-4 py-2 text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition text-sm font-bold border border-indigo-200"
+              >
+                다른 사주 입력
+              </button>
+              <SignedOut>
+                <SignInButton mode="modal">
+                  <button className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition text-sm font-bold shadow-md cursor-pointer">
+                    로그인
+                  </button>
+                </SignInButton>
+              </SignedOut>
+              <SignedIn>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={handleSaveMySaju}
+                    disabled={isSaving}
+                    className="group relative px-5 py-2.5 bg-gradient-to-r from-purple-600 via-purple-500 to-indigo-600 text-white rounded-xl hover:from-purple-700 hover:via-purple-600 hover:to-indigo-700 transition-all duration-300 text-sm font-bold shadow-lg hover:shadow-xl hover:scale-105 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 overflow-hidden"
+                  >
+                    <span className="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 transition-opacity duration-300"></span>
+                    <span className="relative flex items-center gap-2">
+                      {isSaving ? (
+                        <>
+                          <svg className="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                          </svg>
+                          저장 중...
+                        </>
+                      ) : (
+                        <>
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                          </svg>
+                          내 사주로 저장
+                        </>
+                      )}
+                    </span>
+                  </button>
+                  <button
+                    onClick={() => navigate('/input', { state: { skipAutoLoad: true } })}
+                    className="md:hidden px-3 py-2 text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition text-xs font-bold border border-indigo-200"
+                  >
+                    새 사주
+                  </button>
+                  <UserButton afterSignOutUrl="/input" />
+                </div>
+              </SignedIn>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <main className="max-w-7xl mx-auto relative pt-12">
-        {/* 헤더 */}
-        <div className="text-center mb-8">
-          <button
-            onClick={() => navigate('/result')}
-            className="mb-4 text-indigo-600 hover:text-indigo-800 font-semibold inline-flex items-center gap-2"
-          >
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-            </svg>
-            돌아가기
-          </button>
-          <h1 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 mb-2">
-
-          </h1>
-          <p className="text-gray-600">
-
-          </p>
+      {/* 저장 메시지 표시 */}
+      {saveMessage && (
+        <div className="fixed top-20 right-4 z-[60] px-4 py-2 bg-white border-2 border-green-500 text-green-700 rounded-lg shadow-lg text-sm font-bold animate-fade-in">
+          {saveMessage}
         </div>
+      )}
 
-        {/* 로고 */}
-        <header className="text-center mb-8 relative flex justify-center">
-          <img
-            src="/logo.png"
-            alt="아사주달 로고"
-            className="h-20 sm:h-24 md:h-28 w-auto object-contain cursor-pointer"
-            onClick={() => navigate('/')}
-          />
-        </header>
+      <main className="max-w-7xl mx-auto relative pt-24 px-4 sm:px-6 lg:px-8 pb-8">
 
         {/* 캘린더 */}
         <div className="max-w-6xl mx-auto">

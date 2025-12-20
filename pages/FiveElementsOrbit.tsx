@@ -1153,19 +1153,45 @@ export default function FiveElementsOrbit() {
           boxShadow: "0 8px 32px rgba(0,0,0,0.4)",
         }}
       >
-        <h1
-          style={{
-            margin: "0 0 16px 0",
-            fontSize: "26px",
-            background: "linear-gradient(135deg, #60a5fa, #fbbf24, #ec4899)",
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
-            fontWeight: "bold",
-            letterSpacing: "-0.5px",
-          }}
-        >
-           🌌 5행 에너지 궤도: 당신을 중심으로 움직이는 우주의 지도
-        </h1>
+        <div style={{ marginBottom: "16px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
+            <h2
+              style={{
+                margin: 0,
+                fontSize: "20px",
+                background: "linear-gradient(135deg, #a855f7, #6366f1)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                fontWeight: "bold",
+              }}
+            >
+              아사주달
+            </h2>
+            <span
+              style={{
+                fontSize: "11px",
+                color: "#a855f7",
+                fontWeight: "600",
+                animation: "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+              }}
+            >
+              (아! 사주 보여달라고?)
+            </span>
+          </div>
+          <h1
+            style={{
+              margin: 0,
+              fontSize: "26px",
+              background: "linear-gradient(135deg, #60a5fa, #fbbf24, #ec4899)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+              fontWeight: "bold",
+              letterSpacing: "-0.5px",
+            }}
+          >
+             🌌 5행 에너지 궤도: 당신을 중심으로 움직이는 우주의 지도
+          </h1>
+        </div>
 
         <div
           style={{

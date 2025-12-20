@@ -129,22 +129,34 @@ export const MonthlyIljuCalendar: React.FC<{ sajuInfo: SajuInfo }> = ({
   const [selectedDay, setSelectedDay] = useState<number>(today.getDate());
 
   // 체크박스 상태 관리 (localStorage 연동)
-  const [showCheonEul, setShowCheonEul] = useState<boolean>(false);
-  const [showYongsin, setShowYongsin] = useState<boolean>(false);
-
-  // localStorage에서 초기값 로드
-  useEffect(() => {
+  // localStorage에서 초기값 직접 로드 (기본값: 천을귀인 true, 용신 false)
+  const [showCheonEul, setShowCheonEul] = useState<boolean>(() => {
     try {
       const saved = localStorage.getItem('calendar-display-options');
       if (saved) {
         const options = JSON.parse(saved);
-        setShowCheonEul(options.showCheonEul ?? false);
-        setShowYongsin(options.showYongsin ?? false);
+        return options.showCheonEul ?? true; // 기본값 true
       }
+      return true; // localStorage에 값이 없으면 true
     } catch (error) {
       console.error('Failed to load calendar display options:', error);
+      return true; // 에러 시에도 true
     }
-  }, []);
+  });
+
+  const [showYongsin, setShowYongsin] = useState<boolean>(() => {
+    try {
+      const saved = localStorage.getItem('calendar-display-options');
+      if (saved) {
+        const options = JSON.parse(saved);
+        return options.showYongsin ?? false; // 기본값 false
+      }
+      return false; // localStorage에 값이 없으면 false
+    } catch (error) {
+      console.error('Failed to load calendar display options:', error);
+      return false; // 에러 시에도 false
+    }
+  });
 
   // localStorage에 저장
   useEffect(() => {

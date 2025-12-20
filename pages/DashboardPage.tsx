@@ -1,8 +1,15 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/clerk-react';
-import type { SajuInfo, Ohaeng } from '../types';
+import { SignedIn, SignedOut, SignInButton, UserButton, useUser } from '@clerk/clerk-react';
+import type { SajuInfo, Ohaeng, GeokgukResult } from '../types';
 import { getDayGanjiByYMD, getUnseongByIlganAndJiji, earthlyBranchGanInfo } from '../utils/manse';
+import { upsertMySaju } from '../utils/sajuStorage';
+import { analyzeGeokguk } from '../utils/gyeokguk';
+import { geokgukDescriptions } from '../utils/geokgukDescriptions';
+import { loadIljuBundle } from '../utils/ilju/loadIljuBundle';
+import type { IljuBundle } from '../utils/ilju/types';
+import { sibsinPositionDescriptions } from '../utils/sibsinPositionDescriptions';
+import { unseongDescriptions } from '../utils/unseongDescriptions';
 
 // 오행 색상 맵 (캘린더와 동일)
 const ohaengColorMap: Record<Ohaeng, { bg: string; text: string; border: string }> = {
@@ -25,7 +32,7 @@ const ganjiKoreanMap: Record<string, string> = {
   '申': '신금', '酉': '유금', '戌': '술토', '亥': '해수',
 };
 
-// 간지 박스 컴포넌트 (캘린더와 동일한 스타일)
+// 간지 박스 컴포넌트 (사주결과 페이지와 동일한 스타일)
 const GanjiBox: React.FC<{ char: string; showKorean?: boolean }> = ({ char, showKorean = true }) => {
   const info = earthlyBranchGanInfo[char];
   if (!info) return <span className="text-2xl font-bold">{char}</span>;
@@ -36,11 +43,7 @@ const GanjiBox: React.FC<{ char: string; showKorean?: boolean }> = ({ char, show
   return (
     <div className="flex flex-col items-center gap-1">
       <div
-        className={`inline-flex items-center justify-center w-16 h-16 text-4xl font-bold rounded-md shadow-md ${color.bg} ${color.text} ${color.border}`}
-        style={{
-          WebkitTextStroke: '0.5px black',
-          textShadow: '0 0 1px rgba(0,0,0,0.5), 1px 1px 2px rgba(0,0,0,0.3)'
-        }}
+        className={`saju-char-outline inline-flex items-center justify-center w-16 h-16 text-4xl font-bold rounded-md shadow-md ${color.bg} ${color.text} ${color.border}`}
       >
         {char}
       </div>
@@ -53,8 +56,16 @@ const GanjiBox: React.FC<{ char: string; showKorean?: boolean }> = ({ char, show
 
 const DashboardPage: React.FC = () => {
   const navigate = useNavigate();
+  const { user, isSignedIn } = useUser();
   const [sajuData, setSajuData] = useState<SajuInfo | null>(null);
   const [userName, setUserName] = useState<string>('사용자');
+  const [isSaving, setIsSaving] = useState<boolean>(false);
+  const [saveMessage, setSaveMessage] = useState<string>('');
+  const [showGyeokgukModal, setShowGyeokgukModal] = useState<boolean>(false);
+  const [showIljuModal, setShowIljuModal] = useState<boolean>(false);
+  const [iljuData, setIljuData] = useState<IljuBundle | null>(null);
+  const [iljuLoading, setIljuLoading] = useState<boolean>(false);
+  const [showWollyeongModal, setShowWollyeongModal] = useState<boolean>(false);
 
   // 페이지 로드 시 스크롤을 최상단으로 이동
   useEffect(() => {
@@ -77,6 +88,40 @@ const DashboardPage: React.FC = () => {
       }
     }
   }, []);
+
+  // "내 사주로 저장" 핸들러
+  const handleSaveMySaju = async () => {
+    if (!isSignedIn || !user || !sajuData) {
+      alert('로그인이 필요합니다.');
+      return;
+    }
+
+    try {
+      setIsSaving(true);
+      setSaveMessage('');
+
+      const result = await upsertMySaju(user.id, sajuData);
+
+      if (result.success) {
+        const name = sajuData.name || '사주 정보';
+        const message = result.isUpdate
+          ? `✅ ${name}님의 사주가 업데이트되었습니다!`
+          : `✅ ${name}님의 사주가 저장되었습니다!`;
+        setSaveMessage(message);
+
+        // 3초 후 메시지 제거
+        setTimeout(() => setSaveMessage(''), 3000);
+      } else {
+        setSaveMessage('❌ 저장 중 오류가 발생했습니다.');
+        console.error('저장 실패:', result.error);
+      }
+    } catch (error) {
+      setSaveMessage('❌ 저장 중 오류가 발생했습니다.');
+      console.error('저장 오류:', error);
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   // 오늘 날짜 정보 계산
   const todayInfo = useMemo(() => {
@@ -158,6 +203,68 @@ const DashboardPage: React.FC = () => {
     },
   ];
 
+  // 격국 분석 결과
+  const geokgukResult = useMemo(() => {
+    if (!sajuData) return null;
+    try {
+      const isHourUnknown =
+        sajuData.pillars.hour.cheonGan.char === '-' ||
+        sajuData.pillars.hour.jiJi.char === '-';
+      return analyzeGeokguk(sajuData, isHourUnknown);
+    } catch (e) {
+      console.error('격국 분석 오류:', e);
+      return null;
+    }
+  }, [sajuData]);
+
+  // 일주 데이터 로드
+  useEffect(() => {
+    if (!showIljuModal || !sajuData) {
+      setIljuData(null);
+      return;
+    }
+
+    const iljuGanji = sajuData.pillars.day.ganji;
+    setIljuLoading(true);
+
+    loadIljuBundle(iljuGanji)
+      .then((data) => {
+        setIljuData(data);
+        setIljuLoading(false);
+      })
+      .catch((error) => {
+        console.error('일주 데이터 로드 실패:', error);
+        setIljuData(null);
+        setIljuLoading(false);
+      });
+  }, [showIljuModal, sajuData]);
+
+  // renderBoldMarkdown 헬퍼 함수
+  const renderBoldMarkdown = (text: string, strongClassName: string): React.ReactNode => {
+    const regex = /\*\*(.+?)\*\*/g;
+    const nodes: React.ReactNode[] = [];
+    let lastIndex = 0;
+
+    for (let match = regex.exec(text); match; match = regex.exec(text)) {
+      const start = match.index;
+      const full = match[0];
+      const inner = match[1];
+      if (start > lastIndex) {
+        nodes.push(text.slice(lastIndex, start));
+      }
+      nodes.push(
+        <strong key={start} className={strongClassName}>
+          {inner}
+        </strong>
+      );
+      lastIndex = start + full.length;
+    }
+    if (lastIndex < text.length) {
+      nodes.push(text.slice(lastIndex));
+    }
+    return <>{nodes}</>;
+  };
+
   // 통계 카드 데이터
   const statsCards = [
     {
@@ -168,6 +275,7 @@ const DashboardPage: React.FC = () => {
       color: 'text-amber-600',
       bgColor: 'bg-amber-50',
       borderColor: 'border-amber-200',
+      onClick: () => setShowIljuModal(true),
     },
     {
       label: '월령',
@@ -177,15 +285,17 @@ const DashboardPage: React.FC = () => {
       color: 'text-purple-600',
       bgColor: 'bg-purple-50',
       borderColor: 'border-purple-200',
+      onClick: () => setShowWollyeongModal(true),
     },
     {
       label: '격국',
-      value: sajuData?.gyeokguk?.name || '-',
+      value: geokgukResult?.격국?.격명칭 || '-',
       description: '사주의 유형',
       icon: '🎭',
       color: 'text-blue-600',
       bgColor: 'bg-blue-50',
       borderColor: 'border-blue-200',
+      onClick: () => setShowGyeokgukModal(true),
     },
   ];
 
@@ -201,9 +311,14 @@ const DashboardPage: React.FC = () => {
                 alt="아사주달 로고"
                 className="h-10 w-auto object-contain"
               />
-              <h1 className="text-xl font-bold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">
-                아사주달
-              </h1>
+              <div className="flex items-center gap-2">
+                <h1 className="text-xl font-bold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">
+                  아사주달
+                </h1>
+                <span className="text-xs font-semibold text-purple-500 animate-pulse">
+                  (아! 사주 보여달라고?)
+                </span>
+              </div>
             </div>
             <div className="flex gap-2 items-center">
               <button
@@ -222,6 +337,31 @@ const DashboardPage: React.FC = () => {
               <SignedIn>
                 <div className="flex items-center gap-2">
                   <button
+                    onClick={handleSaveMySaju}
+                    disabled={isSaving}
+                    className="group relative px-5 py-2.5 bg-gradient-to-r from-purple-600 via-purple-500 to-indigo-600 text-white rounded-xl hover:from-purple-700 hover:via-purple-600 hover:to-indigo-700 transition-all duration-300 text-sm font-bold shadow-lg hover:shadow-xl hover:scale-105 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 overflow-hidden"
+                  >
+                    <span className="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 transition-opacity duration-300"></span>
+                    <span className="relative flex items-center gap-2">
+                      {isSaving ? (
+                        <>
+                          <svg className="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                          </svg>
+                          저장 중...
+                        </>
+                      ) : (
+                        <>
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                          </svg>
+                          내 사주로 저장
+                        </>
+                      )}
+                    </span>
+                  </button>
+                  <button
                     onClick={() => navigate('/input', { state: { skipAutoLoad: true } })}
                     className="md:hidden px-3 py-2 text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition text-xs font-bold border border-indigo-200"
                   >
@@ -235,16 +375,68 @@ const DashboardPage: React.FC = () => {
         </div>
       </div>
 
+      {/* 저장 메시지 표시 */}
+      {saveMessage && (
+        <div className="fixed top-20 right-4 z-[60] px-4 py-2 bg-white border-2 border-green-500 text-green-700 rounded-lg shadow-lg text-sm font-bold animate-fade-in">
+          {saveMessage}
+        </div>
+      )}
+
       {/* 메인 컨텐츠 */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-16">
         {/* 환영 메시지 */}
-        <div className="mb-12 text-center animate-fade-in">
-          <h2 className="text-4xl md:text-5xl font-extrabold text-gray-800 mb-4">
-            안녕하세요, <span className="bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">{userName}</span>님! 👋
-          </h2>
-          <p className="text-lg text-gray-600">
-            나의 운명을 탐험하고 인생의 지도를 그려보세요
-          </p>
+        <div className="mb-12 animate-fade-in">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+            {/* 왼쪽: 인사문구 */}
+            <div className="flex-1 text-center md:text-left">
+              <h2 className="text-4xl md:text-5xl font-extrabold text-gray-800 mb-4">
+                안녕하세요, <span className="bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">{userName}</span>님! 👋
+              </h2>
+              <p className="text-lg text-gray-600">
+                나의 운명을 탐험하고 인생의 지도를 그려보세요
+              </p>
+            </div>
+
+            {/* 오른쪽: 만세력 달력보기 카드 */}
+            <div
+              onClick={() => navigate('/calendar', { state: { sajuData } })}
+              className="group relative bg-gradient-to-br from-pink-100 via-purple-100 to-indigo-100 rounded-2xl p-6 cursor-pointer hover:shadow-xl transition-all duration-300 hover:scale-105 border-2 border-pink-200 hover:border-purple-300 w-full md:w-80"
+            >
+              {/* 배경 장식 */}
+              <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-pink-200/50 to-purple-200/50 rounded-full blur-2xl group-hover:blur-3xl transition-all"></div>
+              <div className="absolute bottom-0 left-0 w-16 h-16 bg-gradient-to-tr from-indigo-200/50 to-purple-200/50 rounded-full blur-2xl group-hover:blur-3xl transition-all"></div>
+
+              <div className="relative z-10">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="text-4xl animate-bounce">📅</div>
+                  <h3 className="text-xl font-bold bg-gradient-to-r from-pink-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent">
+                    만세력 달력
+                  </h3>
+                </div>
+                <p className="text-sm text-gray-700 mb-4 leading-relaxed">
+                  매일매일의 일주를 확인하고<br />
+                  <span className="font-semibold text-purple-700">오늘의 에너지</span>를 느껴보세요 ✨
+                </p>
+                <div className="flex items-center justify-between">
+                  <div className="flex gap-1">
+                    <span className="text-2xl">🌸</span>
+                    <span className="text-2xl">🌙</span>
+                    <span className="text-2xl">⭐</span>
+                  </div>
+                  <div className="flex items-center gap-1 text-purple-600 font-semibold text-sm group-hover:gap-2 transition-all">
+                    <span>보러가기</span>
+                    <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+
+              {/* 반짝이는 효과 */}
+              <div className="absolute top-4 right-4 w-2 h-2 bg-yellow-300 rounded-full animate-ping"></div>
+              <div className="absolute bottom-6 left-6 w-1.5 h-1.5 bg-pink-300 rounded-full animate-pulse"></div>
+            </div>
+          </div>
         </div>
 
         {/* 오늘의 운세 섹션 */}
@@ -262,15 +454,11 @@ const DashboardPage: React.FC = () => {
                   <span className="text-white/80 text-lg">일간</span>
                   <div className="flex flex-col items-center">
                     <div
-                      className={`inline-flex items-center justify-center w-12 h-12 text-3xl font-bold rounded-md shadow-md ${(() => {
+                      className={`saju-char-outline-small inline-flex items-center justify-center w-12 h-12 text-3xl font-bold rounded-md shadow-md ${(() => {
                           const info = earthlyBranchGanInfo[todayInfo.ilgan];
                           return info ? `${ohaengColorMap[info.ohaeng].bg} ${ohaengColorMap[info.ohaeng].text} ${ohaengColorMap[info.ohaeng].border}` : 'bg-gray-200 text-black border border-gray-800';
                         })()
                         }`}
-                      style={{
-                        WebkitTextStroke: '0.5px black',
-                        textShadow: '0 0 1px rgba(0,0,0,0.5), 1px 1px 2px rgba(0,0,0,0.3)'
-                      }}
                     >
                       {todayInfo.ilgan}
                     </div>
@@ -321,7 +509,10 @@ const DashboardPage: React.FC = () => {
               {statsCards.map((stat, index) => (
                 <div
                   key={index}
-                  className={`${stat.bgColor} ${stat.borderColor} border-2 rounded-2xl p-6 text-center shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1`}
+                  onClick={stat.onClick || undefined}
+                  className={`${stat.bgColor} ${stat.borderColor} border-2 rounded-2xl p-6 text-center shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 ${
+                    stat.onClick ? 'cursor-pointer' : ''
+                  }`}
                 >
                   <div className="text-3xl mb-2">{stat.icon}</div>
                   <div className="text-sm text-gray-600 font-semibold mb-1">{stat.label}</div>
@@ -329,6 +520,11 @@ const DashboardPage: React.FC = () => {
                     {stat.value}
                   </div>
                   <div className="text-xs text-gray-500">{stat.description}</div>
+                  {stat.onClick && (
+                    <div className="mt-2 text-xs text-blue-600 font-semibold">
+                      클릭하여 자세히 보기 →
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
@@ -347,6 +543,10 @@ const DashboardPage: React.FC = () => {
                 key={index}
                 onClick={() => {
                   if (card.path) {
+                    // 만세력 캘린더로 이동 시 데이터 설정
+                    if (card.path === '/calendar' && sajuData) {
+                      localStorage.setItem('calendarSajuData', JSON.stringify(sajuData));
+                    }
                     navigate(card.path);
                   }
                 }}
@@ -421,6 +621,496 @@ const DashboardPage: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* 일주 모달 */}
+      {showIljuModal && sajuData && (
+        <div
+          className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 animate-fade-in"
+          onClick={() => setShowIljuModal(false)}
+        >
+          <div
+            className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* 모달 헤더 */}
+            <div className="sticky top-0 bg-gradient-to-r from-emerald-600 via-green-600 to-teal-500 p-6 rounded-t-2xl flex justify-between items-center z-10">
+              <h2 className="text-2xl md:text-3xl font-bold text-white">일주(日柱) - 나와 배우자</h2>
+              <button
+                onClick={() => setShowIljuModal(false)}
+                className="text-white hover:text-gray-200 transition"
+              >
+                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            {/* 모달 내용 */}
+            <div className="p-6 space-y-6">
+              {/* 일주 소개 */}
+              <div className="bg-gradient-to-br from-emerald-50 via-green-50 to-teal-50 rounded-xl border-2 border-emerald-200 p-6">
+                <div className="bg-white/80 p-6 rounded-xl border-2 border-emerald-200 shadow-lg">
+                  <div className="space-y-4 text-base font-normal leading-relaxed text-gray-700">
+                    <p>
+                      <strong className="text-emerald-700 font-bold">일주(日柱)</strong>는 나 자신의 핵심이자 배우자의 궁입니다.
+                    </p>
+                    <p>
+                      <strong className="text-emerald-600 font-semibold">일간(日干)</strong>은 내{' '}
+                      <strong className="text-emerald-700 font-bold">영혼</strong>을,{' '}
+                      <strong className="text-emerald-600 font-semibold">일지(日支)</strong>는 내{' '}
+                      <strong className="text-emerald-700 font-bold">몸과 배우자</strong>를 상징합니다.
+                    </p>
+                    <p>
+                      일주를 통해 나의 본성과 배우자와의 인연, 그리고 인생의 안정감을 읽어낼 수 있습니다.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* 로딩 중 */}
+              {iljuLoading && (
+                <div className="bg-white/60 p-8 rounded-xl border border-emerald-200 text-center">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600 mx-auto mb-4"></div>
+                  <p className="text-gray-700">일주 정보를 불러오는 중입니다...</p>
+                </div>
+              )}
+
+              {/* 일주 정보 표시 */}
+              {!iljuLoading && iljuData && (
+                <div className="space-y-6">
+                  {/* 일주 이름 및 특성 */}
+                  <div className="text-center">
+                    <div className="inline-block px-3 py-1 bg-emerald-100 text-emerald-800 rounded-full text-sm font-semibold mb-2">
+                      나의 일주 (Day Pillar)
+                    </div>
+                    <h3 className="text-3xl md:text-4xl font-extrabold text-gray-800 mb-2">
+                      {iljuData.name || sajuData.pillars.day.ganji}
+                    </h3>
+                    <p className="text-lg text-gray-600 font-medium">
+                      "{renderBoldMarkdown(iljuData.general.nature || '', 'font-extrabold text-emerald-800')}"
+                    </p>
+                  </div>
+
+                  {/* 핵심 특징 */}
+                  <div className="bg-white/80 p-6 rounded-xl border-2 border-emerald-200 shadow-lg">
+                    <h4 className="text-xl font-bold text-emerald-700 mb-4 flex items-center gap-2">
+                      <span>💎</span> 핵심 특징
+                    </h4>
+                    <p className="text-base md:text-lg font-normal leading-relaxed text-gray-800 whitespace-pre-line">
+                      {renderBoldMarkdown(iljuData.general.characteristic || '', 'font-extrabold text-emerald-800')}
+                    </p>
+                  </div>
+
+                  {/* 배우자 */}
+                  <div className="bg-gradient-to-br from-pink-50 to-rose-50 p-6 rounded-xl border-2 border-pink-200 shadow-lg">
+                    <h4 className="text-xl font-bold text-pink-700 mb-4 flex items-center gap-2">
+                      <span>💕</span> 배우자
+                    </h4>
+                    <p className="text-base md:text-lg font-normal leading-relaxed text-gray-800 whitespace-pre-line">
+                      {renderBoldMarkdown(iljuData.general.spouse || '', 'font-extrabold text-pink-900')}
+                    </p>
+                  </div>
+
+                  {/* 직업 · 재물운 */}
+                  <div className="bg-gradient-to-br from-blue-50 to-cyan-50 p-6 rounded-xl border-2 border-blue-200 shadow-lg">
+                    <h4 className="text-xl font-bold text-blue-700 mb-4 flex items-center gap-2">
+                      <span>💼</span> 직업 · 재물운
+                    </h4>
+                    <p className="text-base md:text-lg font-normal leading-relaxed text-gray-800 whitespace-pre-line">
+                      {renderBoldMarkdown(iljuData.general.jobWealth || '', 'font-extrabold text-blue-900')}
+                    </p>
+                  </div>
+
+                  {/* 족집게 조언 */}
+                  <div className="bg-gradient-to-br from-amber-50 to-yellow-50 p-6 rounded-xl border-2 border-amber-200 shadow-lg">
+                    <h4 className="text-xl font-bold text-amber-700 mb-4 flex items-center gap-2">
+                      <span>🍀</span> 족집게 조언
+                    </h4>
+                    <p className="text-base md:text-lg font-medium leading-relaxed text-gray-800 whitespace-pre-line">
+                      {renderBoldMarkdown(iljuData.general.advice || '', 'font-extrabold text-emerald-800')}
+                    </p>
+                  </div>
+
+                  {/* 더 자세히 보기 버튼 */}
+                  <div className="bg-gradient-to-r from-indigo-50 to-purple-50 p-6 rounded-xl border-2 border-indigo-200 text-center">
+                    <p className="text-gray-700 mb-4">
+                      더 자세한 일주 분석이 궁금하시다면 사주 분석 결과 페이지를 확인해보세요!
+                    </p>
+                    <button
+                      onClick={() => {
+                        setShowIljuModal(false);
+                        navigate('/result');
+                      }}
+                      className="px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-full font-bold hover:from-indigo-700 hover:to-purple-700 transition shadow-lg"
+                    >
+                      사주 분석 결과로 이동 →
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* 데이터 로드 실패 */}
+              {!iljuLoading && !iljuData && (
+                <div className="bg-yellow-50 p-6 rounded-xl border-2 border-yellow-200 text-center">
+                  <p className="text-gray-700 mb-2">일주 상세 정보를 불러올 수 없습니다.</p>
+                  <p className="text-sm text-gray-600">사주 분석 결과 페이지에서 확인해주세요.</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 월령 모달 */}
+      {showWollyeongModal && sajuData && (
+        <div
+          className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 animate-fade-in"
+          onClick={() => setShowWollyeongModal(false)}
+        >
+          <div
+            className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* 모달 헤더 */}
+            <div className="sticky top-0 bg-gradient-to-r from-purple-600 via-violet-600 to-indigo-500 p-6 rounded-t-2xl flex justify-between items-center z-10">
+              <h2 className="text-2xl md:text-3xl font-bold text-white">
+                월령(月令) - 운명의 사령관
+              </h2>
+              <button
+                onClick={() => setShowWollyeongModal(false)}
+                className="text-white hover:text-gray-200 transition"
+              >
+                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            {/* 모달 내용 */}
+            <div className="p-6 space-y-6">
+              {/* 월령 소개 */}
+              <div className="bg-gradient-to-br from-purple-50 via-violet-50 to-indigo-50 rounded-xl border-2 border-purple-200 p-6">
+                <div className="bg-white/80 p-6 rounded-xl border-2 border-purple-200 shadow-lg">
+                  <div className="space-y-4 text-base font-normal leading-relaxed text-gray-700">
+                    <p>
+                      <strong className="text-purple-700 font-bold">월령(月令)</strong>은 사주 8글자 중에서 가장 강력한 권한을 가진 자리이자, 운명의 사령탑입니다.
+                    </p>
+                    <p>
+                      내가 세상에 나올 때{' '}
+                      <strong className="text-purple-600 font-semibold">자연으로부터 부여받은 '특명'</strong>과 같습니다.
+                    </p>
+                    <p>
+                      봄의 생명력(木), 여름의 열정(火), 가을의 결실(金), 겨울의 지혜(水) 중 어떤 계절의 힘을 주무기로 삼아야 하는지를 결정합니다.
+                    </p>
+                    <div className="mt-4 space-y-2">
+                      <p>
+                        <strong className="text-purple-700 font-bold">운명의 뿌리:</strong>{' '}
+                        나의 사회적 성공, 직업, 부귀빈천을 결정짓는{' '}
+                        <strong className="text-purple-600 font-semibold">'격국(格局)'</strong>이 바로 이곳에서 탄생합니다.
+                      </p>
+                      <p>
+                        <strong className="text-purple-700 font-bold">환경의 지배자:</strong>{' '}
+                        내가 평생을 살아가며 활동해야 할 무대의 성격을 규정합니다.
+                      </p>
+                    </div>
+                    <p className="mt-4 font-semibold text-purple-800">
+                      월령을 장악했다는 것은, 내 인생의 주도권을 쥐고 세상의 흐름을 내 편으로 만들 준비가 되었음을 의미합니다.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* 월령 정보 */}
+              {(() => {
+                const wollyeongSibsin = sajuData.pillars.month.jiJi.sibsin.name;
+                const wollyeongChar = sajuData.pillars.month.jiJi.char;
+                const wollyeongUnseong = sajuData.pillars.month.jiJi.unseong;
+
+                return (
+                  <div className="space-y-6">
+                    {/* 월령 십신 */}
+                    <div className="bg-gradient-to-br from-blue-50 via-white to-blue-50 p-6 rounded-2xl border-2 border-blue-300 shadow-lg">
+                      <div className="flex items-center gap-3 mb-6 pb-4 border-b-2 border-blue-200">
+                        <div className="bg-blue-500 text-white px-3 py-1.5 rounded-lg font-bold text-sm">
+                          월령 (月令)
+                        </div>
+                        <h4 className="text-3xl font-bold text-blue-900">{wollyeongSibsin}</h4>
+                        <div
+                          className={`inline-flex items-center justify-center w-12 h-12 text-2xl font-bold rounded shadow-md ${
+                            (() => {
+                              const info = earthlyBranchGanInfo[wollyeongChar];
+                              const color = info ? ohaengColorMap[info.ohaeng] : { bg: 'bg-gray-200', text: 'text-gray-800', border: 'border-gray-300' };
+                              return `${color.bg} ${color.text} ${color.border}`;
+                            })()
+                          } saju-char-outline-small`}
+                        >
+                          {wollyeongChar}
+                        </div>
+                      </div>
+
+                      {/* 월주 위치별 해석 */}
+                      {sibsinPositionDescriptions[wollyeongSibsin] && (
+                        <div className="bg-gradient-to-r from-blue-100/50 to-white p-5 rounded-xl border border-blue-300 mb-5">
+                          <h5 className="font-bold text-blue-900 mb-3 flex items-center gap-2 text-xl">
+                            <span>🎯</span> 월주에 위치한 의미
+                          </h5>
+                          <div className="space-y-3">
+                            <p className="font-bold text-blue-800 text-lg">
+                              {sibsinPositionDescriptions[wollyeongSibsin]['월주'].meaning}
+                            </p>
+                            <div className="flex flex-wrap gap-1.5 mb-3">
+                              {sibsinPositionDescriptions[wollyeongSibsin]['월주'].keywords.map((kw, idx) => (
+                                <span
+                                  key={idx}
+                                  className="px-2 py-0.5 bg-blue-200 text-blue-900 rounded-full text-xs font-semibold"
+                                >
+                                  {kw}
+                                </span>
+                              ))}
+                            </div>
+                            <div className="text-base md:text-lg font-normal leading-relaxed text-gray-700 whitespace-pre-line bg-white/70 p-4 rounded-lg">
+                              {sibsinPositionDescriptions[wollyeongSibsin]['월주'].detail}
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* 월주 십이운성 정보 */}
+                      {unseongDescriptions[wollyeongUnseong.name] && (
+                        <div className="bg-gradient-to-br from-amber-50 via-yellow-50 to-orange-50 p-6 rounded-xl border-2 border-amber-200">
+                          <div className="flex items-center gap-3 mb-4 pb-3 border-b border-amber-200">
+                            <div className="bg-amber-500 text-white px-3 py-1.5 rounded-lg font-bold text-sm">
+                              십이운성 (十二運星)
+                            </div>
+                            <h4 className="text-2xl font-bold text-amber-900">
+                              {wollyeongUnseong.name} ({wollyeongUnseong.hanja})
+                            </h4>
+                          </div>
+
+                          <div className="bg-white/80 p-4 rounded-lg border border-amber-200 mb-4">
+                            <h5 className="font-bold text-amber-800 mb-2 flex items-center gap-2 text-xl">
+                              <span>⭐</span> {unseongDescriptions[wollyeongUnseong.name].title}
+                            </h5>
+                            <div className="flex flex-wrap gap-1.5 mb-3">
+                              {unseongDescriptions[wollyeongUnseong.name].keywords.map((kw, idx) => (
+                                <span
+                                  key={idx}
+                                  className="px-2 py-0.5 bg-amber-200 text-amber-900 rounded-full text-xs font-semibold"
+                                >
+                                  {kw}
+                                </span>
+                              ))}
+                            </div>
+                            <p className="text-base md:text-lg font-normal leading-relaxed text-gray-700 whitespace-pre-line">
+                              {unseongDescriptions[wollyeongUnseong.name].description}
+                            </p>
+                          </div>
+
+                          {/* 월지 십이운성 정보 */}
+                          {unseongDescriptions[wollyeongUnseong.name].월지 && (
+                            <div className="bg-gradient-to-r from-blue-100/50 to-amber-100/50 p-5 rounded-xl border border-blue-300">
+                              <h5 className="font-bold text-blue-900 mb-3 flex items-center gap-2 text-xl">
+                                <span>🌙</span> {unseongDescriptions[wollyeongUnseong.name].월지.title}
+                              </h5>
+                              <p className="text-base md:text-lg font-normal leading-relaxed text-gray-700 whitespace-pre-line bg-white/70 p-4 rounded-lg">
+                                {unseongDescriptions[wollyeongUnseong.name].월지.description}
+                              </p>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* 더 자세히 보기 버튼 */}
+                    <div className="bg-gradient-to-r from-indigo-50 to-purple-50 p-6 rounded-xl border-2 border-indigo-200 text-center">
+                      <p className="text-gray-700 mb-4">
+                        더 자세한 월령 분석이 궁금하시다면 심층 분석 페이지를 확인해보세요!
+                      </p>
+                      <button
+                        onClick={() => {
+                          setShowWollyeongModal(false);
+                          navigate('/deep-analysis');
+                        }}
+                        className="px-6 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-full font-bold hover:from-purple-700 hover:to-indigo-700 transition shadow-lg"
+                      >
+                        심층 분석으로 이동 →
+                      </button>
+                    </div>
+                  </div>
+                );
+              })()}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 격국 모달 */}
+      {showGyeokgukModal && sajuData && geokgukResult && (
+        <div
+          className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 animate-fade-in"
+          onClick={() => setShowGyeokgukModal(false)}
+        >
+          <div
+            className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* 모달 헤더 */}
+            <div className="sticky top-0 bg-gradient-to-r from-indigo-600 via-blue-600 to-cyan-500 p-6 rounded-t-2xl flex justify-between items-center">
+              <h2 className="text-2xl md:text-3xl font-bold text-white">격국(格局) 상세 정보</h2>
+              <button
+                onClick={() => setShowGyeokgukModal(false)}
+                className="text-white hover:text-gray-200 transition"
+              >
+                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            {/* 모달 내용 */}
+            <div className="p-6 space-y-6">
+              {/* 격국 소개 */}
+              <div className="bg-gradient-to-br from-indigo-50 via-blue-50 to-cyan-50 rounded-xl border-2 border-indigo-200 p-6">
+                <div className="max-w-4xl mx-auto space-y-4">
+                  <div className="bg-white/70 p-5 rounded-xl border border-indigo-200">
+                    <p className="text-base font-normal leading-relaxed text-gray-700 mb-4">
+                      <strong className="text-indigo-700">격국(格局)</strong>은 인생이라는 전쟁터에서 승리하기 위해 지급받은{' '}
+                      <strong className="text-indigo-700">'단 하나의 필살기'</strong>입니다.
+                    </p>
+                    <p className="text-base font-normal leading-relaxed text-gray-700 mb-4">
+                      누구에게나 세상을 살아가는 도구가 주어집니다. 누군가는{' '}
+                      <strong className="text-indigo-700">'말(언변)'</strong>이 무기이고, 누군가는{' '}
+                      <strong className="text-indigo-700">'돈(재력)'</strong>이 무기이며, 누군가는{' '}
+                      <strong className="text-indigo-700">'자격증(기술)'</strong>이 무기입니다.
+                    </p>
+                    <p className="text-base font-normal leading-relaxed text-gray-700">
+                      남의 무기를 부러워하면 백전백패하지만, 내 격국에 맞는 무기를 갈고닦으면 반드시 정상에 오릅니다.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* 격국 결과 */}
+              {geokgukResult.판단가능 && geokgukResult.격국 ? (
+                <div className="space-y-6">
+                  <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-6 rounded-2xl border-2 border-green-300 shadow-lg">
+                    <div className="text-center mb-6">
+                      <div className="inline-block px-4 py-2 bg-green-500 text-white rounded-full text-lg font-bold mb-3">
+                        ✅ 당신의 격국
+                      </div>
+                      <h3 className="text-3xl md:text-4xl font-extrabold text-gray-800 mb-2">
+                        {geokgukResult.격국.격명칭}
+                      </h3>
+                    </div>
+
+                    <div className="bg-white/80 p-5 rounded-xl border border-green-200 mb-4">
+                      <h4 className="font-bold text-green-800 mb-3 flex items-center gap-2 text-lg">
+                        <span>📝</span> 해석
+                      </h4>
+                      <p className="text-gray-700 leading-relaxed text-base">
+                        {geokgukResult.격국.해석}
+                      </p>
+                    </div>
+
+                    {/* 격국 상세 설명 */}
+                    {geokgukDescriptions[geokgukResult.격국.격명칭] && (
+                      <div className="bg-gradient-to-br from-indigo-50 to-blue-50 p-6 rounded-xl border-2 border-indigo-200">
+                        <h4 className="font-bold text-indigo-800 mb-4 flex items-center gap-2 text-xl">
+                          <span>📚</span> {geokgukDescriptions[geokgukResult.격국.격명칭].title}
+                        </h4>
+
+                        <div className="mb-4">
+                          <p className="text-gray-700 leading-relaxed text-base mb-3">
+                            {geokgukDescriptions[geokgukResult.격국.격명칭].description}
+                          </p>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                          <div className="bg-white/70 p-4 rounded-lg border border-indigo-100">
+                            <h5 className="font-bold text-indigo-700 mb-2 flex items-center gap-2">
+                              <span>✅</span> 장점
+                            </h5>
+                            <ul className="space-y-1">
+                              {geokgukDescriptions[geokgukResult.격국.격명칭].characteristics.pros.map((item, idx) => (
+                                <li key={idx} className="text-gray-700 text-sm">
+                                  • {item}
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                          <div className="bg-white/70 p-4 rounded-lg border border-indigo-100">
+                            <h5 className="font-bold text-indigo-700 mb-2 flex items-center gap-2">
+                              <span>⚠️</span> 주의점
+                            </h5>
+                            <ul className="space-y-1">
+                              {geokgukDescriptions[geokgukResult.격국.격명칭].characteristics.cons.map((item, idx) => (
+                                <li key={idx} className="text-gray-700 text-sm">
+                                  • {item}
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        </div>
+
+                        <div className="bg-white/70 p-4 rounded-lg border border-indigo-100 mb-4">
+                          <h5 className="font-bold text-indigo-700 mb-2 flex items-center gap-2">
+                            <span>💼</span> 적합한 직업/분야
+                          </h5>
+                          <div className="flex flex-wrap gap-2">
+                            {geokgukDescriptions[geokgukResult.격국.격명칭].suitableJobs.map((job, idx) => (
+                              <span
+                                key={idx}
+                                className="px-3 py-1 bg-indigo-100 text-indigo-800 rounded-full text-xs font-semibold"
+                              >
+                                {job}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+
+                        <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
+                          <h5 className="font-bold text-yellow-800 mb-2 flex items-center gap-2">
+                            <span>💡</span> 조언
+                          </h5>
+                          <p className="text-gray-800 text-sm leading-relaxed">
+                            {geokgukDescriptions[geokgukResult.격국.격명칭].advice}
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ) : (
+                <div className="bg-gradient-to-br from-yellow-50 to-orange-50 p-6 rounded-2xl border-2 border-yellow-300 shadow-lg">
+                  <div className="text-center mb-4">
+                    <div className="inline-block px-4 py-2 bg-yellow-500 text-white rounded-full text-lg font-bold mb-3">
+                      ⚠️ 격국 판단 어려움
+                    </div>
+                    <h3 className="text-2xl font-extrabold text-gray-800 mb-2">
+                      {geokgukResult.메시지 || '격국을 판단하기 어렵습니다'}
+                    </h3>
+                  </div>
+                  {geokgukResult.이유 && geokgukResult.이유.length > 0 && (
+                    <div className="bg-white/80 p-5 rounded-xl border border-yellow-200">
+                      <h4 className="font-bold text-yellow-800 mb-3 flex items-center gap-2">
+                        <span>📋</span> 이유
+                      </h4>
+                      <ul className="space-y-2">
+                        {geokgukResult.이유.map((reason, idx) => (
+                          <li key={idx} className="text-gray-700 text-sm flex items-start gap-2">
+                            <span className="text-yellow-600 mt-1">•</span>
+                            <span>{reason}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* 푸터 */}
       <footer className="text-center py-8 border-t border-gray-200 bg-white/50">
