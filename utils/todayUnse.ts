@@ -86,11 +86,25 @@ export const getTodayUnseData = async (
     // 8. 키 생성: "십성_귀인_운성" 형식
     const key = `${sibsinName}_${gwiinStr}_${unseongName}`;
 
+    console.log('🔑 운세 조회 키:', {
+      일간,
+      월지: woljee,
+      십성: sibsinName,
+      귀인: gwiinStr,
+      운성: unseongName,
+      득령실령: deukryeongKey,
+      최종키: key
+    });
+
     // 9. 데이터 조회
     const data = jsonData.default?.[deukryeongKey]?.[key];
 
+    console.log('📦 조회된 데이터:', data);
+    console.log('📁 전체 JSON 구조:', jsonData.default);
+
     if (!data) {
-      console.error('운세 데이터를 찾을 수 없습니다:', { deukryeongKey, key });
+      console.error('❌ 운세 데이터를 찾을 수 없습니다:', { deukryeongKey, key });
+      console.log('사용 가능한 키들:', Object.keys(jsonData.default?.[deukryeongKey] || {}));
       return null;
     }
 

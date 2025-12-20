@@ -166,7 +166,13 @@ const DashboardPage: React.FC = () => {
   useEffect(() => {
     const loadTodayUnse = async () => {
       if (sajuData && todayInfo && todayInfo.unseong) {
+        console.log('🔍 운세 데이터 로딩 시작:', {
+          일간: sajuData.pillars.day.cheonGan.char,
+          오늘지지: todayInfo.ji,
+          십이운성: todayInfo.unseong.name
+        });
         const unseData = await getTodayUnseData(sajuData, todayInfo.ji, todayInfo.unseong.name);
+        console.log('📊 로드된 운세 데이터:', unseData);
         setTodayUnseData(unseData);
       }
     };
