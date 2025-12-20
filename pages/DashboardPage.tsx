@@ -66,6 +66,7 @@ const DashboardPage: React.FC = () => {
   const [iljuData, setIljuData] = useState<IljuBundle | null>(null);
   const [iljuLoading, setIljuLoading] = useState<boolean>(false);
   const [showWollyeongModal, setShowWollyeongModal] = useState<boolean>(false);
+  const [checkedPlans, setCheckedPlans] = useState<boolean[]>([false, false, false]);
 
   // 페이지 로드 시 스크롤을 최상단으로 이동
   useEffect(() => {
@@ -501,24 +502,23 @@ const DashboardPage: React.FC = () => {
                     {/* 활동 에너지 */}
                     <div className="text-center">
                       <div className="mb-3">
-                        <div className="inline-flex items-center gap-2 bg-gradient-to-r from-orange-500 to-red-500 text-white px-4 py-2 rounded-full text-sm font-bold shadow-md">
+                        <div className="inline-flex items-center gap-2 bg-gradient-to-r from-orange-500 to-red-500 text-white px-4 py-2 rounded-full text-lg font-bold shadow-md">
                           <span>🔥</span>
                           <span>활동 에너지</span>
                         </div>
                       </div>
-                      <div className="flex justify-center items-center gap-1 bg-white rounded-lg py-3 px-2 shadow-inner">
-                        {[...Array(5)].map((_, idx) => (
+                      <div className="flex justify-center items-center -space-x-2 bg-white rounded-lg py-3 px-2 shadow-inner">
+                        {[...Array(7)].map((_, idx) => (
                           <span
                             key={idx}
                             className={`text-2xl transition-all duration-300 ${
-                              idx < 1 ? 'text-yellow-400 drop-shadow-lg scale-110' : 'text-gray-200'
+                              idx < 1 ? 'text-yellow-400 drop-shadow-lg' : 'text-gray-200'
                             }`}
                           >
                             ⭐
                           </span>
                         ))}
                       </div>
-                      <p className="text-xs text-gray-500 mt-2 font-semibold">AE Level: 1/5</p>
                     </div>
 
                     {/* 구분선 */}
@@ -527,24 +527,23 @@ const DashboardPage: React.FC = () => {
                     {/* 마음 에너지 */}
                     <div className="text-center">
                       <div className="mb-3">
-                        <div className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white px-4 py-2 rounded-full text-sm font-bold shadow-md">
+                        <div className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white px-4 py-2 rounded-full text-lg font-bold shadow-md">
                           <span>💎</span>
                           <span>마음 에너지</span>
                         </div>
                       </div>
-                      <div className="flex justify-center items-center gap-1 bg-white rounded-lg py-3 px-2 shadow-inner">
-                        {[...Array(5)].map((_, idx) => (
+                      <div className="flex justify-center items-center -space-x-2 bg-white rounded-lg py-3 px-2 shadow-inner">
+                        {[...Array(7)].map((_, idx) => (
                           <span
                             key={idx}
                             className={`text-2xl transition-all duration-300 ${
-                              idx < 5 ? 'text-yellow-400 drop-shadow-lg scale-110' : 'text-gray-200'
+                              idx < 5 ? 'text-yellow-400 drop-shadow-lg' : 'text-gray-200'
                             }`}
                           >
                             ⭐
                           </span>
                         ))}
                       </div>
-                      <p className="text-xs text-gray-500 mt-2 font-semibold">ME Level: 5/5</p>
                     </div>
                   </div>
                 </div>
@@ -564,70 +563,72 @@ const DashboardPage: React.FC = () => {
                         "조용히 혼자 커피를 마시며 인간관계의 우선순위 정리하기",
                         "명상이나 산책으로 마음을 정리하기",
                         "오래된 연락처 정리하고 연락 끊기"
-                      ].map((plan, idx) => (
-                        <div
-                          key={idx}
-                          className="group relative bg-gradient-to-br from-white to-purple-50 rounded-xl p-5 border-2 border-purple-200 hover:border-purple-400 transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
-                        >
-                          {/* 번호 배지 */}
-                          <div className="absolute -top-3 -left-3 w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 text-white rounded-full flex items-center justify-center font-bold text-lg shadow-lg group-hover:scale-110 transition-transform">
-                            {idx + 1}
-                          </div>
+                      ].map((plan, idx) => {
+                        const isChecked = checkedPlans[idx];
+                        return (
+                          <div
+                            key={idx}
+                            onClick={() => {
+                              const newChecked = [...checkedPlans];
+                              newChecked[idx] = !newChecked[idx];
+                              setCheckedPlans(newChecked);
+                            }}
+                            className={`group relative rounded-xl p-5 border-2 transition-all duration-300 cursor-pointer ${
+                              isChecked
+                                ? 'bg-gradient-to-br from-emerald-50 via-green-50 to-teal-50 border-emerald-400 shadow-lg shadow-emerald-200/50'
+                                : 'bg-gradient-to-br from-white to-purple-50 border-purple-200 hover:border-purple-400 hover:shadow-xl hover:-translate-y-1'
+                            }`}
+                          >
+                            {/* 번호 배지 */}
+                            <div className={`absolute -top-3 -left-3 w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg shadow-lg transition-all ${
+                              isChecked
+                                ? 'bg-gradient-to-br from-emerald-500 to-green-500 scale-110'
+                                : 'bg-gradient-to-br from-purple-500 to-pink-500 group-hover:scale-110'
+                            } text-white`}>
+                              {idx + 1}
+                            </div>
 
-                          {/* 액션 내용 */}
-                          <div className="mt-2">
-                            <p className="text-sm md:text-base text-gray-700 leading-relaxed font-medium">
-                              {plan}
-                            </p>
-                          </div>
+                            {/* 액션 내용 */}
+                            <div className="mt-2">
+                              <p className={`text-sm md:text-base leading-relaxed font-medium transition-colors ${
+                                isChecked ? 'text-emerald-900' : 'text-gray-700'
+                              }`}>
+                                {plan}
+                              </p>
+                            </div>
 
-                          {/* 체크 아이콘 */}
-                          <div className="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
-                            <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
-                              <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                              </svg>
+                            {/* 체크 아이콘 */}
+                            <div className={`absolute bottom-3 right-3 transition-all duration-300 ${
+                              isChecked ? 'opacity-100 scale-110' : 'opacity-0 group-hover:opacity-100'
+                            }`}>
+                              <div className={`w-7 h-7 rounded-full flex items-center justify-center shadow-lg ${
+                                isChecked ? 'bg-emerald-500' : 'bg-green-500'
+                              }`}>
+                                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                                </svg>
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   </div>
 
                   {/* 운세 전반 큰 박스 */}
-                  <div className="relative bg-gradient-to-br from-white via-purple-50 to-pink-50 rounded-2xl p-8 border-2 border-purple-200 shadow-xl overflow-hidden">
+                  <div className="relative bg-gradient-to-br from-white via-purple-50 to-pink-50 rounded-2xl p-4 border-2 border-purple-200 shadow-xl overflow-hidden">
                     {/* 배경 장식 */}
                     <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-purple-200/30 to-pink-200/30 rounded-full blur-3xl"></div>
                     <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-indigo-200/30 to-purple-200/30 rounded-full blur-3xl"></div>
 
                     <div className="relative z-10">
-                      {/* 제목 */}
-                      <div className="flex items-center gap-3 mb-6">
-                        <div className="text-4xl">🔮</div>
-                        <h3 className="text-2xl font-bold bg-gradient-to-r from-purple-600 via-pink-600 to-indigo-600 bg-clip-text text-transparent">
-                          오늘의 운세 전반
-                        </h3>
-                      </div>
-
                       {/* 운세 내용 */}
-                      <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 border border-purple-100 shadow-inner">
-                        <p className="text-base md:text-lg text-gray-800 leading-relaxed font-medium whitespace-pre-line">
+                      <div className="bg-white/80 backdrop-blur-sm rounded-xl p-4 border border-purple-100 shadow-inner">
+                        <p className="text-lg md:text-xl text-gray-800 leading-relaxed font-medium whitespace-pre-line">
                           과거의 인연이 정리되고 새로운 조력자가 나타납니다. 정신적 각성을 통해 진정한 내 편을 알아보는 날입니다.
 
                           오늘은 내면의 목소리에 귀 기울이며, 주변 사람들과의 관계를 재정립하는 시간을 가져보세요. 불필요한 인연은 과감히 정리하고, 나에게 진심으로 힘이 되어주는 사람들과 더 깊은 유대를 형성할 수 있는 날입니다.
                         </p>
-                      </div>
-
-                      {/* 키워드 태그 */}
-                      <div className="mt-6 flex flex-wrap gap-2">
-                        {['정리', '각성', '조력자', '내면', '재정립'].map((keyword, idx) => (
-                          <span
-                            key={idx}
-                            className="px-4 py-2 bg-gradient-to-r from-purple-100 to-pink-100 text-purple-700 rounded-full text-sm font-semibold border border-purple-200 shadow-sm"
-                          >
-                            #{keyword}
-                          </span>
-                        ))}
                       </div>
                     </div>
                   </div>
