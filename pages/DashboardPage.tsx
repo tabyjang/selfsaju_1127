@@ -305,13 +305,14 @@ const DashboardPage: React.FC = () => {
       <div className="fixed top-0 left-0 right-0 bg-white/80 backdrop-blur-md border-b border-gray-200 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate('/')}>
+            <div className="flex items-center gap-3">
               <img
                 src="/logo.png"
                 alt="아사주달 로고"
-                className="h-10 w-auto object-contain"
+                className="h-10 w-auto object-contain cursor-pointer"
+                onClick={() => navigate('/')}
               />
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate('/dashboard')}>
                 <h1 className="text-xl font-bold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">
                   아사주달
                 </h1>
@@ -442,55 +443,193 @@ const DashboardPage: React.FC = () => {
         {/* 오늘의 운세 섹션 */}
         {sajuData && todayInfo && (
           <div className="mb-12 animate-fade-in" style={{ animationDelay: '0.1s' }}>
-            <div className="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-xl border-2 border-indigo-200 overflow-hidden shadow-lg">
+            <div className="bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 rounded-2xl border-2 border-indigo-200 overflow-hidden shadow-2xl">
               {/* 상단 헤더 */}
-              <div className="bg-gradient-to-r from-indigo-600 to-purple-600 px-4 py-3 flex items-center">
-                <div className="flex items-center gap-2 flex-1">
-                  <span className="text-white font-bold text-base md:text-lg">
-                    {todayInfo.month}월 {todayInfo.day}일 {todayInfo.weekday}
-                  </span>
-                </div>
-                <div className="flex items-center gap-4 absolute left-1/2 transform -translate-x-1/2">
-                  <span className="text-white/80 text-lg">일간</span>
-                  <div className="flex flex-col items-center">
-                    <div
-                      className={`saju-char-outline-small inline-flex items-center justify-center w-12 h-12 text-3xl font-bold rounded-md shadow-md ${(() => {
-                          const info = earthlyBranchGanInfo[todayInfo.ilgan];
-                          return info ? `${ohaengColorMap[info.ohaeng].bg} ${ohaengColorMap[info.ohaeng].text} ${ohaengColorMap[info.ohaeng].border}` : 'bg-gray-200 text-black border border-gray-800';
-                        })()
-                        }`}
-                    >
-                      {todayInfo.ilgan}
+              <div className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 px-6 py-5 flex items-center relative">
+                {/* 왼쪽: 날짜 + 오늘의 일주 */}
+                <div className="flex items-center gap-6">
+                  {/* 날짜 강조 */}
+                  <div className="flex flex-col md:flex-row md:items-baseline md:gap-3">
+                    <span className="text-white font-extrabold text-2xl md:text-3xl leading-tight">
+                      {todayInfo.month}월 {todayInfo.day}일
+                    </span>
+                    <span className="text-white/90 font-bold text-lg md:text-xl">
+                      {todayInfo.weekday}
+                    </span>
+                  </div>
+
+                  {/* 오늘의 일주 */}
+                  <div className="flex items-center gap-3 bg-white/20 px-4 py-2 rounded-xl backdrop-blur-sm">
+                    <span className="text-white/90 text-sm font-semibold">오늘 일주</span>
+                    <div className="flex items-center gap-2">
+                      {/* 천간 */}
+                      <div
+                        className={`saju-char-outline-small inline-flex items-center justify-center w-10 h-10 md:w-12 md:h-12 text-2xl md:text-3xl font-bold rounded-lg shadow-md ${(() => {
+                            const info = earthlyBranchGanInfo[todayInfo.gan];
+                            return info ? `${ohaengColorMap[info.ohaeng].bg} ${ohaengColorMap[info.ohaeng].text} ${ohaengColorMap[info.ohaeng].border}` : 'bg-gray-200 text-black border border-gray-800';
+                          })()
+                          }`}
+                      >
+                        {todayInfo.gan}
+                      </div>
+                      {/* 지지 */}
+                      <div
+                        className={`saju-char-outline-small inline-flex items-center justify-center w-10 h-10 md:w-12 md:h-12 text-2xl md:text-3xl font-bold rounded-lg shadow-md ${(() => {
+                            const info = earthlyBranchGanInfo[todayInfo.ji];
+                            return info ? `${ohaengColorMap[info.ohaeng].bg} ${ohaengColorMap[info.ohaeng].text} ${ohaengColorMap[info.ohaeng].border}` : 'bg-gray-200 text-black border border-gray-800';
+                          })()
+                          }`}
+                      >
+                        {todayInfo.ji}
+                      </div>
                     </div>
                   </div>
-                  <span className="text-white/80 text-lg">나 자신</span>
                 </div>
-                <div className="text-white font-bold flex items-center gap-2 flex-1 justify-end">
-                  <span>✨</span>
-                  <span className="hidden sm:inline text-lg">오늘의 운세</span>
+
+                {/* 중앙: 오늘의 운세 */}
+                <div className="absolute left-1/2 transform -translate-x-1/2 text-white font-bold flex items-center gap-2">
+                  <span className="text-2xl">✨</span>
+                  <span className="hidden sm:inline text-lg md:text-xl bg-white/20 px-4 py-2 rounded-full backdrop-blur-sm">오늘의 운세</span>
                 </div>
               </div>
 
-              {/* 내용 */}
-              <div className="grid grid-cols-1 md:grid-cols-5 gap-4 p-4">
-                {/* 왼쪽: 오늘의 날짜 정보 (1/5) */}
-                <div className="bg-white rounded-lg p-4 shadow border border-indigo-100">
-                  <div className="flex flex-col items-center justify-center h-full">
-                    {/* 일주 세로 배치 */}
-                    <div className="flex flex-col gap-3">
-                      <GanjiBox char={todayInfo.gan} />
-                      <GanjiBox char={todayInfo.ji} />
+              {/* 메인 컨텐츠 */}
+              <div className="grid grid-cols-1 md:grid-cols-5 gap-6 p-6">
+                {/* 왼쪽: 에너지 표시 (1/5) */}
+                <div className="bg-gradient-to-br from-white to-indigo-50 rounded-xl p-6 shadow-lg border-2 border-indigo-100">
+                  <div className="space-y-8">
+                    {/* 활동 에너지 */}
+                    <div className="text-center">
+                      <div className="mb-3">
+                        <div className="inline-flex items-center gap-2 bg-gradient-to-r from-orange-500 to-red-500 text-white px-4 py-2 rounded-full text-sm font-bold shadow-md">
+                          <span>🔥</span>
+                          <span>활동 에너지</span>
+                        </div>
+                      </div>
+                      <div className="flex justify-center items-center gap-1 bg-white rounded-lg py-3 px-2 shadow-inner">
+                        {[...Array(5)].map((_, idx) => (
+                          <span
+                            key={idx}
+                            className={`text-2xl transition-all duration-300 ${
+                              idx < 1 ? 'text-yellow-400 drop-shadow-lg scale-110' : 'text-gray-200'
+                            }`}
+                          >
+                            ⭐
+                          </span>
+                        ))}
+                      </div>
+                      <p className="text-xs text-gray-500 mt-2 font-semibold">AE Level: 1/5</p>
+                    </div>
+
+                    {/* 구분선 */}
+                    <div className="border-t-2 border-dashed border-indigo-200"></div>
+
+                    {/* 마음 에너지 */}
+                    <div className="text-center">
+                      <div className="mb-3">
+                        <div className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white px-4 py-2 rounded-full text-sm font-bold shadow-md">
+                          <span>💎</span>
+                          <span>마음 에너지</span>
+                        </div>
+                      </div>
+                      <div className="flex justify-center items-center gap-1 bg-white rounded-lg py-3 px-2 shadow-inner">
+                        {[...Array(5)].map((_, idx) => (
+                          <span
+                            key={idx}
+                            className={`text-2xl transition-all duration-300 ${
+                              idx < 5 ? 'text-yellow-400 drop-shadow-lg scale-110' : 'text-gray-200'
+                            }`}
+                          >
+                            ⭐
+                          </span>
+                        ))}
+                      </div>
+                      <p className="text-xs text-gray-500 mt-2 font-semibold">ME Level: 5/5</p>
                     </div>
                   </div>
                 </div>
 
-                {/* 오른쪽: 운세 메시지 (4/5) */}
-                <div className="md:col-span-4 bg-white rounded-lg p-6 shadow border border-indigo-100 flex items-center justify-center min-h-[250px]">
-                  <div className="text-center">
-                    <div className="text-4xl mb-4">🔮</div>
-                    <p className="text-gray-600 text-base leading-relaxed">
-                      오늘의 운세가 표시됩니다.
-                    </p>
+                {/* 오른쪽: 액션플랜 + 운세전반 (4/5) */}
+                <div className="md:col-span-4 space-y-6">
+                  {/* 액션플랜 3개 박스 */}
+                  <div>
+                    <div className="flex items-center gap-2 mb-4">
+                      <span className="text-2xl">⚡</span>
+                      <h3 className="text-xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                        오늘의 액션 플랜
+                      </h3>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      {[
+                        "조용히 혼자 커피를 마시며 인간관계의 우선순위 정리하기",
+                        "명상이나 산책으로 마음을 정리하기",
+                        "오래된 연락처 정리하고 연락 끊기"
+                      ].map((plan, idx) => (
+                        <div
+                          key={idx}
+                          className="group relative bg-gradient-to-br from-white to-purple-50 rounded-xl p-5 border-2 border-purple-200 hover:border-purple-400 transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
+                        >
+                          {/* 번호 배지 */}
+                          <div className="absolute -top-3 -left-3 w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 text-white rounded-full flex items-center justify-center font-bold text-lg shadow-lg group-hover:scale-110 transition-transform">
+                            {idx + 1}
+                          </div>
+
+                          {/* 액션 내용 */}
+                          <div className="mt-2">
+                            <p className="text-sm md:text-base text-gray-700 leading-relaxed font-medium">
+                              {plan}
+                            </p>
+                          </div>
+
+                          {/* 체크 아이콘 */}
+                          <div className="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
+                              <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                              </svg>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* 운세 전반 큰 박스 */}
+                  <div className="relative bg-gradient-to-br from-white via-purple-50 to-pink-50 rounded-2xl p-8 border-2 border-purple-200 shadow-xl overflow-hidden">
+                    {/* 배경 장식 */}
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-purple-200/30 to-pink-200/30 rounded-full blur-3xl"></div>
+                    <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-indigo-200/30 to-purple-200/30 rounded-full blur-3xl"></div>
+
+                    <div className="relative z-10">
+                      {/* 제목 */}
+                      <div className="flex items-center gap-3 mb-6">
+                        <div className="text-4xl">🔮</div>
+                        <h3 className="text-2xl font-bold bg-gradient-to-r from-purple-600 via-pink-600 to-indigo-600 bg-clip-text text-transparent">
+                          오늘의 운세 전반
+                        </h3>
+                      </div>
+
+                      {/* 운세 내용 */}
+                      <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 border border-purple-100 shadow-inner">
+                        <p className="text-base md:text-lg text-gray-800 leading-relaxed font-medium whitespace-pre-line">
+                          과거의 인연이 정리되고 새로운 조력자가 나타납니다. 정신적 각성을 통해 진정한 내 편을 알아보는 날입니다.
+
+                          오늘은 내면의 목소리에 귀 기울이며, 주변 사람들과의 관계를 재정립하는 시간을 가져보세요. 불필요한 인연은 과감히 정리하고, 나에게 진심으로 힘이 되어주는 사람들과 더 깊은 유대를 형성할 수 있는 날입니다.
+                        </p>
+                      </div>
+
+                      {/* 키워드 태그 */}
+                      <div className="mt-6 flex flex-wrap gap-2">
+                        {['정리', '각성', '조력자', '내면', '재정립'].map((keyword, idx) => (
+                          <span
+                            key={idx}
+                            className="px-4 py-2 bg-gradient-to-r from-purple-100 to-pink-100 text-purple-700 rounded-full text-sm font-semibold border border-purple-200 shadow-sm"
+                          >
+                            #{keyword}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
