@@ -49,7 +49,8 @@ export interface TodayUnseData {
 export const getTodayUnseData = async (
   sajuData: SajuInfo,
   todayJiji: string,
-  todayUnseong: string
+  todayUnseong: string,
+  loadBoth: boolean = false // 득령+실령 둘 다 로딩 옵션
 ): Promise<TodayUnseData | null> => {
   try {
     // 1. 일간 가져오기
@@ -80,21 +81,46 @@ export const getTodayUnseData = async (
       return null;
     }
 
-    // 동적 import로 JSON 파일 로드
-    const jsonData = await import(`../today_unse/${jsonFileName}.json`);
-
     // 8. 키 생성: "십성_귀인_운성" 형식
     const key = `${sibsinName}_${gwiinStr}_${unseongName}`;
 
-    // 9. 데이터 조회
-    const data = jsonData.default?.[deukryeongKey]?.[key];
+    // 9. 득령/실령에 따라 파일 로드
+    if (loadBoth) {
+      // 옵션: 득령+실령 둘 다 로드 (분량 늘리기)
+      const 득령Data = await import(`../today_unse/${jsonFileName}_득령.json`);
+      const 실령Data = await import(`../today_unse/${jsonFileName}_실령.json`);
 
-    if (!data) {
-      console.error('❌ 운세 데이터를 찾을 수 없습니다:', { deukryeongKey, key });
-      return null;
+      const 득령Result = 득령Data.default?.[key];
+      const 실령Result = 실령Data.default?.[key];
+
+      // 둘 다 있으면 합치기
+      if (득령Result && 실령Result) {
+        return {
+          십성: 득령Result.십성,
+          귀인: 득령Result.귀인,
+          운성: 득령Result.운성,
+          AE: 득령Result.AE,
+          ME: 득령Result.ME,
+          액션플랜: [...득령Result.액션플랜, ...실령Result.액션플랜],
+          운세전반: `[득령일 때]\n${득령Result.운세전반}\n\n[실령일 때]\n${실령Result.운세전반}`
+        } as TodayUnseData;
+      }
+
+      // 하나만 있으면 그것 반환
+      return (득령Result || 실령Result) as TodayUnseData;
+    } else {
+      // 기본: 득령 또는 실령 하나만 로드
+      const suffix = deukryeong ? '_득령' : '_실령';
+      const jsonData = await import(`../today_unse/${jsonFileName}${suffix}.json`);
+      const data = jsonData.default?.[key];
+
+      if (!data) {
+        console.error('❌ 운세 데이터를 찾을 수 없습니다:', { deukryeongKey, key });
+        return null;
+      }
+
+      return data as TodayUnseData;
     }
-
-    return data as TodayUnseData;
   } catch (error) {
     console.error('오늘의 운세 데이터 조회 실패:', error);
     return null;

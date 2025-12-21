@@ -229,8 +229,17 @@ const CalendarPage: React.FC = () => {
       {/* 헤더 - 모바일 */}
       <div className="fixed top-0 left-0 right-0 bg-white/80 backdrop-blur-md border-b border-gray-200 z-50 flex md:hidden">
         <div className="w-full px-4">
-          <div className="flex justify-end items-center h-12 gap-2">
-            <SignedOut>
+          <div className="flex justify-between items-center h-12 gap-2">
+            {/* 왼쪽: 로고 */}
+            <img
+              src="/logo.png"
+              alt="아사주달 로고"
+              className="h-8 w-auto object-contain cursor-pointer"
+              onClick={() => navigate('/')}
+            />
+            {/* 오른쪽: 버튼들 */}
+            <div className="flex items-center gap-2">
+              <SignedOut>
               <SignInButton mode="modal">
                 <button className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition text-sm font-bold shadow-md cursor-pointer">
                   로그인
@@ -270,6 +279,7 @@ const CalendarPage: React.FC = () => {
                 <UserButton afterSignOutUrl="/input" />
               </div>
             </SignedIn>
+            </div>
           </div>
         </div>
       </div>
