@@ -687,9 +687,12 @@ const DashboardPage: React.FC = () => {
                     <div className="relative z-10">
                       {/* 운세 내용 */}
                       <div className="bg-white/80 backdrop-blur-sm rounded-xl p-4 border border-purple-100 shadow-inner">
-                        <p className="text-lg md:text-xl text-gray-800 leading-relaxed font-medium whitespace-pre-line">
-                          {todayUnseData?.운세전반 || "과거의 인연이 정리되고 새로운 조력자가 나타납니다. 정신적 각성을 통해 진정한 내 편을 알아보는 날입니다.\n\n오늘은 내면의 목소리에 귀 기울이며, 주변 사람들과의 관계를 재정립하는 시간을 가져보세요. 불필요한 인연은 과감히 정리하고, 나에게 진심으로 힘이 되어주는 사람들과 더 깊은 유대를 형성할 수 있는 날입니다."}
-                        </p>
+                        <div
+                          className="text-lg md:text-xl text-gray-800 leading-relaxed font-medium"
+                          dangerouslySetInnerHTML={{
+                            __html: (todayUnseData?.운세전반 || "과거의 인연이 정리되고 새로운 조력자가 나타납니다. 정신적 각성을 통해 진정한 내 편을 알아보는 날입니다.\n\n오늘은 내면의 목소리에 귀 기울이며, 주변 사람들과의 관계를 재정립하는 시간을 가져보세요. 불필요한 인연은 과감히 정리하고, 나에게 진심으로 힘이 되어주는 사람들과 더 깊은 유대를 형성할 수 있는 날입니다.").replace(/\n/g, '<br />')
+                          }}
+                        />
                       </div>
                     </div>
                   </div>
