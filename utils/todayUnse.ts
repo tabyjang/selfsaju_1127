@@ -1,6 +1,7 @@
 import { getSibsinByIlganAndTarget } from './manse';
 import { cheonEulGwiInMap } from './sinsal';
 import type { SajuInfo } from '../types';
+import { generateFortune, formatFortune, type FortuneInput, type GeneratedFortune } from './fortuneTemplate';
 
 // 일간별 JSON 파일 매핑
 const ilganJsonMap: { [key: string]: string } = {
@@ -125,4 +126,85 @@ export const getTodayUnseData = async (
     console.error('오늘의 운세 데이터 조회 실패:', error);
     return null;
   }
+};
+
+/**
+ * 템플릿 기반 오늘의 운세 생성 (신규)
+ * 일주 특성을 반영한 개인화된 운세 생성
+ *
+ * @param sajuData - 사주 데이터
+ * @param todayJiji - 오늘 지지
+ * @param todayUnseong - 오늘 십이운성
+ * @param userBirthday - 사용자 생일 (선택, 'MM-DD' 형식)
+ * @returns 생성된 운세
+ */
+export const getTodayUnseWithTemplate = async (
+  sajuData: SajuInfo,
+  todayJiji: string,
+  todayUnseong: string,
+  userBirthday?: string
+): Promise<GeneratedFortune | null> => {
+  try {
+    // 1. 일간 가져오기
+    const ilgan = sajuData.pillars.day.cheonGan.char;
+
+    // 2. 일주 가져오기 (일간 + 일지)
+    const ilju = sajuData.pillars.day.cheonGan.char + sajuData.pillars.day.jiJi.char;
+
+    // 3. 월지 가져오기
+    const woljee = sajuData.pillars.month.jiJi.char;
+
+    // 4. 월지의 십성 계산
+    const sibsinInfo = getSibsinByIlganAndTarget(ilgan, woljee);
+    const sibsinName = sibsinInfo.name;
+
+    // 5. 천을귀인 여부 확인 (오늘 일주의 지지 기준)
+    const hasGwiin = hasCheonEulGwiin(ilgan, todayJiji);
+
+    // 6. 득령/실령 판단
+    const deukryeong = isDeukryeong(sibsinName);
+
+    // 7. FortuneInput 생성
+    const input: FortuneInput = {
+      ilju,
+      todayJiji,
+      sibsin: sibsinName,
+      unseong: todayUnseong,
+      deukryeong,
+      gwiin: hasGwiin,
+      date: new Date(),
+    };
+
+    // 8. 템플릿 기반 운세 생성
+    const fortune = await generateFortune(input, userBirthday);
+
+    return fortune;
+  } catch (error) {
+    console.error('템플릿 기반 운세 생성 실패:', error);
+    return null;
+  }
+};
+
+/**
+ * 템플릿 기반 오늘의 운세를 마크다운 형식으로 가져오기
+ *
+ * @param sajuData - 사주 데이터
+ * @param todayJiji - 오늘 지지
+ * @param todayUnseong - 오늘 십이운성
+ * @param userBirthday - 사용자 생일 (선택)
+ * @returns 마크다운 형식 운세 문자열
+ */
+export const getTodayUnseMarkdown = async (
+  sajuData: SajuInfo,
+  todayJiji: string,
+  todayUnseong: string,
+  userBirthday?: string
+): Promise<string | null> => {
+  const fortune = await getTodayUnseWithTemplate(sajuData, todayJiji, todayUnseong, userBirthday);
+
+  if (!fortune) {
+    return null;
+  }
+
+  return formatFortune(fortune);
 };

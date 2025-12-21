@@ -10,7 +10,8 @@ import { loadIljuBundle } from '../utils/ilju/loadIljuBundle';
 import type { IljuBundle } from '../utils/ilju/types';
 import { sibsinPositionDescriptions } from '../utils/sibsinPositionDescriptions';
 import { unseongDescriptions } from '../utils/unseongDescriptions';
-import { getTodayUnseData, type TodayUnseData } from '../utils/todayUnse';
+import { getTodayUnseData, getTodayUnseWithTemplate, type TodayUnseData } from '../utils/todayUnse';
+import type { GeneratedFortune } from '../utils/fortuneTemplate';
 
 // 오행 색상 맵 (캘린더와 동일)
 const ohaengColorMap: Record<Ohaeng, { bg: string; text: string; border: string }> = {
@@ -69,6 +70,7 @@ const DashboardPage: React.FC = () => {
   const [showWollyeongModal, setShowWollyeongModal] = useState<boolean>(false);
   const [checkedPlans, setCheckedPlans] = useState<boolean[]>([false, false, false]);
   const [todayUnseData, setTodayUnseData] = useState<TodayUnseData | null>(null);
+  const [todayFortune, setTodayFortune] = useState<GeneratedFortune | null>(null); // 템플릿 기반 운세
 
   // 페이지 로드 시 스크롤을 최상단으로 이동
   useEffect(() => {
@@ -166,8 +168,18 @@ const DashboardPage: React.FC = () => {
   useEffect(() => {
     const loadTodayUnse = async () => {
       if (sajuData && todayInfo && todayInfo.unseong) {
+        // 기존 방식 (백업용)
         const unseData = await getTodayUnseData(sajuData, todayInfo.ji, todayInfo.unseong.name);
         setTodayUnseData(unseData);
+
+        // 템플릿 기반 운세 생성 (신규)
+        try {
+          const fortune = await getTodayUnseWithTemplate(sajuData, todayInfo.ji, todayInfo.unseong.name);
+          setTodayFortune(fortune);
+        } catch (error) {
+          console.error('템플릿 기반 운세 생성 실패:', error);
+          // 실패 시 기존 데이터 사용
+        }
       }
     };
     loadTodayUnse();
@@ -626,7 +638,7 @@ const DashboardPage: React.FC = () => {
                       </h3>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      {(todayUnseData?.액션플랜 || ["조용히 혼자 커피를 마시며 인간관계의 우선순위 정리하기", "명상이나 산책으로 마음을 정리하기", "오래된 연락처 정리하고 연락 끊기"]).map((plan, idx) => {
+                      {(todayFortune?.actionPlans || todayUnseData?.액션플랜 || ["조용히 혼자 커피를 마시며 인간관계의 우선순위 정리하기", "명상이나 산책으로 마음을 정리하기", "오래된 연락처 정리하고 연락 끊기"]).map((plan, idx) => {
                         const isChecked = checkedPlans[idx];
                         return (
                           <div
@@ -685,12 +697,26 @@ const DashboardPage: React.FC = () => {
                     <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-indigo-200/30 to-purple-200/30 rounded-full blur-3xl"></div>
 
                     <div className="relative z-10">
+                      {/* 템플릿 기반 운세 제목 (있으면 표시) */}
+                      {todayFortune?.title && (
+                        <div className="mb-4">
+                          <h4 className="text-2xl font-bold text-purple-800 text-center">
+                            {/* [대괄호] 제거하고 표시 */}
+                            {todayFortune.title.replace(/[\[\]]/g, '')}
+                          </h4>
+                        </div>
+                      )}
+
                       {/* 운세 내용 */}
                       <div className="bg-white/80 backdrop-blur-sm rounded-xl p-4 border border-purple-100 shadow-inner">
                         <div
                           className="text-lg md:text-xl text-gray-800 leading-relaxed font-medium"
                           dangerouslySetInnerHTML={{
-                            __html: (todayUnseData?.운세전반 || "과거의 인연이 정리되고 새로운 조력자가 나타납니다. 정신적 각성을 통해 진정한 내 편을 알아보는 날입니다.\n\n오늘은 내면의 목소리에 귀 기울이며, 주변 사람들과의 관계를 재정립하는 시간을 가져보세요. 불필요한 인연은 과감히 정리하고, 나에게 진심으로 힘이 되어주는 사람들과 더 깊은 유대를 형성할 수 있는 날입니다.").replace(/\n/g, '<br />')
+                            __html: (
+                              todayFortune?.content ||
+                              todayUnseData?.운세전반?.replace(/\n/g, '<br />') ||
+                              "과거의 인연이 정리되고 새로운 조력자가 나타납니다. 정신적 각성을 통해 진정한 내 편을 알아보는 날입니다.<br /><br />오늘은 내면의 목소리에 귀 기울이며, 주변 사람들과의 관계를 재정립하는 시간을 가져보세요. 불필요한 인연은 과감히 정리하고, 나에게 진심으로 힘이 되어주는 사람들과 더 깊은 유대를 형성할 수 있는 날입니다."
+                            )
                           }}
                         />
                       </div>
