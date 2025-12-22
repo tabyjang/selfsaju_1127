@@ -108,9 +108,10 @@ const CalendarCharBox: React.FC<{ char: string }> = ({ char }) => {
 
   return (
     <div
-      className={`saju-char-outline-small w-9 h-9 md:w-10 md:h-10 flex items-center justify-center text-xl md:text-2xl font-bold rounded-md shadow-md ${color.bg} ${color.text} ${
+      className={`w-8 h-8 md:w-10 md:h-10 flex items-center justify-center text-lg md:text-2xl font-bold rounded-md shadow-md ${color.bg} ${color.text} ${
         color.border ?? ""
       }`}
+      style={{ WebkitTextStroke: '0.5px #000', paintOrder: 'stroke fill' }}
     >
       {char}
     </div>
@@ -404,7 +405,20 @@ export const MonthlyIljuCalendar: React.FC<{ sajuInfo: SajuInfo }> = ({
               onClick={() => setSelectedDay(cell.day)}
               className={`h-[92px] md:h-[108px] rounded-lg border transition-all overflow-hidden ${borderClass} ${shadowClass} ${bgClass}`}
             >
-              <div className="h-full grid grid-cols-[56px_44px] grid-rows-2 justify-center items-center">
+              {/* 모바일: 세로 레이아웃 (날짜 → 간 → 지) */}
+              <div className="h-full flex flex-col items-center justify-center gap-0.5 md:hidden">
+                {/* 날짜 */}
+                <div className="text-sm font-extrabold text-gray-800">
+                  {cell.day}
+                </div>
+                {/* 천간 */}
+                <CalendarCharBox char={cell.gan} />
+                {/* 지지 */}
+                <CalendarCharBox char={cell.ji} />
+              </div>
+
+              {/* 데스크톱: 기존 가로 레이아웃 유지 */}
+              <div className="hidden md:grid h-full grid-cols-[56px_44px] grid-rows-2 justify-center items-center">
                 {/* 좌측: 일주 */}
                 <div className="row-span-2 flex flex-col items-center justify-center gap-1 bg-white/30">
                   <CalendarCharBox char={cell.gan} />

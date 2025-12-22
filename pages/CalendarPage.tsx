@@ -39,10 +39,10 @@ const CheonganCharBox: React.FC<{ char: string }> = ({ char }) => {
 
   return (
     <div
-      className={`inline-flex items-center justify-center w-10 h-10 md:w-12 md:h-12 text-xl md:text-2xl font-bold rounded-md shadow-md mr-2 border border-gray-800 ${color.bg} ${color.text}`}
+      className={`inline-flex items-center justify-center w-8 h-8 md:w-12 md:h-12 text-base md:text-2xl font-bold rounded-md shadow-md border border-gray-800 ${color.bg} ${color.text}`}
       style={{
         WebkitTextStroke: '0.5px black',
-        textShadow: '0 0 1px rgba(0,0,0,0.5), 1px 1px 2px rgba(0,0,0,0.3)'
+        paintOrder: 'stroke fill'
       }}
     >
       {char}
@@ -59,10 +59,10 @@ const JijiCharBox: React.FC<{ char: string }> = ({ char }) => {
 
   return (
     <div
-      className={`inline-flex items-center justify-center w-10 h-10 md:w-12 md:h-12 text-xl md:text-2xl font-bold rounded-md shadow-md mr-2 border border-gray-800 ${color.bg} ${color.text}`}
+      className={`inline-flex items-center justify-center w-8 h-8 md:w-12 md:h-12 text-base md:text-2xl font-bold rounded-md shadow-md border border-gray-800 ${color.bg} ${color.text}`}
       style={{
         WebkitTextStroke: '0.5px black',
-        textShadow: '0 0 1px rgba(0,0,0,0.5), 1px 1px 2px rgba(0,0,0,0.3)'
+        paintOrder: 'stroke fill'
       }}
     >
       {char}
@@ -367,8 +367,91 @@ const CalendarPage: React.FC = () => {
                 천을귀인은 철저하게 <strong className="text-blue-700">태어난 날의 천간(일간)</strong>을 기준으로 결정됩니다.
               </p>
 
-              {/* 테이블 */}
-              <div className="overflow-x-auto">
+              {/* 모바일: 카드 레이아웃 */}
+              <div className="md:hidden space-y-3">
+                {/* 행 1: 甲戊庚 → 丑未 */}
+                <div className="bg-white p-3 rounded-lg shadow-md border border-blue-200">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-1">
+                      <span className="text-xs text-gray-600 mr-1">일간:</span>
+                      <CheonganCharBox char="甲" />
+                      <CheonganCharBox char="戊" />
+                      <CheonganCharBox char="庚" />
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <span className="text-xs text-gray-600 mr-1">귀인:</span>
+                      <JijiCharBox char="丑" />
+                      <JijiCharBox char="未" />
+                    </div>
+                  </div>
+                </div>
+
+                {/* 행 2: 乙己 → 子申 */}
+                <div className="bg-white p-3 rounded-lg shadow-md border border-blue-200">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-1">
+                      <span className="text-xs text-gray-600 mr-1">일간:</span>
+                      <CheonganCharBox char="乙" />
+                      <CheonganCharBox char="己" />
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <span className="text-xs text-gray-600 mr-1">귀인:</span>
+                      <JijiCharBox char="子" />
+                      <JijiCharBox char="申" />
+                    </div>
+                  </div>
+                </div>
+
+                {/* 행 3: 丙丁 → 亥酉 */}
+                <div className="bg-white p-3 rounded-lg shadow-md border border-blue-200">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-1">
+                      <span className="text-xs text-gray-600 mr-1">일간:</span>
+                      <CheonganCharBox char="丙" />
+                      <CheonganCharBox char="丁" />
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <span className="text-xs text-gray-600 mr-1">귀인:</span>
+                      <JijiCharBox char="亥" />
+                      <JijiCharBox char="酉" />
+                    </div>
+                  </div>
+                </div>
+
+                {/* 행 4: 壬癸 → 卯巳 */}
+                <div className="bg-white p-3 rounded-lg shadow-md border border-blue-200">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-1">
+                      <span className="text-xs text-gray-600 mr-1">일간:</span>
+                      <CheonganCharBox char="壬" />
+                      <CheonganCharBox char="癸" />
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <span className="text-xs text-gray-600 mr-1">귀인:</span>
+                      <JijiCharBox char="卯" />
+                      <JijiCharBox char="巳" />
+                    </div>
+                  </div>
+                </div>
+
+                {/* 행 5: 辛 → 寅午 */}
+                <div className="bg-white p-3 rounded-lg shadow-md border border-blue-200">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-1">
+                      <span className="text-xs text-gray-600 mr-1">일간:</span>
+                      <CheonganCharBox char="辛" />
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <span className="text-xs text-gray-600 mr-1">귀인:</span>
+                      <JijiCharBox char="寅" />
+                      <JijiCharBox char="午" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* 데스크톱: 테이블 레이아웃 */}
+              <div className="hidden md:block overflow-x-auto">
                 <table className="w-full bg-white rounded-lg overflow-hidden shadow-md">
                   <thead className="bg-blue-600 text-white">
                     <tr>

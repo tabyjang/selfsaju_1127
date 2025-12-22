@@ -397,6 +397,7 @@ const DashboardPage: React.FC = () => {
       color: 'text-pink-600',
       bgColor: 'bg-pink-50',
       borderColor: 'border-pink-200',
+      isIlju: true, // 일주 특수 표시
       onClick: () => {
         setShowJinjjaModal(true);
         // 일주 데이터 로드
@@ -786,7 +787,7 @@ const DashboardPage: React.FC = () => {
                   }`}
                 >
                   <div className="text-3xl mb-2">{stat.icon}</div>
-                  <div className="text-sm text-gray-600 font-semibold mb-1">{stat.label}</div>
+                  <div className="text-lg md:text-xl text-gray-700 font-bold mb-2">{stat.label}</div>
                   {stat.isSpecial ? (
                     <div className="flex flex-col items-center justify-center gap-2 mb-2">
                       {/* 4주 색상 박스로 표시 */}
@@ -851,12 +852,7 @@ const DashboardPage: React.FC = () => {
                       {stat.value}
                     </div>
                   )}
-                  <div className="text-xs text-gray-500">{stat.description}</div>
-                  {stat.onClick && (
-                    <div className="mt-2 text-xs text-blue-600 font-semibold">
-                      클릭하여 자세히 보기 →
-                    </div>
-                  )}
+                  <div className="text-sm md:text-base text-gray-600 font-medium">{stat.description}</div>
                 </div>
               ))}
             </div>
