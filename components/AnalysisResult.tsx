@@ -327,7 +327,7 @@ export const SajuPillarsDisplay: React.FC<{ sajuInfo: SajuInfo }> = ({ sajuInfo 
 };
 
 // 오행 다이어그램 컴포넌트
-const OhaengDiagram: React.FC<{
+export const OhaengDiagram: React.FC<{
   ohaengCounts: Record<Ohaeng, number>;
   ilganOhaeng: Ohaeng | undefined;
 }> = ({ ohaengCounts, ilganOhaeng }) => {

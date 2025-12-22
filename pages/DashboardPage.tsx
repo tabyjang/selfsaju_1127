@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { SignedIn, SignedOut, SignInButton, UserButton, useUser } from '@clerk/clerk-react';
 import type { SajuInfo, Ohaeng, GeokgukResult } from '../types';
 import { getDayGanjiByYMD, getUnseongByIlganAndJiji, earthlyBranchGanInfo } from '../utils/manse';
-import { upsertMySaju } from '../utils/sajuStorage';
+import { upsertMySaju, getUserSajuRecords } from '../utils/sajuStorage';
 import { analyzeGeokguk } from '../utils/gyeokguk';
 import { geokgukDescriptions } from '../utils/geokgukDescriptions';
 import { loadIljuBundle } from '../utils/ilju/loadIljuBundle';
@@ -89,21 +89,53 @@ const DashboardPage: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    // localStorage에서 사주 데이터 불러오기
-    const savedData = localStorage.getItem('currentSajuData');
-    if (savedData) {
-      try {
-        const data = JSON.parse(savedData);
-        setSajuData(data);
-        // 이름 추출
-        if (data.name) {
-          setUserName(data.name);
+    const loadSajuData = async () => {
+      // 1. 먼저 localStorage에서 사주 데이터 확인
+      const savedData = localStorage.getItem('currentSajuData');
+      if (savedData) {
+        try {
+          const data = JSON.parse(savedData);
+          setSajuData(data);
+          // 이름 추출
+          if (data.name) {
+            setUserName(data.name);
+          }
+          return; // localStorage에 데이터 있으면 종료
+        } catch (error) {
+          console.error('사주 데이터 복원 실패:', error);
         }
-      } catch (error) {
-        console.error('사주 데이터 복원 실패:', error);
       }
-    }
-  }, []);
+
+      // 2. localStorage가 비어있고 로그인된 경우, DB에서 불러오기
+      if (isSignedIn && user) {
+        try {
+          console.log('로그인 상태: DB에서 사주 데이터 조회 중...');
+          const result = await getUserSajuRecords(user.id);
+
+          if (result.success && result.data && result.data.length > 0) {
+            console.log(`✅ DB에서 사주 데이터 ${result.data.length}개 발견!`);
+            const latestRecord = result.data[0];
+            const sajuInfo = latestRecord.saju_data as SajuInfo;
+
+            // localStorage에 저장
+            localStorage.setItem('currentSajuData', JSON.stringify(sajuInfo));
+            console.log('✅ localStorage에 사주 데이터 저장 완료');
+
+            setSajuData(sajuInfo);
+            if (sajuInfo.name) {
+              setUserName(sajuInfo.name);
+            }
+          } else {
+            console.log('DB에 저장된 사주 데이터가 없습니다.');
+          }
+        } catch (error) {
+          console.error('DB에서 사주 데이터 조회 오류:', error);
+        }
+      }
+    };
+
+    loadSajuData();
+  }, [isSignedIn, user]);
 
   // "내 사주로 저장" 핸들러
   const handleSaveMySaju = async () => {
@@ -200,6 +232,14 @@ const DashboardPage: React.FC = () => {
       path: '/result',
       gradient: 'from-blue-500 to-cyan-500',
       bgGradient: 'from-blue-50 to-cyan-50',
+    },
+    {
+      title: '나의 오행 에너지',
+      description: '위치별 가중치와 통근·투간 반영 정밀 에너지 분석',
+      icon: '⚡',
+      path: '/my-energy',
+      gradient: 'from-indigo-500 to-violet-500',
+      bgGradient: 'from-indigo-50 to-violet-50',
     },
     {
       title: '심층 사주 분석',
