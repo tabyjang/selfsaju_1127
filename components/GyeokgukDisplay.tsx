@@ -83,7 +83,7 @@ export const GyeokgukDisplay: React.FC<GyeokgukDisplayProps> = ({
           <div className="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-br from-indigo-400 to-blue-400 rounded-full shadow-lg">
             <span className="text-2xl">🎯</span>
           </div>
-          <h4 className="text-xl md:text-2xl font-bold bg-gradient-to-r from-indigo-600 via-blue-600 to-cyan-500 bg-clip-text text-transparent">
+          <h4 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-indigo-600 via-blue-600 to-cyan-500 bg-clip-text text-transparent">
             격국(格局)이란?
           </h4>
         </div>
@@ -99,14 +99,14 @@ export const GyeokgukDisplay: React.FC<GyeokgukDisplayProps> = ({
             <div className="text-center">
               <div className="max-w-4xl mx-auto space-y-4 text-left">
                 <div className="bg-white/70 p-5 rounded-xl border border-indigo-200">
-                  <p className="text-base font-normal leading-relaxed text-gray-700 mb-4">
+                  <p className="text-lg font-normal leading-relaxed text-gray-700 mb-4">
                     <strong className="text-indigo-700">격국(格局)</strong>은
                     인생이라는 전쟁터에서 승리하기 위해 지급받은{" "}
                     <strong className="text-indigo-700">'단 하나의 필살기'</strong>
                     입니다.
                   </p>
 
-                  <p className="text-base font-normal leading-relaxed text-gray-700 mb-4">
+                  <p className="text-lg font-normal leading-relaxed text-gray-700 mb-4">
                     누구에게나 세상을 살아가는 도구가 주어집니다. 누군가는{" "}
                     <strong className="text-indigo-700">'말(언변)'</strong>이
                     무기이고, 누군가는{" "}
@@ -116,7 +116,7 @@ export const GyeokgukDisplay: React.FC<GyeokgukDisplayProps> = ({
                     무기입니다.
                   </p>
 
-                  <p className="text-base font-normal leading-relaxed text-gray-700">
+                  <p className="text-lg font-normal leading-relaxed text-gray-700">
                     남의 무기를 부러워하면 백전백패하지만, 내 격국에 맞는 무기를
                     갈고닦으면 반드시 정상에 오릅니다. 격국 분석은 당신이 손에 쥔 그
                     무기가 무엇인지 확인하는 가장 정교한 인생 전략서입니다.
@@ -129,8 +129,8 @@ export const GyeokgukDisplay: React.FC<GyeokgukDisplayProps> = ({
                   </h5>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="bg-white/70 p-3 rounded-lg border border-yellow-300">
-                      <p className="text-sm font-normal text-gray-700">
-                        <strong className="text-base font-bold text-indigo-700">
+                      <p className="text-base font-normal text-gray-700">
+                        <strong className="text-lg font-bold text-indigo-700">
                           식신격
                         </strong>
                         : <strong className="text-indigo-600">재능, 표현</strong> →
@@ -138,8 +138,8 @@ export const GyeokgukDisplay: React.FC<GyeokgukDisplayProps> = ({
                       </p>
                     </div>
                     <div className="bg-white/70 p-3 rounded-lg border border-yellow-300">
-                      <p className="text-sm font-normal text-gray-700">
-                        <strong className="text-base font-bold text-indigo-700">
+                      <p className="text-base font-normal text-gray-700">
+                        <strong className="text-lg font-bold text-indigo-700">
                           상관격
                         </strong>
                         : <strong className="text-indigo-600">비판, 창조</strong> →
@@ -147,8 +147,8 @@ export const GyeokgukDisplay: React.FC<GyeokgukDisplayProps> = ({
                       </p>
                     </div>
                     <div className="bg-white/70 p-3 rounded-lg border border-yellow-300">
-                      <p className="text-sm font-normal text-gray-700">
-                        <strong className="text-base font-bold text-indigo-700">
+                      <p className="text-base font-normal text-gray-700">
+                        <strong className="text-lg font-bold text-indigo-700">
                           정재격
                         </strong>
                         :{" "}
@@ -159,8 +159,8 @@ export const GyeokgukDisplay: React.FC<GyeokgukDisplayProps> = ({
                       </p>
                     </div>
                     <div className="bg-white/70 p-3 rounded-lg border border-yellow-300">
-                      <p className="text-sm font-normal text-gray-700">
-                        <strong className="text-base font-bold text-indigo-700">
+                      <p className="text-base font-normal text-gray-700">
+                        <strong className="text-lg font-bold text-indigo-700">
                           편재격
                         </strong>
                         :{" "}
@@ -171,8 +171,8 @@ export const GyeokgukDisplay: React.FC<GyeokgukDisplayProps> = ({
                       </p>
                     </div>
                     <div className="bg-white/70 p-3 rounded-lg border border-yellow-300">
-                      <p className="text-sm font-normal text-gray-700">
-                        <strong className="text-base font-bold text-indigo-700">
+                      <p className="text-base font-normal text-gray-700">
+                        <strong className="text-lg font-bold text-indigo-700">
                           정관격
                         </strong>
                         :{" "}
@@ -183,8 +183,8 @@ export const GyeokgukDisplay: React.FC<GyeokgukDisplayProps> = ({
                       </p>
                     </div>
                     <div className="bg-white/70 p-3 rounded-lg border border-yellow-300">
-                      <p className="text-sm font-normal text-gray-700">
-                        <strong className="text-base font-bold text-indigo-700">
+                      <p className="text-base font-normal text-gray-700">
+                        <strong className="text-lg font-bold text-indigo-700">
                           편관격(칠살격)
                         </strong>
                         :{" "}
@@ -195,8 +195,8 @@ export const GyeokgukDisplay: React.FC<GyeokgukDisplayProps> = ({
                       </p>
                     </div>
                     <div className="bg-white/70 p-3 rounded-lg border border-yellow-300">
-                      <p className="text-sm font-normal text-gray-700">
-                        <strong className="text-base font-bold text-indigo-700">
+                      <p className="text-base font-normal text-gray-700">
+                        <strong className="text-lg font-bold text-indigo-700">
                           정인격
                         </strong>
                         : <strong className="text-indigo-600">정통 학문</strong> →
@@ -204,8 +204,8 @@ export const GyeokgukDisplay: React.FC<GyeokgukDisplayProps> = ({
                       </p>
                     </div>
                     <div className="bg-white/70 p-3 rounded-lg border border-yellow-300">
-                      <p className="text-sm font-normal text-gray-700">
-                        <strong className="text-base font-bold text-indigo-700">
+                      <p className="text-base font-normal text-gray-700">
+                        <strong className="text-lg font-bold text-indigo-700">
                           편인격
                         </strong>
                         : <strong className="text-indigo-600">비주류 지식</strong> →
@@ -213,8 +213,8 @@ export const GyeokgukDisplay: React.FC<GyeokgukDisplayProps> = ({
                       </p>
                     </div>
                     <div className="bg-white/70 p-3 rounded-lg border border-yellow-300">
-                      <p className="text-sm font-normal text-gray-700">
-                        <strong className="text-base font-bold text-indigo-700">
+                      <p className="text-base font-normal text-gray-700">
+                        <strong className="text-lg font-bold text-indigo-700">
                           양인격
                         </strong>
                         :{" "}
@@ -224,8 +224,8 @@ export const GyeokgukDisplay: React.FC<GyeokgukDisplayProps> = ({
                       </p>
                     </div>
                     <div className="bg-white/70 p-3 rounded-lg border border-yellow-300">
-                      <p className="text-sm font-normal text-gray-700">
-                        <strong className="text-base font-bold text-indigo-700">
+                      <p className="text-base font-normal text-gray-700">
+                        <strong className="text-lg font-bold text-indigo-700">
                           건록격,월겁격
                         </strong>
                         :{" "}
@@ -336,10 +336,10 @@ export const GyeokgukDisplay: React.FC<GyeokgukDisplayProps> = ({
                                       </div>
 
                                       <div className="ml-2">
-                                        <p className="text-gray-700 font-semibold text-base">
+                                        <p className="text-gray-700 font-semibold text-lg">
                                           격용신
                                         </p>
-                                        <p className="text-gray-600 text-xs mt-1">
+                                        <p className="text-gray-600 text-sm mt-1">
                                           {월지}월의 본기 {격용신}
                                         </p>
                                       </div>
@@ -355,7 +355,7 @@ export const GyeokgukDisplay: React.FC<GyeokgukDisplayProps> = ({
                                 <h4 className="font-bold text-green-800 mb-3 flex items-center gap-2 text-lg">
                                   <span>🔍</span> 판단 근거
                                 </h4>
-                                <div className="space-y-2 text-sm">
+                                <div className="space-y-2 text-lg">
                                   <p className="text-gray-700">
                                     <strong>방법:</strong>{" "}
                                     {geokgukResult.격국.판단근거.방법}
@@ -392,7 +392,7 @@ export const GyeokgukDisplay: React.FC<GyeokgukDisplayProps> = ({
                           <h4 className="font-bold text-green-800 mb-3 flex items-center gap-2 text-lg">
                             <span>📝</span> 해석
                           </h4>
-                          <p className="text-gray-700 leading-relaxed text-base">
+                          <p className="text-gray-700 leading-relaxed text-lg">
                             {geokgukResult.격국.해석}
                           </p>
                         </div>
@@ -406,7 +406,7 @@ export const GyeokgukDisplay: React.FC<GyeokgukDisplayProps> = ({
                             </h4>
 
                             <div className="mb-4">
-                              <p className="text-gray-700 leading-relaxed text-base mb-3">
+                              <p className="text-gray-700 leading-relaxed text-lg mb-3">
                                 {
                                   geokgukDescriptions[geokgukResult.격국.격명칭]
                                     .description
@@ -423,7 +423,7 @@ export const GyeokgukDisplay: React.FC<GyeokgukDisplayProps> = ({
                                   {geokgukDescriptions[
                                     geokgukResult.격국.격명칭
                                   ].characteristics.pros.map((item, idx) => (
-                                    <li key={idx} className="text-gray-700 text-sm">
+                                    <li key={idx} className="text-gray-700 text-lg">
                                       • {item}
                                     </li>
                                   ))}
@@ -437,7 +437,7 @@ export const GyeokgukDisplay: React.FC<GyeokgukDisplayProps> = ({
                                   {geokgukDescriptions[
                                     geokgukResult.격국.격명칭
                                   ].characteristics.cons.map((item, idx) => (
-                                    <li key={idx} className="text-gray-700 text-sm">
+                                    <li key={idx} className="text-gray-700 text-lg">
                                       • {item}
                                     </li>
                                   ))}
@@ -467,7 +467,7 @@ export const GyeokgukDisplay: React.FC<GyeokgukDisplayProps> = ({
                               <h5 className="font-bold text-yellow-800 mb-2 flex items-center gap-2">
                                 <span>💡</span> 조언
                               </h5>
-                              <p className="text-gray-800 text-sm leading-relaxed">
+                              <p className="text-gray-800 text-lg leading-relaxed">
                                 {
                                   geokgukDescriptions[geokgukResult.격국.격명칭]
                                     .advice
@@ -500,7 +500,7 @@ export const GyeokgukDisplay: React.FC<GyeokgukDisplayProps> = ({
                           {geokgukResult.이유.map((reason, idx) => (
                             <li
                               key={idx}
-                              className="text-gray-700 text-sm flex items-start gap-2"
+                              className="text-gray-700 text-lg flex items-start gap-2"
                             >
                               <span className="text-yellow-600 mt-1">•</span>
                               <span>{reason}</span>
@@ -511,7 +511,7 @@ export const GyeokgukDisplay: React.FC<GyeokgukDisplayProps> = ({
                     )}
 
                     <div className="mt-4 bg-blue-50 p-4 rounded-xl border border-blue-200">
-                      <p className="text-gray-700 text-sm leading-relaxed">
+                      <p className="text-gray-700 text-lg leading-relaxed">
                         <strong>💡 참고:</strong> 투출이 없는 경우 대운에서 투출되면
                         격국이 드러날 수 있습니다. 현재는 격국을 명확히 판단하기
                         어렵지만, 대운의 흐름을 통해 향후 격국이 형성될 가능성이

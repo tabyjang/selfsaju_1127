@@ -51,16 +51,16 @@ const FIVE_ELEMENTS_BASE: ElementConfig[] = [
     baseSpeed: 0.4,
   },
   {
-    id: "metal",
-    name: "시주",
-    color: "#e5e7eb",
+    id: "water",
+    name: "시간",
+    color: "#60a5fa",
     baseRadius: 1,
     baseSpeed: 0.6,
   },
   {
-    id: "water",
-    name: "년주",
-    color: "#1e40af",
+    id: "metal",
+    name: "시지",
+    color: "#e5e7eb",
     baseRadius: 1,
     baseSpeed: 0.7,
   },
@@ -851,15 +851,15 @@ const DEFAULT_SETTINGS = {
     월주: 2.2,
     대운: 2.0,
     일주: 1.8,
-    시주: 1.4,
-    년주: 1.1,
+    시간: 1.4,
+    시지: 1.1,
   },
   elementColors: {
     월주: "#22c55e",
     대운: "#ef4444",
     일주: "#f59e0b",
-    시주: "#e5e7eb",
-    년주: "#1e40af",
+    시간: "#60a5fa",
+    시지: "#e5e7eb",
   },
   speedMultiplier: 0.5,
   galaxyOrbitSpeed: 0.0,
@@ -943,10 +943,10 @@ const getColorsFromSaju = (sajuInfo: SajuInfo | null): ElementColors | null => {
     }
 
     return {
-      년주: OHAENG_COLOR_MAP[pillars.year.jiJi.ohaeng], // 년지
       월주: OHAENG_COLOR_MAP[pillars.month.jiJi.ohaeng], // 월지
       일주: OHAENG_COLOR_MAP[pillars.day.jiJi.ohaeng], // 일지
-      시주: OHAENG_COLOR_MAP[pillars.hour.jiJi.ohaeng], // 시지
+      시간: OHAENG_COLOR_MAP[pillars.hour.jiJi.ohaeng], // 4번째 궤도: 시주 지지
+      시지: OHAENG_COLOR_MAP[pillars.hour.cheonGan.ohaeng], // 5번째 궤도: 시주 천간
       대운: currentDaewoon
         ? OHAENG_COLOR_MAP[currentDaewoon.jiJi.ohaeng]
         : "#ef4444", // 대운 지지
@@ -1299,9 +1299,8 @@ export default function FiveElementsOrbit() {
             <div>
               <strong style={{ color: "#60a5fa" }}>• 배경 궤도 (4~5번):</strong>{" "}
               <span style={{ opacity: 0.9 }}>
-                시지와 년지입니다. 나의 노년과 사회적 뿌리를 상징합니다. 거리는
-                멀지만, 당신이라는 우주를 지탱하는 든든한 배경이자 삶의 여운을
-                형성합니다.
+                시간과 시지입니다. 나의 미래 방향과 당신의 속마음, 당신의 노후와 자식을 상징합니다.
+                <br />년지와 세운은 생략했습니다.
               </span>
             </div>
           </div>
@@ -1328,7 +1327,7 @@ export default function FiveElementsOrbit() {
               gap: "6px",
             }}
           >
-            <span>🎨</span> 2. 크기와 색상: '생극제화(生剋制化)'의 시각화
+            <span>🎨</span> 2. 크기와 색상: '생극제화(生剋制化)'의 시각화 (색은 오행 무관)
           </h3>
           <div style={{ fontSize: "12.5px", lineHeight: "1.8" }}>
             <p style={{ margin: "0 0 10px 0", opacity: 0.95 }}>

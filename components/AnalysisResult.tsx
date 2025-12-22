@@ -781,7 +781,7 @@ const getTopThreeOhaeng = (
   return selected.slice(0, 3);
 };
 
-const OhaengEnergyDisplay: React.FC<{
+export const OhaengEnergyDisplay: React.FC<{
   ilganChar: string;
   sajuInfo: SajuInfo;
 }> = ({ ilganChar, sajuInfo }) => {
@@ -994,7 +994,7 @@ const OhaengEnergyDisplay: React.FC<{
   );
 };
 
-const IlganPersonalityDisplay: React.FC<{ ilganChar: string }> = ({
+export const IlganPersonalityDisplay: React.FC<{ ilganChar: string }> = ({
   ilganChar,
 }) => {
   const [isOpen, setIsOpen] = useState(true);

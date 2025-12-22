@@ -12,8 +12,9 @@ import { sibsinPositionDescriptions } from '../utils/sibsinPositionDescriptions'
 import { unseongDescriptions } from '../utils/unseongDescriptions';
 import { getTodayUnseWithTemplate } from '../utils/todayUnse';
 import type { GeneratedFortune } from '../utils/fortuneTemplate';
-import OhaengForceDisplay from '../yongsin/OhaengForceDisplay';
-import { SajuPillarsDisplay, SajuInfoSummary } from '../components/AnalysisResult';
+import { SajuPillarsDisplay, SajuInfoSummary, OhaengEnergyDisplay, IlganPersonalityDisplay } from '../components/AnalysisResult';
+import { InteractionsDisplay } from '../components/InteractionsDisplay';
+import { SinsalDisplay } from '../components/SinsalDisplay';
 
 // 오행 색상 맵 (캘린더와 동일)
 const ohaengColorMap: Record<Ohaeng, { bg: string; text: string; border: string }> = {
@@ -1125,13 +1126,20 @@ const DashboardPage: React.FC = () => {
               {/* 오행 개수, 월령, 천을귀인 - 기존 컴포넌트 재사용 */}
               <SajuInfoSummary sajuInfo={sajuData} />
 
-              {/* 오행 세력 분석 */}
-              <div className="bg-white rounded-xl">
-                <OhaengForceDisplay
-                  sajuInfo={sajuData}
-                  isHourUnknown={sajuData.pillars.hour.cheonGan.char === '-'}
-                />
-              </div>
+              {/* 지지의 형충회합 */}
+              <InteractionsDisplay sajuInfo={sajuData} />
+
+              {/* 일간으로 보는 신살 */}
+              <SinsalDisplay sajuInfo={sajuData} />
+
+              {/* 오행의 기운 */}
+              <OhaengEnergyDisplay
+                ilganChar={sajuData.pillars.day.cheonGan.char}
+                sajuInfo={sajuData}
+              />
+
+              {/* 일간(日干) - 나의 본질 */}
+              <IlganPersonalityDisplay ilganChar={sajuData.pillars.day.cheonGan.char} />
             </div>
           </div>
         </div>
