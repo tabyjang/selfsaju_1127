@@ -33,7 +33,11 @@
       "Bash(git checkout:*)",
       "Bash(timeout:*)",
       "Bash(del replace_hadoe.py)",
-      "Bash(del expand_ilju_personalities.py)"
+      "Bash(del expand_ilju_personalities.py)",
+      "Bash(find:*)",
+      "Bash(wc:*)",
+      "Bash(del:*)",
+      "Bash(exit 0)"
     ],
     "deny": [],
     "ask": []

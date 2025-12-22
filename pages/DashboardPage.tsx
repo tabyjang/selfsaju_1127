@@ -12,6 +12,8 @@ import { sibsinPositionDescriptions } from '../utils/sibsinPositionDescriptions'
 import { unseongDescriptions } from '../utils/unseongDescriptions';
 import { getTodayUnseWithTemplate } from '../utils/todayUnse';
 import type { GeneratedFortune } from '../utils/fortuneTemplate';
+import OhaengForceDisplay from '../yongsin/OhaengForceDisplay';
+import { SajuPillarsDisplay, SajuInfoSummary } from '../components/AnalysisResult';
 
 // 오행 색상 맵 (캘린더와 동일)
 const ohaengColorMap: Record<Ohaeng, { bg: string; text: string; border: string }> = {
@@ -76,6 +78,8 @@ const DashboardPage: React.FC = () => {
   const [iljuData, setIljuData] = useState<IljuBundle | null>(null);
   const [iljuLoading, setIljuLoading] = useState<boolean>(false);
   const [showWollyeongModal, setShowWollyeongModal] = useState<boolean>(false);
+  const [showSajuWongukModal, setShowSajuWongukModal] = useState<boolean>(false);
+  const [showJinjjaModal, setShowJinjjaModal] = useState<boolean>(false);
   const [checkedPlans, setCheckedPlans] = useState<boolean[]>([false, false, false]);
   const [todayFortune, setTodayFortune] = useState<GeneratedFortune | null>(null); // 템플릿 기반 운세
 
@@ -293,37 +297,82 @@ const DashboardPage: React.FC = () => {
     return <>{nodes}</>;
   };
 
+  // 오행 개수 계산
+  const ohaengCounts = useMemo(() => {
+    if (!sajuData) return { wood: 0, fire: 0, earth: 0, metal: 0, water: 0 };
+
+    const counts: Record<string, number> = {
+      wood: 0,
+      fire: 0,
+      earth: 0,
+      metal: 0,
+      water: 0,
+    };
+
+    // 시주가 없을 경우 확인
+    const isHourUnknown =
+      sajuData.pillars.hour.cheonGan.char === '-' || sajuData.pillars.hour.jiJi.char === '-';
+
+    Object.entries(sajuData.pillars).forEach(([key, pillar]) => {
+      // 시주가 없으면 제외
+      if (key === 'hour' && isHourUnknown) {
+        return;
+      }
+      counts[pillar.cheonGan.ohaeng]++;
+      counts[pillar.jiJi.ohaeng]++;
+    });
+
+    return counts;
+  }, [sajuData]);
+
   // 통계 카드 데이터
   const statsCards = [
     {
-      label: '일간',
-      value: sajuData?.pillars.day.cheonGan.char || '-',
+      label: '사주원국',
+      value: '',
+      description: '나의 사주팔자',
+      icon: '📜',
+      color: 'text-purple-600',
+      bgColor: 'bg-purple-50',
+      borderColor: 'border-purple-200',
+      onClick: () => setShowSajuWongukModal(true), // 클릭 가능
+      isSpecial: true, // 특수 박스 표시
+    },
+    {
+      label: '일주',
+      value: sajuData?.pillars.day.ganji || '-',
       description: '나의 본질',
       icon: '⭐',
       color: 'text-amber-600',
       bgColor: 'bg-amber-50',
       borderColor: 'border-amber-200',
       onClick: () => setShowIljuModal(true),
+      isIlju: true, // 일주 특수 표시
     },
     {
-      label: '월령',
-      value: sajuData?.pillars.month.jiJi.char || '-',
-      description: '운명의 사령관',
-      icon: '🌙',
-      color: 'text-purple-600',
-      bgColor: 'bg-purple-50',
-      borderColor: 'border-purple-200',
-      onClick: () => setShowWollyeongModal(true),
-    },
-    {
-      label: '격국',
-      value: geokgukResult?.격국?.격명칭 || '-',
-      description: '사주의 유형',
-      icon: '🎭',
-      color: 'text-blue-600',
-      bgColor: 'bg-blue-50',
-      borderColor: 'border-blue-200',
-      onClick: () => setShowGyeokgukModal(true),
+      label: '진짜 속마음',
+      value: '특별해설',
+      description: '일주의 숨겨진 진실',
+      icon: '💭',
+      color: 'text-pink-600',
+      bgColor: 'bg-pink-50',
+      borderColor: 'border-pink-200',
+      onClick: () => {
+        setShowJinjjaModal(true);
+        // 일주 데이터 로드
+        if (!iljuData && sajuData) {
+          setIljuLoading(true);
+          loadIljuBundle(sajuData.pillars.day.ganji)
+            .then(data => {
+              setIljuData(data);
+              setIljuLoading(false);
+            })
+            .catch(error => {
+              console.error('일주 데이터 로드 실패:', error);
+              setIljuLoading(false);
+            });
+        }
+      },
     },
   ];
 
@@ -484,44 +533,35 @@ const DashboardPage: React.FC = () => {
               </p>
             </div>
 
-            {/* 오른쪽: 만세력 달력보기 카드 */}
+            {/* 오른쪽: 타로 원카드운세 카드 */}
             <div
-              onClick={() => navigate('/calendar', { state: { sajuData } })}
-              className="group relative bg-gradient-to-br from-pink-100 via-purple-100 to-indigo-100 rounded-2xl p-6 cursor-pointer hover:shadow-xl transition-all duration-300 hover:scale-105 border-2 border-pink-200 hover:border-purple-300 w-full md:w-80"
+              className="group relative bg-gradient-to-br from-purple-100 via-indigo-100 to-violet-100 rounded-2xl p-6 border-2 border-purple-200 w-full md:w-80 opacity-75"
             >
               {/* 배경 장식 */}
-              <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-pink-200/50 to-purple-200/50 rounded-full blur-2xl group-hover:blur-3xl transition-all"></div>
-              <div className="absolute bottom-0 left-0 w-16 h-16 bg-gradient-to-tr from-indigo-200/50 to-purple-200/50 rounded-full blur-2xl group-hover:blur-3xl transition-all"></div>
+              <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-purple-200/50 to-indigo-200/50 rounded-full blur-2xl transition-all"></div>
+              <div className="absolute bottom-0 left-0 w-16 h-16 bg-gradient-to-tr from-violet-200/50 to-purple-200/50 rounded-full blur-2xl transition-all"></div>
 
               <div className="relative z-10">
                 <div className="flex items-center gap-3 mb-3">
-                  <div className="text-4xl animate-bounce">📅</div>
-                  <h3 className="text-xl font-bold bg-gradient-to-r from-pink-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent">
-                    만세력 달력
+                  <div className="text-4xl">🔮</div>
+                  <h3 className="text-xl font-bold bg-gradient-to-r from-purple-600 via-indigo-600 to-violet-600 bg-clip-text text-transparent">
+                    타로 원카드운세
                   </h3>
                 </div>
                 <p className="text-sm text-gray-700 mb-4 leading-relaxed">
-                  매일매일의 일주를 확인하고<br />
-                  <span className="font-semibold text-purple-700">오늘의 에너지</span>를 느껴보세요 ✨
+                  오늘 나에게 필요한<br />
+                  <span className="font-semibold text-purple-700">특별한 메시지</span>를 받아보세요 ✨
                 </p>
-                <div className="flex items-center justify-between">
-                  <div className="flex gap-1">
-                    <span className="text-2xl">🌸</span>
-                    <span className="text-2xl">🌙</span>
-                    <span className="text-2xl">⭐</span>
-                  </div>
-                  <div className="flex items-center gap-1 text-purple-600 font-semibold text-sm group-hover:gap-2 transition-all">
-                    <span>보러가기</span>
-                    <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </svg>
+                <div className="flex items-center justify-center">
+                  <div className="px-4 py-2 bg-purple-100 text-purple-700 rounded-full text-sm font-semibold">
+                    준비중입니다
                   </div>
                 </div>
               </div>
 
               {/* 반짝이는 효과 */}
-              <div className="absolute top-4 right-4 w-2 h-2 bg-yellow-300 rounded-full animate-ping"></div>
-              <div className="absolute bottom-6 left-6 w-1.5 h-1.5 bg-pink-300 rounded-full animate-pulse"></div>
+              <div className="absolute top-4 right-4 w-2 h-2 bg-purple-300 rounded-full animate-ping"></div>
+              <div className="absolute bottom-6 left-6 w-1.5 h-1.5 bg-indigo-300 rounded-full animate-pulse"></div>
             </div>
           </div>
         </div>
@@ -699,9 +739,70 @@ const DashboardPage: React.FC = () => {
                 >
                   <div className="text-3xl mb-2">{stat.icon}</div>
                   <div className="text-sm text-gray-600 font-semibold mb-1">{stat.label}</div>
-                  <div className={`text-3xl font-bold ${stat.color} mb-2`}>
-                    {stat.value}
-                  </div>
+                  {stat.isSpecial ? (
+                    <div className="flex flex-col items-center justify-center gap-2 mb-2">
+                      {/* 4주 색상 박스로 표시 */}
+                      <div className="flex items-center justify-center gap-1">
+                        {['hour', 'day', 'month', 'year'].map((key) => {
+                          const pillar = sajuData.pillars[key as keyof typeof sajuData.pillars];
+                          const isHourUnknown = pillar.cheonGan.char === '-';
+
+                          if (isHourUnknown) {
+                            return (
+                              <div key={key} className="flex flex-col gap-0.5">
+                                <div className="w-7 h-7 flex items-center justify-center bg-gray-100 text-gray-300 rounded text-xs font-bold">-</div>
+                                <div className="w-7 h-7 flex items-center justify-center bg-gray-100 text-gray-300 rounded text-xs font-bold">-</div>
+                              </div>
+                            );
+                          }
+
+                          const ganInfo = earthlyBranchGanInfo[pillar.cheonGan.char];
+                          const jiInfo = earthlyBranchGanInfo[pillar.jiJi.char];
+                          const ganColor = ganInfo ? ohaengColorMap[ganInfo.ohaeng] : { bg: 'bg-gray-200', text: 'text-gray-800', border: 'border-gray-300' };
+                          const jiColor = jiInfo ? ohaengColorMap[jiInfo.ohaeng] : { bg: 'bg-gray-200', text: 'text-gray-800', border: 'border-gray-300' };
+
+                          return (
+                            <div key={key} className="flex flex-col gap-0.5">
+                              <div className={`w-7 h-7 flex items-center justify-center ${ganColor.bg} ${ganColor.text} ${ganColor.border} rounded text-xs font-bold shadow-sm saju-char-outline`}>
+                                {pillar.cheonGan.char}
+                              </div>
+                              <div className={`w-7 h-7 flex items-center justify-center ${jiColor.bg} ${jiColor.text} ${jiColor.border} rounded text-xs font-bold shadow-sm saju-char-outline`}>
+                                {pillar.jiJi.char}
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  ) : stat.isIlju ? (
+                    <div className="flex flex-col items-center justify-center gap-2 mb-2">
+                      {/* 일주 색상 박스로 표시 */}
+                      <div className="flex items-center justify-center gap-1">
+                        {(() => {
+                          const dayPillar = sajuData.pillars.day;
+                          const ganInfo = earthlyBranchGanInfo[dayPillar.cheonGan.char];
+                          const jiInfo = earthlyBranchGanInfo[dayPillar.jiJi.char];
+                          const ganColor = ganInfo ? ohaengColorMap[ganInfo.ohaeng] : { bg: 'bg-gray-200', text: 'text-gray-800', border: 'border-gray-300' };
+                          const jiColor = jiInfo ? ohaengColorMap[jiInfo.ohaeng] : { bg: 'bg-gray-200', text: 'text-gray-800', border: 'border-gray-300' };
+
+                          return (
+                            <>
+                              <div className={`w-12 h-12 flex items-center justify-center ${ganColor.bg} ${ganColor.text} ${ganColor.border} rounded-lg text-2xl font-bold shadow-md saju-char-outline`}>
+                                {dayPillar.cheonGan.char}
+                              </div>
+                              <div className={`w-12 h-12 flex items-center justify-center ${jiColor.bg} ${jiColor.text} ${jiColor.border} rounded-lg text-2xl font-bold shadow-md saju-char-outline`}>
+                                {dayPillar.jiJi.char}
+                              </div>
+                            </>
+                          );
+                        })()}
+                      </div>
+                    </div>
+                  ) : (
+                    <div className={`text-3xl font-bold ${stat.color} mb-2`}>
+                      {stat.value}
+                    </div>
+                  )}
                   <div className="text-xs text-gray-500">{stat.description}</div>
                   {stat.onClick && (
                     <div className="mt-2 text-xs text-blue-600 font-semibold">
@@ -939,6 +1040,54 @@ const DashboardPage: React.FC = () => {
                   <p className="text-sm text-gray-600">사주 분석 결과 페이지에서 확인해주세요.</p>
                 </div>
               )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 사주원국 모달 */}
+      {showSajuWongukModal && sajuData && (
+        <div
+          className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 animate-fade-in"
+          onClick={() => setShowSajuWongukModal(false)}
+        >
+          <div
+            className="bg-white rounded-2xl shadow-2xl max-w-6xl w-full max-h-[90vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* 모달 헤더 */}
+            <div className="sticky top-0 bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-500 p-6 rounded-t-2xl flex justify-between items-center z-10">
+              <h2 className="text-2xl md:text-3xl font-bold text-white">사주원국 - 나의 사주팔자</h2>
+              <button
+                onClick={() => setShowSajuWongukModal(false)}
+                className="text-white hover:text-gray-200 transition"
+              >
+                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            {/* 모달 내용 */}
+            <div className="p-6 space-y-6">
+              {/* 사주 원국 정보 제목 */}
+              <div className="text-center">
+                <h3 className="text-2xl font-bold text-gray-800 mb-2">사주 원국 정보</h3>
+              </div>
+
+              {/* 사주 4주 표시 - 기존 컴포넌트 재사용 */}
+              <SajuPillarsDisplay sajuInfo={sajuData} />
+
+              {/* 오행 개수, 월령, 천을귀인 - 기존 컴포넌트 재사용 */}
+              <SajuInfoSummary sajuInfo={sajuData} />
+
+              {/* 오행 세력 분석 */}
+              <div className="bg-white rounded-xl">
+                <OhaengForceDisplay
+                  sajuInfo={sajuData}
+                  isHourUnknown={sajuData.pillars.hour.cheonGan.char === '-'}
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -1288,6 +1437,128 @@ const DashboardPage: React.FC = () => {
                       </ul>
                     </div>
                   )}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 진짜 속마음 모달 */}
+      {showJinjjaModal && sajuData && (
+        <div
+          className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 animate-fade-in"
+          onClick={() => setShowJinjjaModal(false)}
+        >
+          <div
+            className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* 모달 헤더 */}
+            <div className="sticky top-0 bg-gradient-to-r from-pink-600 via-rose-600 to-red-500 p-6 rounded-t-2xl flex justify-between items-center z-10">
+              <h2 className="text-2xl md:text-3xl font-bold text-white">나의 진짜 속마음</h2>
+              <button
+                onClick={() => setShowJinjjaModal(false)}
+                className="text-white hover:text-gray-200 transition"
+              >
+                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            {/* 모달 내용 */}
+            <div className="p-6 space-y-6">
+              {/* 로딩 중 */}
+              {iljuLoading && (
+                <div className="bg-white/60 p-8 rounded-xl border border-pink-200 text-center">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-600 mx-auto mb-4"></div>
+                  <p className="text-gray-700">일주 특별해설을 불러오는 중입니다...</p>
+                </div>
+              )}
+
+              {/* 일주 정보 표시 */}
+              {!iljuLoading && iljuData && (
+                <div className="space-y-6">
+                  {/* 십성 특별해설 */}
+                  {iljuData.ilji?.sibsin?.special_analysis && (
+                    <div className="bg-gradient-to-br from-pink-50 via-rose-50 to-red-50 rounded-2xl border-2 border-pink-300 p-6 shadow-lg">
+                      <div className="bg-white/80 p-6 rounded-xl border-2 border-pink-200 shadow-inner">
+                        <div className="flex items-center gap-3 mb-4 pb-4 border-b-2 border-pink-200">
+                          <span className="text-3xl">💖</span>
+                          <h3 className="text-2xl font-bold text-pink-800">
+                            십성 특별해설: {iljuData.ilji.sibsin.name}
+                          </h3>
+                        </div>
+                        <h4 className="text-xl font-bold text-pink-900 mb-4">
+                          {iljuData.ilji.sibsin.special_analysis.title}
+                        </h4>
+                        <div className="text-base md:text-lg font-normal leading-relaxed text-gray-800 whitespace-pre-line">
+                          {renderBoldMarkdown(iljuData.ilji.sibsin.special_analysis.description || '', 'font-extrabold text-pink-900')}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* 십이운성 특별해설 */}
+                  {iljuData.ilji?.unseong && (
+                    <div className="bg-gradient-to-br from-yellow-50 via-amber-50 to-orange-50 rounded-2xl border-2 border-amber-300 p-6 shadow-lg">
+                      <div className="bg-white/80 p-6 rounded-xl border-2 border-amber-200 shadow-inner">
+                        <div className="flex items-center gap-3 mb-4 pb-4 border-b-2 border-amber-200">
+                          <span className="text-3xl">✨</span>
+                          <h3 className="text-2xl font-bold text-amber-800">
+                            십이운성 특별해설: {iljuData.ilji.unseong.name} ({iljuData.ilji.unseong.hanja})
+                          </h3>
+                        </div>
+                        <h4 className="text-xl font-bold text-amber-900 mb-4">
+                          {iljuData.ilji.unseong.title}
+                        </h4>
+
+                        {/* 키워드 */}
+                        {iljuData.ilji.unseong.keywords && iljuData.ilji.unseong.keywords.length > 0 && (
+                          <div className="flex flex-wrap gap-2 mb-4">
+                            {iljuData.ilji.unseong.keywords.map((keyword, idx) => (
+                              <span
+                                key={idx}
+                                className="px-3 py-1 bg-amber-200 text-amber-900 rounded-full text-sm font-semibold"
+                              >
+                                {keyword}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+
+                        {/* 설명 */}
+                        <div className="text-base md:text-lg font-normal leading-relaxed text-gray-800 whitespace-pre-line">
+                          {renderBoldMarkdown(iljuData.ilji.unseong.description || '', 'font-extrabold text-amber-900')}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* 더 자세히 보기 버튼 */}
+                  <div className="bg-gradient-to-r from-indigo-50 to-purple-50 p-6 rounded-xl border-2 border-indigo-200 text-center">
+                    <p className="text-gray-700 mb-4">
+                      더 자세한 일주 분석이 궁금하시다면 사주 분석 결과 페이지를 확인해보세요!
+                    </p>
+                    <button
+                      onClick={() => {
+                        setShowJinjjaModal(false);
+                        navigate('/result');
+                      }}
+                      className="px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-full font-bold hover:from-indigo-700 hover:to-purple-700 transition shadow-lg"
+                    >
+                      사주 분석 결과로 이동 →
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* 데이터 로드 실패 */}
+              {!iljuLoading && !iljuData && (
+                <div className="bg-yellow-50 p-6 rounded-xl border-2 border-yellow-200 text-center">
+                  <p className="text-gray-700 mb-2">일주 특별해설 정보를 불러올 수 없습니다.</p>
+                  <p className="text-sm text-gray-600">사주 분석 결과 페이지에서 확인해주세요.</p>
                 </div>
               )}
             </div>

@@ -116,7 +116,7 @@ const OhaengDisplayItem: React.FC<{ char: string; count: number }> = ({
   );
 };
 
-const SajuInfoSummary: React.FC<{ sajuInfo: SajuInfo }> = ({ sajuInfo }) => {
+export const SajuInfoSummary: React.FC<{ sajuInfo: SajuInfo }> = ({ sajuInfo }) => {
   const { pillars } = sajuInfo;
   const ilgan = pillars.day.cheonGan.char;
   const cheonEulGwiInCharsArray = cheonEulGwiInMap[ilgan] || [];
@@ -180,7 +180,7 @@ const SajuInfoSummary: React.FC<{ sajuInfo: SajuInfo }> = ({ sajuInfo }) => {
   );
 };
 
-const SajuPillarsDisplay: React.FC<{ sajuInfo: SajuInfo }> = ({ sajuInfo }) => {
+export const SajuPillarsDisplay: React.FC<{ sajuInfo: SajuInfo }> = ({ sajuInfo }) => {
   // 시주가 없을 경우(시간 모름) 확인
   const isHourUnknown =
     sajuInfo.pillars.hour.cheonGan.char === "-" ||

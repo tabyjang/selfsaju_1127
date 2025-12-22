@@ -20,7 +20,8 @@ let iljuPersonalitiesCache: { [key: string]: any } | null = null;
 let unseongThemesCache: { [key: string]: UnseongTheme } | null = null;
 let holidayMessagesCache: { [key: string]: HolidayMessage } | null = null;
 let fortuneTemplatesCache: FortuneTemplates | null = null;
-let iljuDailyEventsCache: { [key: string]: IljuDailyEvent } | null = null;
+// 일주별 개별 캐시 (일주 한자를 키로 사용)
+let iljuDailyEventsCache: { [key: string]: IljuDailyEvent } = {};
 
 /**
  * 60개 일주 성격 데이터 로드
@@ -188,20 +189,18 @@ export async function getHolidayMessage(
 
 /**
  * 60개 일주별 일일 이벤트 데이터 로드
- *
+ * @deprecated 모바일 성능 최적화를 위해 getIljuDailyEvent()를 직접 사용하세요
  * @returns 일주별 일일 이벤트 데이터 객체
  */
 export async function loadIljuDailyEvents(): Promise<{
   [key: string]: IljuDailyEvent;
 }> {
-  if (iljuDailyEventsCache) {
-    return iljuDailyEventsCache;
-  }
+  console.warn('[성능 경고] loadIljuDailyEvents()는 deprecated되었습니다. getIljuDailyEvent()를 사용하세요.');
 
+  // 이전 버전 호환성을 위해 유지하되, 경고 표시
   try {
     const response = await fetch(`${DATA_PATH}/ilju_daily_events.json`);
     const data = await response.json();
-    iljuDailyEventsCache = data;
     return data;
   } catch (error) {
     console.error('일주 이벤트 데이터 로드 실패:', error);
@@ -211,6 +210,7 @@ export async function loadIljuDailyEvents(): Promise<{
 
 /**
  * 특정 일주의 일일 이벤트 데이터 가져오기
+ * 모바일 최적화: 필요한 일주 파일만 개별 로드 (5.2KB)
  *
  * @param ilju - 일주 한자 (예: "己丑")
  * @returns 일주 일일 이벤트 데이터
@@ -218,17 +218,37 @@ export async function loadIljuDailyEvents(): Promise<{
 export async function getIljuDailyEvent(
   ilju: string
 ): Promise<IljuDailyEvent> {
-  const events = await loadIljuDailyEvents();
-
-  if (!events[ilju]) {
-    throw new Error(`일주 이벤트 데이터를 찾을 수 없습니다: ${ilju}`);
+  // 캐시에 이미 있으면 반환
+  if (iljuDailyEventsCache[ilju]) {
+    return iljuDailyEventsCache[ilju];
   }
 
-  return events[ilju];
+  try {
+    // 개별 일주 파일 로드 (예: daily_events/甲子.json)
+    // 프로덕션: 브라우저 캐시 활용 (모바일 성능 최적화)
+    const response = await fetch(`${DATA_PATH}/daily_events/${ilju}.json`, {
+      cache: 'default', // 브라우저 기본 캐시 전략 (재방문 시 빠른 로드)
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    // 캐시에 저장
+    iljuDailyEventsCache[ilju] = data;
+
+    return data;
+  } catch (error) {
+    console.error(`일주 이벤트 데이터 로드 실패 (${ilju}):`, error);
+    throw new Error(`일주 이벤트 데이터를 로드할 수 없습니다: ${ilju}`);
+  }
 }
 
 /**
  * 모든 데이터 미리 로드 (성능 최적화용)
+ * 주의: 일주 이벤트는 필요할 때 개별 로드되므로 제외
  */
 export async function preloadAllData(): Promise<void> {
   await Promise.all([
@@ -236,7 +256,7 @@ export async function preloadAllData(): Promise<void> {
     loadUnseongThemes(),
     loadHolidayMessages(),
     loadFortuneTemplates(),
-    loadIljuDailyEvents(),
+    // loadIljuDailyEvents() - 모바일 최적화를 위해 제거됨
   ]);
 }
 
@@ -248,5 +268,5 @@ export function clearCache(): void {
   unseongThemesCache = null;
   holidayMessagesCache = null;
   fortuneTemplatesCache = null;
-  iljuDailyEventsCache = null;
+  iljuDailyEventsCache = {}; // 객체로 변경
 }

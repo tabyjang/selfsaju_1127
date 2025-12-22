@@ -91,11 +91,14 @@ export async function loadIljuBundle(
 
   // Vite: new URL(..., import.meta.url)로 JSON을 asset URL로 해석 가능
   const url = new URL(`../DB_ilju_60/${filename}`, import.meta.url);
-  // 개발 중 JSON 수정 시 브라우저 캐시로 인해 "옛날 내용"이 보일 수 있어 DEV에서는 cache-bust
-  if (import.meta.env.DEV) {
-    url.searchParams.set("t", String(Date.now()));
-  }
-  const res = await fetch(url, { cache: "no-store" });
+
+  // 개발 모드: 캐시 비활성화 (수정 시 즉시 반영)
+  // 프로덕션: 브라우저 캐시 활용 (성능 최적화)
+  const fetchOptions: RequestInit = import.meta.env.DEV
+    ? { cache: "no-store" }
+    : { cache: "default" }; // 브라우저 기본 캐시 전략 사용
+
+  const res = await fetch(url, fetchOptions);
   if (!res.ok) {
     throw new Error(`일주 DB 로드 실패: ${ganji} (${res.status})`);
   }
