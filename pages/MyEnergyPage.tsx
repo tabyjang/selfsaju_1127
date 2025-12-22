@@ -175,7 +175,7 @@ const OhaengPentagon: React.FC<OhaengPentagonProps> = ({
 
   return (
     <div className="flex flex-col items-center">
-      <svg viewBox="0 0 100 100" className="w-56 h-56 md:w-64 md:h-64">
+      <svg viewBox="0 -12 100 124" className="w-56 h-64 md:w-64 md:h-72">
         <defs>
           <marker
             id="arrowhead-sangsaeng"
@@ -280,6 +280,9 @@ const OhaengPentagon: React.FC<OhaengPentagonProps> = ({
                 textAnchor="middle"
                 dominantBaseline="middle"
                 fill="#ffffff"
+                stroke="#000000"
+                strokeWidth="0.5"
+                paintOrder="stroke fill"
                 style={{
                   fontSize: `${fontSize}px`,
                   fontWeight: "bold",
@@ -288,14 +291,30 @@ const OhaengPentagon: React.FC<OhaengPentagonProps> = ({
               >
                 {pos.korean}
               </text>
-              {/* 점수 표시 (원 아래) */}
+              {/* 점수 표시 */}
               <text
-                x={pos.x}
-                y={pos.y + circleRadius + 10}
-                textAnchor="middle"
+                x={
+                  idx === 0 || idx === 1 || idx === 4
+                    ? pos.x // 상단, 우상단, 좌상단: 중앙
+                    : idx === 2
+                    ? pos.x + 8 // 우하단: 오른쪽
+                    : pos.x - 8 // 좌하단: 왼쪽
+                }
+                y={
+                  idx === 0 || idx === 1 || idx === 4
+                    ? pos.y - circleRadius - 2 // 상단, 우상단, 좌상단: 바로 위
+                    : pos.y - circleRadius + 3 // 우하단, 좌하단: 대각선 위
+                }
+                textAnchor={
+                  idx === 0 || idx === 1 || idx === 4
+                    ? "middle" // 상단, 우상단, 좌상단: 중앙 정렬
+                    : idx === 2
+                    ? "start" // 우하단: 왼쪽 정렬
+                    : "end" // 좌하단: 오른쪽 정렬
+                }
                 fill="#374151"
                 style={{
-                  fontSize: "6px",
+                  fontSize: "7px",
                   fontWeight: "bold",
                 }}
               >
@@ -305,7 +324,7 @@ const OhaengPentagon: React.FC<OhaengPentagonProps> = ({
           );
         })}
       </svg>
-      <h4 className="mt-4 text-sm font-semibold text-gray-700">{title}</h4>
+      <h4 className="mt-2 text-base md:text-lg font-bold text-gray-800">{title}</h4>
     </div>
   );
 };
@@ -338,7 +357,7 @@ const OhaengBarChart: React.FC<OhaengBarChartProps> = ({
           <div key={ohaeng} className="flex items-center gap-3">
             {/* 오행 아이콘 */}
             <div
-              className={`flex-shrink-0 w-10 h-10 flex items-center justify-center text-sm font-bold rounded-lg shadow-md ${color.bg} ${color.text}`}
+              className={`saju-char-outline-small flex-shrink-0 w-10 h-10 flex items-center justify-center text-sm font-bold rounded-lg shadow-md border-2 border-gray-800 ${color.bg} text-white`}
             >
               {ohaengShortMap[ohaeng]}
             </div>
@@ -459,7 +478,7 @@ const ChangeIndicator: React.FC<ChangeIndicatorProps> = ({ changes, fromPhase, t
           return (
             <div key={ohaeng} className="text-center">
               <div
-                className={`w-8 h-8 mx-auto flex items-center justify-center text-xs font-bold rounded-full ${ohaengColorMap[ohaeng].bg} ${ohaengColorMap[ohaeng].text}`}
+                className={`saju-char-outline-small w-8 h-8 mx-auto flex items-center justify-center text-xs font-bold rounded-full border-2 border-gray-800 ${ohaengColorMap[ohaeng].bg} text-white`}
               >
                 {ohaengShortMap[ohaeng]}
               </div>
@@ -598,45 +617,53 @@ const JijangganPillarsDisplay: React.FC<JijangganPillarsDisplayProps> = ({
 
         {/* 천간 (고정 크기) */}
         <div className="flex justify-center items-center py-4 min-h-[120px]">
-          <div
-            className={`flex items-center justify-center font-bold rounded shadow-md saju-char-outline-small ${
-              isDayMaster
-                ? 'animate-heartbeat border-4 border-yellow-400 shadow-[0_0_20px_rgba(250,204,21,0.6)]'
-                : ''
-            } ${ganColor.bg} ${pillar.cheonGan.ohaeng === 'metal' ? 'text-gray-800' : ganColor.text} ${ganColor.border ?? ''}`}
-            style={{
-              width: `${stemSize}px`,
-              height: `${stemSize}px`,
-              fontSize: '3rem',
-            }}
-          >
-            {pillar.cheonGan.char}
+          <div className="flex flex-col items-center gap-1">
+            <div
+              className={`saju-char-outline flex items-center justify-center font-bold rounded shadow-md ${
+                isDayMaster
+                  ? 'animate-heartbeat border-4 border-yellow-400 shadow-[0_0_20px_rgba(250,204,21,0.6)]'
+                  : 'border-2 border-gray-800'
+              } ${ganColor.bg} text-white`}
+              style={{
+                width: `${stemSize}px`,
+                height: `${stemSize}px`,
+                fontSize: '3rem',
+              }}
+            >
+              {pillar.cheonGan.char}
+            </div>
+            {stemCell && pillarKey !== 'day' && (
+              <span className="text-xs font-bold text-gray-600">
+                {stemCell.finalScore.toFixed(1)}
+              </span>
+            )}
           </div>
         </div>
 
-        {/* 지장간 (세로로 쌓기, 높이만 조정) */}
+        {/* 지장간 (세로로 쌓기, 정사각형) */}
         <div className="flex flex-col justify-end items-center gap-1 py-4 min-h-[180px]">
           {hiddenStemCells.map((cell, idx) => {
             // char 형식: "子(癸)" -> "癸"만 추출
             const match = cell.char.match(/\((.)\)/);
             const hiddenStemChar = match ? match[1] : cell.char;
             const hiddenColor = ohaengColorMap[cell.ohaeng];
-            const height = getHiddenStemHeight(cell.finalScore);
-
-            // metal의 경우 text 색상 명시적으로 지정
-            const textColorClass = cell.ohaeng === 'metal' ? 'text-gray-800' : hiddenColor.text;
+            const size = getHiddenStemHeight(cell.finalScore);
 
             return (
-              <div
-                key={idx}
-                className={`flex items-center justify-center font-bold rounded shadow-md saju-char-outline-small ${hiddenColor.bg} ${textColorClass} ${hiddenColor.border ?? ''}`}
-                style={{
-                  width: '48px',
-                  height: `${height}px`,
-                  fontSize: '1.25rem',
-                }}
-              >
-                {hiddenStemChar}
+              <div key={idx} className="flex items-center gap-1">
+                <div
+                  className={`saju-char-outline-small flex items-center justify-center font-bold rounded shadow-md border-2 border-gray-800 ${hiddenColor.bg} text-white`}
+                  style={{
+                    width: `${size}px`,
+                    height: `${size}px`,
+                    fontSize: '1.25rem',
+                  }}
+                >
+                  {hiddenStemChar}
+                </div>
+                <span className="text-xs font-bold text-gray-600">
+                  {cell.finalScore.toFixed(1)}
+                </span>
               </div>
             );
           })}
@@ -704,9 +731,9 @@ const RootingDisplay: React.FC<RootingDisplayProps> = ({ analysis }) => {
                   {/* 천간 정보 */}
                   <div className="flex items-center gap-2 mb-2">
                     <span
-                      className={`w-8 h-8 flex items-center justify-center rounded font-bold text-lg ${
+                      className={`saju-char-outline-small w-8 h-8 flex items-center justify-center rounded font-bold text-lg border-2 border-gray-800 ${
                         ohaengColorMap[info.stemOhaeng].bg
-                      } ${ohaengColorMap[info.stemOhaeng].text}`}
+                      } text-white`}
                     >
                       {info.stem}
                     </span>
@@ -737,9 +764,9 @@ const RootingDisplay: React.FC<RootingDisplayProps> = ({ analysis }) => {
                               {branchKoreanPosition[root.branchPosition]}
                             </span>
                             <span
-                              className={`px-1.5 py-0.5 rounded text-xs font-bold ${
+                              className={`saju-char-outline-small px-1.5 py-0.5 rounded text-xs font-bold border-2 border-gray-800 ${
                                 ohaengColorMap[root.hiddenStemOhaeng].bg
-                              } ${ohaengColorMap[root.hiddenStemOhaeng].text}`}
+                              } text-white`}
                             >
                               {root.hiddenStem}
                             </span>
@@ -783,7 +810,7 @@ const RootingDisplay: React.FC<RootingDisplayProps> = ({ analysis }) => {
                   {branchKoreanPosition[info.branchPosition]}
                 </span>
                 <span>의 지장간</span>
-                <span className={`px-2 py-0.5 rounded ${ohaengColorMap[info.hiddenStemOhaeng].bg} ${ohaengColorMap[info.hiddenStemOhaeng].text} text-xs font-bold`}>
+                <span className={`saju-char-outline-small px-2 py-0.5 rounded border-2 border-gray-800 ${ohaengColorMap[info.hiddenStemOhaeng].bg} text-white text-xs font-bold`}>
                   {info.hiddenStem}
                 </span>
                 <span className="mx-1">→</span>
@@ -1194,11 +1221,11 @@ const MyEnergyPage: React.FC = () => {
         </div>
 
         {/* 요약 비교 */}
-        <div className="mb-8 p-6 md:p-8 bg-gradient-to-br from-gray-50 via-white to-gray-50 rounded-2xl border-2 border-gray-200 shadow-lg animate-fade-in">
-          <h2 className="text-xl md:text-2xl font-bold text-gray-800 mb-6 text-center">
+        <div className="mb-8 p-4 md:p-6 bg-gradient-to-br from-gray-50 via-white to-gray-50 rounded-2xl border-2 border-gray-200 shadow-lg animate-fade-in">
+          <h2 className="text-xl md:text-2xl font-bold text-gray-800 mb-4 text-center">
             Phase별 에너지 비교
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4">
             <div className="text-center">
               <OhaengPentagon
                 scores={phase1.detailedCounts}
