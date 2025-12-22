@@ -256,41 +256,59 @@ body {
   --rotation: 30deg;
 }
 
-/* 카드 펼치기 애니메이션 */
+/* 카드 펼치기 애니메이션 - 일자 배치 */
 @keyframes card-spread-anim {
   0% {
-    transform: translateX(0) translateY(0) scale(0.5) rotate(0deg);
+    transform: translateX(0) translateY(0) scale(0.5);
     opacity: 0;
   }
   100% {
-    transform: translateX(var(--spread-x, 0)) translateY(0) scale(1) rotate(var(--spread-rot, 0deg));
+    transform: translateX(0) translateY(0) scale(1);
     opacity: 1;
   }
 }
 
 .card-spread {
   animation: card-spread-anim 0.6s ease-out forwards;
+  transition: transform 0.3s ease;
 }
 
-.card-spread:nth-child(1) {
-  --spread-x: 0px;
-  --spread-rot: -8deg;
+/* hover시 두근두근 효과 */
+.card-spread:hover {
+  animation: card-heartbeat 0.6s ease-in-out infinite;
 }
-.card-spread:nth-child(2) {
-  --spread-x: 0px;
-  --spread-rot: -4deg;
+
+@keyframes card-heartbeat {
+  0%, 100% {
+    transform: scale(1);
+  }
+  25% {
+    transform: scale(1.08);
+  }
+  50% {
+    transform: scale(1);
+  }
+  75% {
+    transform: scale(1.05);
+  }
 }
-.card-spread:nth-child(3) {
-  --spread-x: 0px;
-  --spread-rot: 0deg;
+
+/* 선택된 카드 중앙으로 이동 */
+.card-selected {
+  animation: card-move-to-center 0.8s ease-out forwards !important;
+  z-index: 100;
 }
-.card-spread:nth-child(4) {
-  --spread-x: 0px;
-  --spread-rot: 4deg;
-}
-.card-spread:nth-child(5) {
-  --spread-x: 0px;
-  --spread-rot: 8deg;
+
+@keyframes card-move-to-center {
+  0% {
+    transform: translateX(0) translateY(0) scale(1);
+  }
+  50% {
+    transform: translateX(var(--move-x, 0)) translateY(-50px) scale(1.1);
+  }
+  100% {
+    transform: translateX(var(--move-x, 0)) translateY(0) scale(1.2);
+  }
 }
 
 /* 카드 뒤집기 + 확대 애니메이션 */

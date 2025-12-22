@@ -373,35 +373,49 @@ const DashboardPage: React.FC = () => {
   };
 
   // 카드 선택 핸들러
-  const handleCardSelect = (index: number) => {
+  const handleCardSelect = (index: number, event: React.MouseEvent<HTMLDivElement>) => {
     // 사용 가능한 카드 ID 목록
     const availableIds = getAvailableCardIds();
     const randomId = availableIds[Math.floor(Math.random() * availableIds.length)];
 
     setSelectedCardIndex(index);
 
-    loadTarotCard(randomId).then(card => {
-      if (card) {
-        setSelectedCard(card);
-        setDrawStage('flip');
-        setIsFlipped(true);
+    // 선택된 카드의 현재 위치 계산
+    const cardElement = event.currentTarget;
+    const rect = cardElement.getBoundingClientRect();
+    const screenCenterX = window.innerWidth / 2;
+    const cardCenterX = rect.left + rect.width / 2;
+    const moveX = screenCenterX - cardCenterX;
 
-        // localStorage에 저장 (테스트 모드에서는 주석처리)
-        // saveTodayDraw(card.id);
-        setTodayDrawnCard(card);
+    // CSS 변수로 이동 거리 설정
+    cardElement.style.setProperty('--move-x', `${moveX}px`);
+    cardElement.classList.add('card-selected');
 
-        // 3초 후 모달로 전환 (확대 + 스포트라이트 효과 시간)
-        setTimeout(() => {
-          setShowTarotDrawing(false);
-          setShowTarotResult(true);
-          setIsFlipped(false);
-          setSelectedCardIndex(null);
-        }, 3500);
-      }
-    }).catch(error => {
-      console.error('카드 로드 실패:', error);
-      setShowTarotDrawing(false);
-    });
+    // 0.8초 후 flip 단계로 (중앙 이동 애니메이션 완료 후)
+    setTimeout(() => {
+      loadTarotCard(randomId).then(card => {
+        if (card) {
+          setSelectedCard(card);
+          setDrawStage('flip');
+          setIsFlipped(true);
+
+          // localStorage에 저장 (테스트 모드에서는 주석처리)
+          // saveTodayDraw(card.id);
+          setTodayDrawnCard(card);
+
+          // 3초 후 모달로 전환 (확대 + 스포트라이트 효과 시간)
+          setTimeout(() => {
+            setShowTarotDrawing(false);
+            setShowTarotResult(true);
+            setIsFlipped(false);
+            setSelectedCardIndex(null);
+          }, 3500);
+        }
+      }).catch(error => {
+        console.error('카드 로드 실패:', error);
+        setShowTarotDrawing(false);
+      });
+    }, 800);
   };
 
   // 통계 카드 데이터
@@ -1730,8 +1744,8 @@ const DashboardPage: React.FC = () => {
                 {[...Array(5)].map((_, i) => (
                   <div
                     key={i}
-                    onClick={() => handleCardSelect(i)}
-                    className="w-32 h-48 cursor-pointer transform transition-all hover:scale-110 hover:-translate-y-6 bg-gradient-to-br from-purple-900 via-indigo-900 to-violet-900 rounded-xl shadow-2xl hover:shadow-purple-500/70 flex items-center justify-center text-7xl border-4 border-purple-500/30 hover:border-yellow-400/80 card-spread"
+                    onClick={(e) => handleCardSelect(i, e)}
+                    className="w-32 h-48 cursor-pointer bg-gradient-to-br from-purple-900 via-indigo-900 to-violet-900 rounded-xl shadow-2xl hover:shadow-purple-500/70 flex items-center justify-center text-7xl border-4 border-purple-500/30 hover:border-yellow-400/80 card-spread"
                     style={{
                       animationDelay: `${i * 0.1}s`,
                     }}
