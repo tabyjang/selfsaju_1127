@@ -37,7 +37,8 @@
       "Bash(find:*)",
       "Bash(wc:*)",
       "Bash(del:*)",
-      "Bash(exit 0)"
+      "Bash(exit 0)",
+      "Bash(grep:*)"
     ],
     "deny": [],
     "ask": []
