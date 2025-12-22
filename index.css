@@ -182,9 +182,118 @@ body {
 .sinsal-table td:first-child { font-weight: 500; color: rgb(var(--text-primary-rgb)); }
 
 /*
- * Tarot Card Flip Animation
- * 타로 카드 뒤집기 애니메이션 효과를 정의합니다.
+ * Tarot Card Animations
+ * 타로 카드 애니메이션 효과들을 정의합니다.
  */
+
+/* 카드 섞기 애니메이션 */
+@keyframes card-shuffle-anim {
+  0% {
+    transform: rotate(0deg) translateX(0) translateY(0);
+    opacity: 0.8;
+  }
+  25% {
+    transform: rotate(180deg) translateX(100px) translateY(-50px);
+    opacity: 1;
+  }
+  50% {
+    transform: rotate(360deg) translateX(-80px) translateY(60px);
+    opacity: 0.9;
+  }
+  75% {
+    transform: rotate(540deg) translateX(60px) translateY(-80px);
+    opacity: 1;
+  }
+  100% {
+    transform: rotate(720deg) translateX(0) translateY(0);
+    opacity: 0.8;
+  }
+}
+
+.card-shuffle {
+  animation: card-shuffle-anim 2s ease-in-out infinite;
+}
+
+/* 카드 모으기 애니메이션 */
+@keyframes card-gather-anim {
+  0% {
+    transform: translateX(var(--offset-x, 0)) translateY(var(--offset-y, 0)) rotate(var(--rotation, 0deg)) scale(1);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateX(0) translateY(0) rotate(0deg) scale(1.1);
+    opacity: 1;
+  }
+}
+
+.card-gather {
+  animation: card-gather-anim 0.8s ease-out forwards;
+}
+
+.card-gather:nth-child(1) {
+  --offset-x: -150px;
+  --offset-y: -100px;
+  --rotation: -30deg;
+}
+.card-gather:nth-child(2) {
+  --offset-x: -80px;
+  --offset-y: -50px;
+  --rotation: -15deg;
+}
+.card-gather:nth-child(3) {
+  --offset-x: 0px;
+  --offset-y: 0px;
+  --rotation: 0deg;
+}
+.card-gather:nth-child(4) {
+  --offset-x: 80px;
+  --offset-y: -50px;
+  --rotation: 15deg;
+}
+.card-gather:nth-child(5) {
+  --offset-x: 150px;
+  --offset-y: -100px;
+  --rotation: 30deg;
+}
+
+/* 카드 펼치기 애니메이션 */
+@keyframes card-spread-anim {
+  0% {
+    transform: translateX(0) translateY(0) scale(0.5) rotate(0deg);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(var(--spread-x, 0)) translateY(0) scale(1) rotate(var(--spread-rot, 0deg));
+    opacity: 1;
+  }
+}
+
+.card-spread {
+  animation: card-spread-anim 0.6s ease-out forwards;
+}
+
+.card-spread:nth-child(1) {
+  --spread-x: 0px;
+  --spread-rot: -8deg;
+}
+.card-spread:nth-child(2) {
+  --spread-x: 0px;
+  --spread-rot: -4deg;
+}
+.card-spread:nth-child(3) {
+  --spread-x: 0px;
+  --spread-rot: 0deg;
+}
+.card-spread:nth-child(4) {
+  --spread-x: 0px;
+  --spread-rot: 4deg;
+}
+.card-spread:nth-child(5) {
+  --spread-x: 0px;
+  --spread-rot: 8deg;
+}
+
+/* 카드 뒤집기 + 확대 애니메이션 */
 .flip-card {
   perspective: 1000px;
 }
@@ -193,7 +302,7 @@ body {
   position: relative;
   width: 100%;
   height: 100%;
-  transition: transform 0.8s;
+  transition: transform 1.2s;
   transform-style: preserve-3d;
 }
 
@@ -212,4 +321,56 @@ body {
 
 .flip-card-back {
   transform: rotateY(180deg);
+}
+
+/* 카드 확대 효과 */
+@keyframes card-zoom {
+  0% {
+    transform: scale(0.8);
+    opacity: 0.5;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.flip-card-zoom {
+  width: 384px;
+  height: 576px;
+  animation: card-zoom 1.5s ease-out forwards;
+}
+
+/* 느린 펄스 효과 */
+@keyframes pulse-slow {
+  0%, 100% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 3s ease-in-out infinite;
+}
+
+/* 텍스트 발광 효과 */
+.text-shadow-glow {
+  text-shadow:
+    0 0 20px rgba(255, 215, 0, 0.8),
+    0 0 40px rgba(255, 215, 0, 0.6),
+    0 0 60px rgba(255, 215, 0, 0.4),
+    0 0 80px rgba(255, 215, 0, 0.2);
+}
+
+/* Radial gradient 지원 (Tailwind가 없을 경우 대비) */
+.bg-gradient-radial {
+  background: radial-gradient(circle, var(--tw-gradient-stops));
 }

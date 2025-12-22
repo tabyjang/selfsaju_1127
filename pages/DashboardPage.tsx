@@ -89,10 +89,11 @@ const DashboardPage: React.FC = () => {
   // 타로 카드 관련 state
   const [showTarotDrawing, setShowTarotDrawing] = useState<boolean>(false);
   const [showTarotResult, setShowTarotResult] = useState<boolean>(false);
-  const [drawStage, setDrawStage] = useState<'shuffle' | 'spread' | 'flip'>('shuffle');
+  const [drawStage, setDrawStage] = useState<'shuffle' | 'gather' | 'spread' | 'flip'>('shuffle');
   const [selectedCard, setSelectedCard] = useState<TarotCard | null>(null);
   const [todayDrawnCard, setTodayDrawnCard] = useState<TarotCard | null>(null);
   const [isFlipped, setIsFlipped] = useState<boolean>(false);
+  const [selectedCardIndex, setSelectedCardIndex] = useState<number | null>(null);
 
   // 페이지 로드 시 스크롤을 최상단으로 이동
   useEffect(() => {
@@ -347,22 +348,28 @@ const DashboardPage: React.FC = () => {
     return counts;
   }, [sajuData]);
 
-  // 타로 카드 클릭 핸들러
+  // 타로 카드 클릭 핸들러 (테스트용 - 항상 새로 뽑기)
   const handleTarotCardClick = () => {
-    if (todayDrawnCard) {
-      // 이미 뽑음 - 바로 결과 모달
-      setSelectedCard(todayDrawnCard);
-      setShowTarotResult(true);
-    } else {
-      // 새로 뽑기 - 애니메이션 시작
+    // 테스트 모드: 항상 새로 뽑기
+    // if (todayDrawnCard) {
+    //   setSelectedCard(todayDrawnCard);
+    //   setShowTarotResult(true);
+    // } else {
+      // 애니메이션 시작
       setShowTarotDrawing(true);
       setDrawStage('shuffle');
+      setSelectedCardIndex(null);
 
-      // 2초 후 spread 단계로
+      // 2초 후 gather 단계로
+      setTimeout(() => {
+        setDrawStage('gather');
+      }, 2000);
+
+      // 3초 후 spread 단계로
       setTimeout(() => {
         setDrawStage('spread');
-      }, 2000);
-    }
+      }, 3000);
+    // }
   };
 
   // 카드 선택 핸들러
@@ -371,22 +378,25 @@ const DashboardPage: React.FC = () => {
     const availableIds = getAvailableCardIds();
     const randomId = availableIds[Math.floor(Math.random() * availableIds.length)];
 
+    setSelectedCardIndex(index);
+
     loadTarotCard(randomId).then(card => {
       if (card) {
         setSelectedCard(card);
         setDrawStage('flip');
         setIsFlipped(true);
 
-        // localStorage에 저장
-        saveTodayDraw(card.id);
+        // localStorage에 저장 (테스트 모드에서는 주석처리)
+        // saveTodayDraw(card.id);
         setTodayDrawnCard(card);
 
-        // 2초 후 모달로 전환
+        // 3초 후 모달로 전환 (확대 + 스포트라이트 효과 시간)
         setTimeout(() => {
           setShowTarotDrawing(false);
           setShowTarotResult(true);
           setIsFlipped(false);
-        }, 2000);
+          setSelectedCardIndex(null);
+        }, 3500);
       }
     }).catch(error => {
       console.error('카드 로드 실패:', error);
@@ -1664,19 +1674,44 @@ const DashboardPage: React.FC = () => {
 
       {/* 타로 뽑기 애니메이션 */}
       {showTarotDrawing && (
-        <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center animate-fade-in">
-          {/* Stage 1: Shuffle */}
+        <div className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center animate-fade-in">
+          {/* Stage 1: Shuffle - 카드덱이 섞이는 장면 */}
           {drawStage === 'shuffle' && (
             <div className="text-center">
-              <p className="text-white text-2xl mb-8 animate-pulse">
-                카드를 섞고 있습니다...
+              <p className="text-white text-3xl mb-12 animate-pulse font-bold">
+                ✨ 카드를 섞고 있습니다 ✨
               </p>
-              <div className="flex gap-4 justify-center">
+              <div className="relative w-full flex justify-center items-center h-64">
+                {[...Array(8)].map((_, i) => (
+                  <div
+                    key={i}
+                    className="absolute w-32 h-48 bg-gradient-to-br from-purple-900 via-indigo-900 to-violet-900 rounded-xl shadow-2xl flex items-center justify-center text-7xl border-4 border-purple-500/30 card-shuffle"
+                    style={{
+                      animationDelay: `${i * 0.15}s`,
+                      transform: `rotate(${i * 45}deg)`,
+                    }}
+                  >
+                    🔮
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Stage 2: Gather - 카드가 뭉치는 장면 */}
+          {drawStage === 'gather' && (
+            <div className="text-center">
+              <p className="text-white text-3xl mb-12 font-bold animate-pulse">
+                🌙 집중하세요 🌙
+              </p>
+              <div className="relative w-full flex justify-center items-center h-64">
                 {[...Array(5)].map((_, i) => (
                   <div
                     key={i}
-                    className="w-24 h-36 bg-gradient-to-br from-purple-900 to-indigo-900 rounded-lg animate-bounce shadow-2xl flex items-center justify-center text-6xl"
-                    style={{ animationDelay: `${i * 0.1}s` }}
+                    className="absolute w-32 h-48 bg-gradient-to-br from-purple-900 via-indigo-900 to-violet-900 rounded-xl shadow-2xl flex items-center justify-center text-7xl border-4 border-purple-500/30 card-gather"
+                    style={{
+                      animationDelay: `${i * 0.05}s`,
+                    }}
                   >
                     🔮
                   </div>
@@ -1685,19 +1720,21 @@ const DashboardPage: React.FC = () => {
             </div>
           )}
 
-          {/* Stage 2: Spread */}
+          {/* Stage 3: Spread - 5장의 카드가 펼쳐지는 장면 */}
           {drawStage === 'spread' && (
             <div className="text-center">
-              <p className="text-white text-2xl mb-8">
-                마음에 와닿는 카드를 선택하세요
+              <p className="text-white text-3xl mb-12 font-bold">
+                💫 마음에 와닿는 카드를 선택하세요 💫
               </p>
-              <div className="flex gap-6 justify-center flex-wrap">
-                {[...Array(7)].map((_, i) => (
+              <div className="flex gap-8 justify-center items-center">
+                {[...Array(5)].map((_, i) => (
                   <div
                     key={i}
                     onClick={() => handleCardSelect(i)}
-                    className="w-28 h-40 cursor-pointer transform transition-all hover:scale-110 hover:-translate-y-4 animate-fade-in bg-gradient-to-br from-purple-900 to-indigo-900 rounded-lg shadow-2xl hover:shadow-purple-500/50 flex items-center justify-center text-6xl"
-                    style={{ animationDelay: `${i * 0.1}s` }}
+                    className="w-32 h-48 cursor-pointer transform transition-all hover:scale-110 hover:-translate-y-6 bg-gradient-to-br from-purple-900 via-indigo-900 to-violet-900 rounded-xl shadow-2xl hover:shadow-purple-500/70 flex items-center justify-center text-7xl border-4 border-purple-500/30 hover:border-yellow-400/80 card-spread"
+                    style={{
+                      animationDelay: `${i * 0.1}s`,
+                    }}
                   >
                     🔮
                   </div>
@@ -1706,18 +1743,24 @@ const DashboardPage: React.FC = () => {
             </div>
           )}
 
-          {/* Stage 3: Flip */}
+          {/* Stage 4: Flip - 선택한 카드가 확대되고 주변이 밝아지는 장면 */}
           {drawStage === 'flip' && selectedCard && (
-            <div className="text-center">
-              <div className="flip-card w-64 h-96 mx-auto">
+            <div className="text-center relative">
+              {/* 스포트라이트 효과 */}
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="w-[500px] h-[500px] bg-gradient-radial from-yellow-300/30 via-purple-500/20 to-transparent rounded-full animate-pulse-slow blur-3xl"></div>
+              </div>
+
+              {/* 카드 */}
+              <div className="flip-card-zoom relative z-10">
                 <div className={`flip-card-inner ${isFlipped ? 'flipped' : ''}`}>
-                  <div className="flip-card-front bg-gradient-to-br from-purple-900 to-indigo-900 rounded-xl shadow-2xl flex items-center justify-center text-9xl">
+                  <div className="flip-card-front bg-gradient-to-br from-purple-900 via-indigo-900 to-violet-900 rounded-xl shadow-2xl flex items-center justify-center text-9xl border-4 border-purple-500/50">
                     🔮
                   </div>
-                  <div className="flip-card-back bg-gradient-to-br from-indigo-600 to-purple-600 rounded-xl shadow-2xl flex flex-col items-center justify-center p-6 text-white">
-                    <div className="text-6xl mb-4">✨</div>
-                    <div className="text-4xl font-bold mb-2">{selectedCard.name_ko}</div>
-                    <div className="text-xl">{selectedCard.name_en}</div>
+                  <div className="flip-card-back bg-gradient-to-br from-indigo-600 via-purple-600 to-violet-600 rounded-xl shadow-2xl flex flex-col items-center justify-center p-8 text-white border-4 border-yellow-400/80">
+                    <div className="text-8xl mb-6 animate-sparkle">✨</div>
+                    <div className="text-5xl font-extrabold mb-4 text-shadow-glow">{selectedCard.name_ko}</div>
+                    <div className="text-2xl font-semibold text-yellow-200">{selectedCard.name_en}</div>
                   </div>
                 </div>
               </div>
