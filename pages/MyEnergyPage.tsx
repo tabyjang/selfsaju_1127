@@ -171,7 +171,7 @@ const OhaengPentagon: React.FC<OhaengPentagonProps> = ({
   const sangsaengStrokeWidth = 0.8;
   const sanggeukStrokeWidth = 0.7;
   const borderColor = "#1f2937";
-  const borderWidth = 0.8;
+  const borderWidth = 0.5;
 
   return (
     <div className="flex flex-col items-center">
@@ -357,7 +357,8 @@ const OhaengBarChart: React.FC<OhaengBarChartProps> = ({
           <div key={ohaeng} className="flex items-center gap-3">
             {/* 오행 아이콘 */}
             <div
-              className={`saju-char-outline-small flex-shrink-0 w-10 h-10 flex items-center justify-center text-sm font-bold rounded-lg shadow-md border-2 border-gray-800 ${color.bg} text-white`}
+              className={`flex-shrink-0 w-10 h-10 flex items-center justify-center text-sm font-bold rounded-lg shadow-md border border-gray-800 ${color.bg} text-white`}
+              style={{ WebkitTextStroke: '0.5px #000', paintOrder: 'stroke fill' }}
             >
               {ohaengShortMap[ohaeng]}
             </div>
@@ -478,7 +479,8 @@ const ChangeIndicator: React.FC<ChangeIndicatorProps> = ({ changes, fromPhase, t
           return (
             <div key={ohaeng} className="text-center">
               <div
-                className={`saju-char-outline-small w-8 h-8 mx-auto flex items-center justify-center text-xs font-bold rounded-full border-2 border-gray-800 ${ohaengColorMap[ohaeng].bg} text-white`}
+                className={`w-8 h-8 mx-auto flex items-center justify-center text-xs font-bold rounded-full border border-gray-800 ${ohaengColorMap[ohaeng].bg} text-white`}
+                style={{ WebkitTextStroke: '0.5px #000', paintOrder: 'stroke fill' }}
               >
                 {ohaengShortMap[ohaeng]}
               </div>
@@ -619,15 +621,17 @@ const JijangganPillarsDisplay: React.FC<JijangganPillarsDisplayProps> = ({
         <div className="flex justify-center items-center py-4 min-h-[120px]">
           <div className="flex flex-col items-center gap-1">
             <div
-              className={`saju-char-outline flex items-center justify-center font-bold rounded shadow-md ${
+              className={`flex items-center justify-center font-bold rounded shadow-md ${
                 isDayMaster
                   ? 'animate-heartbeat border-4 border-yellow-400 shadow-[0_0_20px_rgba(250,204,21,0.6)]'
-                  : 'border-2 border-gray-800'
+                  : 'border border-gray-800'
               } ${ganColor.bg} text-white`}
               style={{
                 width: `${stemSize}px`,
                 height: `${stemSize}px`,
                 fontSize: '3rem',
+                WebkitTextStroke: '0.5px #000',
+                paintOrder: 'stroke fill',
               }}
             >
               {pillar.cheonGan.char}
@@ -652,11 +656,13 @@ const JijangganPillarsDisplay: React.FC<JijangganPillarsDisplayProps> = ({
             return (
               <div key={idx} className="flex items-center gap-1">
                 <div
-                  className={`saju-char-outline-small flex items-center justify-center font-bold rounded shadow-md border-2 border-gray-800 ${hiddenColor.bg} text-white`}
+                  className={`flex items-center justify-center font-bold rounded shadow-md border border-gray-800 ${hiddenColor.bg} text-white`}
                   style={{
                     width: `${size}px`,
                     height: `${size}px`,
                     fontSize: '1.25rem',
+                    WebkitTextStroke: '0.5px #000',
+                    paintOrder: 'stroke fill',
                   }}
                 >
                   {hiddenStemChar}
@@ -731,9 +737,10 @@ const RootingDisplay: React.FC<RootingDisplayProps> = ({ analysis }) => {
                   {/* 천간 정보 */}
                   <div className="flex items-center gap-2 mb-2">
                     <span
-                      className={`saju-char-outline-small w-8 h-8 flex items-center justify-center rounded font-bold text-lg border-2 border-gray-800 ${
+                      className={`w-8 h-8 flex items-center justify-center rounded font-bold text-lg border border-gray-800 ${
                         ohaengColorMap[info.stemOhaeng].bg
                       } text-white`}
+                      style={{ WebkitTextStroke: '0.5px #000', paintOrder: 'stroke fill' }}
                     >
                       {info.stem}
                     </span>
@@ -764,9 +771,10 @@ const RootingDisplay: React.FC<RootingDisplayProps> = ({ analysis }) => {
                               {branchKoreanPosition[root.branchPosition]}
                             </span>
                             <span
-                              className={`saju-char-outline-small px-1.5 py-0.5 rounded text-xs font-bold border-2 border-gray-800 ${
+                              className={`px-1.5 py-0.5 rounded text-xs font-bold border border-gray-800 ${
                                 ohaengColorMap[root.hiddenStemOhaeng].bg
                               } text-white`}
+                              style={{ WebkitTextStroke: '0.5px #000', paintOrder: 'stroke fill' }}
                             >
                               {root.hiddenStem}
                             </span>
@@ -810,7 +818,10 @@ const RootingDisplay: React.FC<RootingDisplayProps> = ({ analysis }) => {
                   {branchKoreanPosition[info.branchPosition]}
                 </span>
                 <span>의 지장간</span>
-                <span className={`saju-char-outline-small px-2 py-0.5 rounded border-2 border-gray-800 ${ohaengColorMap[info.hiddenStemOhaeng].bg} text-white text-xs font-bold`}>
+                <span
+                  className={`px-2 py-0.5 rounded border border-gray-800 ${ohaengColorMap[info.hiddenStemOhaeng].bg} text-white text-xs font-bold`}
+                  style={{ WebkitTextStroke: '0.5px #000', paintOrder: 'stroke fill' }}
+                >
                   {info.hiddenStem}
                 </span>
                 <span className="mx-1">→</span>
