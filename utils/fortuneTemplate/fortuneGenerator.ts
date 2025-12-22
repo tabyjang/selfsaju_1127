@@ -23,12 +23,14 @@ import {
 } from './templateSelector';
 import { checkHoliday } from './holidayChecker';
 import { convertMarkdownToHtml } from './markdownToHtml';
+import { generateEventBasedFortune } from './eventFortuneGenerator';
 
 /**
  * 템플릿 기반 운세 생성 (메인 함수)
  *
  * @param input - 운세 생성 입력 데이터
  * @param userBirthday - 사용자 생일 (선택, 'MM-DD' 형식)
+ * @param useEventBased - 이벤트 기반 운세 사용 여부 (기본값: true)
  * @returns 생성된 운세
  *
  * @example
@@ -44,7 +46,8 @@ import { convertMarkdownToHtml } from './markdownToHtml';
  */
 export async function generateFortune(
   input: FortuneInput,
-  userBirthday?: string
+  userBirthday?: string,
+  useEventBased: boolean = true
 ): Promise<GeneratedFortune> {
   // 1. 공휴일/특별한 날 체크
   const holiday = checkHoliday(input.date, userBirthday);
@@ -53,7 +56,18 @@ export async function generateFortune(
     return await generateHolidayFortune(input, holiday.name);
   }
 
-  // 2. 일반 운세 생성
+  // 2. 이벤트 기반 운세 생성 (기본값)
+  if (useEventBased) {
+    try {
+      return await generateEventBasedFortune(input);
+    } catch (error) {
+      console.error('이벤트 기반 운세 생성 실패, 기존 방식으로 폴백:', error);
+      // 폴백: 기존 템플릿 방식으로 생성
+      return await generateRegularFortune(input);
+    }
+  }
+
+  // 3. 기존 템플릿 방식 운세 생성
   return await generateRegularFortune(input);
 }
 
@@ -64,8 +78,11 @@ async function generateHolidayFortune(
   input: FortuneInput,
   holidayName: string
 ): Promise<GeneratedFortune> {
+  // 날짜 기반 시드 생성
+  const seed = dateToSeed(input.date);
+
   // 일주 성격 데이터 로드
-  const iljuData = await getIljuPersonality(input.ilju);
+  const iljuData = await getIljuPersonality(input.ilju, seed);
 
   // 공휴일 메시지 로드
   const holidayMessage = await getHolidayMessage(holidayName);
@@ -86,6 +103,7 @@ async function generateHolidayFortune(
     actionPlans,
     mentalEnergy: 5,
     energyLevel: 'medium',
+    activityLevel: 'moderate',
   };
 }
 
@@ -95,8 +113,11 @@ async function generateHolidayFortune(
 async function generateRegularFortune(
   input: FortuneInput
 ): Promise<GeneratedFortune> {
+  // 날짜 기반 시드 생성
+  const seed = dateToSeed(input.date);
+
   // 데이터 로드
-  const iljuData = await getIljuPersonality(input.ilju);
+  const iljuData = await getIljuPersonality(input.ilju, seed);
   const unseongData = await getUnseongTheme(input.unseong);
   const templates = await loadFortuneTemplates();
 
@@ -111,9 +132,6 @@ async function generateRegularFortune(
   // 에너지 레벨 및 활동 레벨 계산
   const energyLevel = calculateEnergyLevel(mentalEnergy);
   const activityLevel = calculateActivityLevel(mentalEnergy);
-
-  // 날짜 기반 시드 생성
-  const seed = dateToSeed(input.date);
 
   // 템플릿 선택
   const title = selectTitle(templates, energyLevel, seed);
@@ -143,6 +161,7 @@ async function generateRegularFortune(
     actionPlans: actionPlansFinal,
     mentalEnergy,
     energyLevel,
+    activityLevel,
   };
 }
 

@@ -14,10 +14,15 @@ export type {
   FortuneInput,
   GeneratedFortune,
   HolidayInfo,
+  IljuDailyEvent,
+  EnergyCombo,
+  EventCategory,
+  Weekday,
 } from './types';
 
 // 메인 함수
 export { generateFortune, formatFortune } from './fortuneGenerator';
+export { generateEventBasedFortune } from './eventFortuneGenerator';
 
 // 데이터 로더
 export {
@@ -25,9 +30,11 @@ export {
   loadUnseongThemes,
   loadHolidayMessages,
   loadFortuneTemplates,
+  loadIljuDailyEvents,
   getIljuPersonality,
   getUnseongTheme,
   getHolidayMessage,
+  getIljuDailyEvent,
   preloadAllData,
   clearCache,
 } from './dataLoader';

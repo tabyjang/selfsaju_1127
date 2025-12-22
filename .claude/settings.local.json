@@ -27,7 +27,13 @@
       "Bash(python:*)",
       "Bash(del convert_gito.py)",
       "Bash(git restore:*)",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "Bash(del fix_gito.py enhance_gito.py final_fix.py add_emphasis.py)",
+      "Bash(del modify_gito*.py)",
+      "Bash(git checkout:*)",
+      "Bash(timeout:*)",
+      "Bash(del replace_hadoe.py)",
+      "Bash(del expand_ilju_personalities.py)"
     ],
     "deny": [],
     "ask": []

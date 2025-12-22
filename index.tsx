@@ -8,6 +8,7 @@ import InputPage from './pages/InputPage';
 import ResultPage from './pages/ResultPage';
 import DeepAnalysis from './pages/DeepAnalysis';
 import CalendarPage from './pages/CalendarPage';
+import CalendarTestPage from './pages/CalendarTestPage';
 import DaewoonPage from './pages/DaewoonPage';
 import DashboardPage from './pages/DashboardPage';
 import FiveElementsOrbit from './pages/FiveElementsOrbit';
@@ -35,6 +36,7 @@ root.render(
           <Route path="/result" element={<ResultPage />} />
           <Route path="/deep-analysis" element={<DeepAnalysis />} />
           <Route path="/calendar" element={<CalendarPage />} />
+          <Route path="/calendar-test" element={<CalendarTestPage />} />
           <Route path="/daewoon" element={<DaewoonPage />} />
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/orbit" element={<FiveElementsOrbit />} />

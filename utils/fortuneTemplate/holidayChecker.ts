@@ -83,7 +83,9 @@ export function checkHoliday(
     };
   }
 
-  // 3. 요일 체크 (월요일, 금요일, 주말)
+  // 3. 요일 체크 (비활성화 - 이벤트 기반 운세 사용)
+  // 요일별 테마는 이벤트 기반 운세에서 자동으로 포함됨
+  /*
   if (dayOfWeek === 1) {
     // 월요일
     return {
@@ -110,6 +112,7 @@ export function checkHoliday(
       message: null as any,
     };
   }
+  */
 
   // 4. 음력 공휴일 체크 (TODO: 음력 변환 라이브러리 필요)
   // 현재는 구현하지 않음. 필요시 추가.

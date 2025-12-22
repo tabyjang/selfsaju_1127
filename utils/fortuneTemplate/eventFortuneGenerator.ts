@@ -102,8 +102,12 @@ function selectEventCategories(
 export async function generateEventBasedFortune(
   input: FortuneInput
 ): Promise<GeneratedFortune> {
-  // 데이터 로드
-  const iljuData = await getIljuPersonality(input.ilju);
+  // 날짜 정보 (먼저 계산하여 seed를 먼저 생성)
+  const seed = dateToSeed(input.date);
+  const weekday = getWeekday(input.date);
+
+  // 데이터 로드 (seed를 전달하여 다양성 확보)
+  const iljuData = await getIljuPersonality(input.ilju, seed);
   const iljuEvents = await getIljuDailyEvent(input.ilju);
   const unseongData = await getUnseongTheme(input.unseong);
   const templates = await loadFortuneTemplates();
@@ -118,10 +122,6 @@ export async function generateEventBasedFortune(
   const energyLevel = calculateEnergyLevel(mentalEnergy);
   const activityLevel = calculateActivityLevel(mentalEnergy);
   const energyCombo = calculateEnergyCombo(activityLevel, energyLevel);
-
-  // 날짜 정보
-  const seed = dateToSeed(input.date);
-  const weekday = getWeekday(input.date);
 
   // 이벤트 카테고리 선택 (3개)
   const eventCategories = selectEventCategories(energyLevel, seed);
@@ -146,33 +146,33 @@ export async function generateEventBasedFortune(
     seed
   );
 
-  // 시간대별 예측
-  const timePrediction = generateTimePrediction(iljuEvents, seed);
+  // 요일 테마 (플레이스홀더 치환)
+  const weekdayThemeRaw = iljuEvents.요일별테마[weekday];
+  const weekdayTheme = replacePlaceholdersSimple(weekdayThemeRaw, iljuData);
 
-  // 요일 테마
-  const weekdayTheme = iljuEvents.요일별테마[weekday];
+  // 에너지 조합 메시지 (플레이스홀더 치환)
+  const energyMessageRaw = iljuEvents.에너지조합[energyCombo];
+  const energyMessage = replacePlaceholdersSimple(energyMessageRaw, iljuData);
 
-  // 에너지 조합 메시지
-  const energyMessage = iljuEvents.에너지조합[energyCombo];
-
-  // 클로징
-  const closing = selectFromArray(
-    templates.event_closing_exciting || templates[`closing_${energyLevel === 'high' ? 'high' : energyLevel === 'medium' ? 'medium' : 'low'}_energy`],
+  // 제목: event_closing_exciting에서 랜덤 선택
+  const titleRaw = selectFromArray(
+    templates.event_closing_exciting || ['오늘의 특별한 순간'],
     seed + 10
   );
-  const closingFinal = replacePlaceholdersSimple(closing, iljuData);
+  const title = replacePlaceholdersSimple(titleRaw, iljuData).replace(/\*\*/g, ''); // ** 제거
 
-  // 액션 플랜: 이벤트 기반 동적 생성
+  // 액션 플랜: 이벤트 기반 동적 생성 (일주 특성 반영)
   const actionPlans = generateEventActionPlans(
+    iljuData,
     iljuEvents,
     eventCategories,
     weekday,
+    energyLevel,
     seed
   );
 
-  // 최종 운세 조합
-  const title = `오늘의 특별한 순간`;
-  const content = `${opening}\n\n${energyMessage}\n\n${mainParts.join('\n\n')}\n\n**${weekday}의 테마**\n${weekdayTheme}\n\n${timePrediction}\n\n${closingFinal}`;
+  // 최종 운세 조합 (closing 메시지 제거)
+  const content = `${opening}\n\n${energyMessage}\n\n${mainParts.join('\n\n')}\n\n**${weekday}의 테마**\n${weekdayTheme}`;
 
   // HTML 변환
   const contentHtml = convertMarkdownToHtml(content);
@@ -189,6 +189,7 @@ export async function generateEventBasedFortune(
 
 /**
  * 이벤트 오프닝 생성
+ * 일주 특성을 풍부하게 반영하여 개인화된 오프닝 생성
  */
 function generateEventOpening(
   iljuData: IljuPersonality,
@@ -199,17 +200,23 @@ function generateEventOpening(
   firstEventCategory: EventCategory,
   seed: number
 ): string {
-  // 에너지 표시
-  const activityEmoji = activityLevel === 'active' ? '🔥🔥🔥' : activityLevel === 'moderate' ? '🔥🔥' : '🔥';
-  const mentalEmoji = energyLevel === 'high' ? '💎💎💎' : energyLevel === 'medium' ? '💎💎' : '💎';
+  // 첫 번째 이벤트 미리보기 (플레이스홀더 치환)
+  const firstEventRaw = selectFromArray(iljuEvents.오늘의이벤트[firstEventCategory], seed);
+  const firstEvent = replacePlaceholdersSimple(firstEventRaw, iljuData);
 
-  // 첫 번째 이벤트 미리보기 - 전체 이벤트 사용 (더 이상 자르지 않음)
-  const firstEvent = selectFromArray(iljuEvents.오늘의이벤트[firstEventCategory], seed);
+  // 일주 특성 중 하나만 랜덤 선택 (중복 제거)
+  const traitOptions = [
+    iljuData.핵심특성,
+    iljuData.강점 + ' 있는',
+    iljuData.소통스타일,
+    iljuData.감정표현,
+    iljuData.업무스타일,
+  ];
+  const selectedTrait = selectFromArray(traitOptions, seed + 100);
 
-  const activityText = activityLevel === 'active' ? '높음' : activityLevel === 'moderate' ? '보통' : '낮음';
-  const mentalText = energyLevel === 'high' ? '높음' : energyLevel === 'medium' ? '보통' : '낮음';
+  const personalityIntro = `**${selectedTrait} 당신, 오늘을 보내세요.**`;
 
-  return `${activityEmoji} **활동 에너지 ${activityText}**  ${mentalEmoji} **마음 에너지 ${mentalText}**\n\n**${iljuData.핵심특성} 당신에게 오늘은 특별해요!**\n\n${firstEvent}`;
+  return `${personalityIntro}\n\n${firstEvent}`;
 }
 
 /**
@@ -240,7 +247,7 @@ function generateEventMainParts(
       template = template.replace('{event_detail}', event);
       template = replacePlaceholdersSimple(template, iljuData);
     } else {
-      // 폴백: 템플릿이 없으면 이벤트 그대로 사용
+      // 폴백: 템플릿이 없으면 이벤트 그대로 사용 (플레이스홀더 치환)
       const categoryEmoji = {
         '인연': '💫',
         '재미': '😄',
@@ -248,7 +255,8 @@ function generateEventMainParts(
         '영감': '💡',
         '도전': '🚀',
       };
-      template = `${categoryEmoji[category]} **${category}**: ${event}`;
+      const eventProcessed = replacePlaceholdersSimple(event, iljuData);
+      template = `${categoryEmoji[category]} **${category}**: ${eventProcessed}`;
     }
 
     parts.push(template);
@@ -258,86 +266,211 @@ function generateEventMainParts(
 }
 
 /**
- * 시간대별 예측 생성
- */
-function generateTimePrediction(iljuEvents: IljuDailyEvent, seed: number): string {
-  const timePeriods = ['오전', '점심', '오후', '저녁'];
-  const selectedPeriod = selectFromArray(timePeriods, seed + 20);
-  const prediction = iljuEvents.시간대별예측[selectedPeriod as keyof typeof iljuEvents.시간대별예측];
-
-  return `**⏰ 오늘의 골든타임: ${selectedPeriod}**\n${prediction}`;
-}
-
-/**
  * 이벤트 기반 액션 플랜 생성
+ * 일주 특성을 반영한 개인화된 액션 플랜
  */
 function generateEventActionPlans(
+  iljuData: IljuPersonality,
   iljuEvents: IljuDailyEvent,
   eventCategories: EventCategory[],
   weekday: Weekday,
+  energyLevel: EnergyLevel,
   seed: number
 ): string[] {
   const plans: string[] = [];
 
-  // 액션 플랜용 템플릿 (명령형)
-  const actionTemplates = {
-    인연: [
-      "오늘 만나는 사람들과 진심으로 소통하기",
-      "새로운 인연에 열린 마음으로 다가가기",
-      "주변 사람들에게 먼저 연락해보기",
-      "협업 기회가 있다면 적극적으로 참여하기",
-      "오래된 인연에게 안부 메시지 보내기"
-    ],
-    재미: [
-      "점심시간에 평소 안 가던 곳 가보기",
-      "퇴근 후 재미있는 활동 하나 계획하기",
-      "유머 감각 발휘해서 분위기 밝게 만들기",
-      "새로운 것 시도하며 즐거움 찾기",
-      "친구들과 가볍게 수다 떨 시간 갖기"
-    ],
-    행운: [
-      "작은 행운에도 감사하는 마음 갖기",
-      "평소 미뤄뒀던 일 오늘 처리하기",
-      "긍정적인 마인드로 하루 시작하기",
-      "좋은 기회 오면 망설이지 말고 잡기",
-      "직감을 믿고 결정하기"
-    ],
-    영감: [
-      "새로운 아이디어 떠오르면 바로 메모하기",
-      "창의적인 작업에 집중할 시간 만들기",
-      "다른 관점에서 문제 바라보기",
-      "산책하며 머리 식히고 영감 얻기",
-      "평소 관심 있던 분야 조금이라도 공부하기"
-    ],
-    도전: [
-      "새로운 방식으로 업무 처리해보기",
-      "평소 망설이던 제안 용기내서 말하기",
-      "안전지대에서 벗어나 도전하기",
-      "실패 두려워하지 말고 시도하기",
-      "배우고 싶던 것 오늘 바로 시작하기"
-    ]
-  };
+  // 1. 요일별 액션 (일주 특성 반영)
+  const weekdayAction = generatePersonalizedWeekdayAction(iljuData, weekday, energyLevel, seed);
+  plans.push(weekdayAction);
 
-  // 1. 요일 테마를 액션으로 변환
-  const weekdayActions: { [key in Weekday]: string } = {
-    '월요일': '한 주 계획 세우고 우선순위 정리하기',
-    '화요일': '어제 시작한 일 집중해서 진행하기',
-    '수요일': '중간 점검하고 방향 조정하기',
-    '목요일': '마무리 준비하며 속도 높이기',
-    '금요일': '이번 주 성과 정리하고 다음 주 준비하기',
-    '토요일': '평소 못했던 취미 활동 즐기기',
-    '일요일': '충분히 쉬면서 에너지 충전하기'
-  };
-  plans.push(weekdayActions[weekday]);
-
-  // 2. 이벤트 카테고리별 액션 2개 추가
+  // 2. 이벤트 카테고리별 개인화 액션 2개
   eventCategories.slice(0, 2).forEach((category, index) => {
-    const categoryActions = actionTemplates[category];
-    const action = selectFromArray(categoryActions, seed + index + 30);
+    const action = generatePersonalizedCategoryAction(iljuData, category, seed + index + 30);
     plans.push(action);
   });
 
   return plans;
+}
+
+/**
+ * 요일별 개인화 액션 생성
+ */
+function generatePersonalizedWeekdayAction(
+  iljuData: IljuPersonality,
+  weekday: Weekday,
+  energyLevel: EnergyLevel,
+  seed: number
+): string {
+  // 강점에서 첫 번째 단어만 추출
+  const firstStrength = iljuData.강점.split(',')[0].trim();
+
+  const weekdayTemplates: { [key in Weekday]: string[] } = {
+    '월요일': [
+      `이번 주 목표 명확히 정하기`,
+      `${firstStrength}을(를) 활용해 한 주 계획 세우기`,
+      `우선순위 정리하기`,
+      `이번 주 가장 중요한 일 먼저 떠올려보기`,
+      `${firstStrength}을(를) 믿고 이번 주 도전 과제 설정하기`,
+      `월요일 아침 루틴 확립하기`,
+      `조용히 앉아 이번 주 목표 마음속에 정리하기`,
+      `${firstStrength}을(를) 발휘할 기회 찾아보기`,
+      `한 주 동안 집중할 핵심 정하기`,
+      `이번 주에 이루고 싶은 것 마음속에 그리기`
+    ],
+    '화요일': [
+      `오늘은 실행에 집중하기`,
+      `${firstStrength}을(를) 활용해 업무 속도 높이기`,
+      `어제의 경험 되돌아보며 오늘 방향 잡기`,
+      `가장 중요한 일부터 처리하기`,
+      `${firstStrength}으(로) 어려운 과제 돌파하기`,
+      `동료와 협력해 일 효율적으로 진행하기`,
+      `당신답게 리듬 찾아가기`,
+      `${firstStrength}을(를) 믿고 과감하게 진행하기`,
+      `작은 성취에도 스스로 칭찬하기`,
+      `집중력 최고조로 끌어올리기`
+    ],
+    '수요일': [
+      `진행 상황 체크하기`,
+      `${firstStrength}을(를) 활용해 중간 점검하기`,
+      `필요한 부분 조정하며 방향 재확인하기`,
+      `방향 재설정할 시간 갖기`,
+      `${firstStrength}으(로) 부족한 부분 보완하기`,
+      `팀원들과 상태 공유하며 협력하기`,
+      `당신답게 균형 찾기`,
+      `${firstStrength}을(를) 발휘해 남은 일정 계획하기`,
+      `지금까지 온 것 스스로 격려하기`,
+      `주중 피로 풀 방법 찾기`
+    ],
+    '목요일': [
+      `주말 전 완료할 것 정리하기`,
+      `${firstStrength}을(를) 발휘해 속도 높이기`,
+      `마무리 준비하며 남은 일정 확인하기`,
+      `금요일 전 해결할 것 우선순위 매기기`,
+      `${firstStrength}으(로) 밀린 일 정리하기`,
+      `동료들과 진행 상황 확인하며 마무리 준비하기`,
+      `당신답게 주말 계획 미리 세우기`,
+      `${firstStrength}을(를) 활용해 효율적으로 일 처리하기`,
+      `이번 주 성과 미리 정리해보기`,
+      `주말까지 에너지 관리하기`
+    ],
+    '금요일': [
+      `다음 주 준비하며 마무리하기`,
+      `${firstStrength}을(를) 활용해 이번 주 성과 정리하기`,
+      `한 주 되돌아보며 배운 점 정리하기`,
+      `미완료 항목 다음 주로 이월하기`,
+      `${firstStrength}으(로) 주요 성과 기록하기`,
+      `팀원들께 감사 표현하며 한 주 마무리하기`,
+      `당신답게 주말 재충전 계획 세우기`,
+      `${firstStrength}을(를) 발휘한 순간 떠올리며 뿌듯해하기`,
+      `이번 주 수고한 자신에게 선물하기`,
+      `다음 주 월요일 준비 가볍게 하기`
+    ],
+    '토요일': [
+      `여유롭게 취미 생활 즐기기`,
+      `평소 못했던 활동 해보기`,
+      `${firstStrength}을(를) 활용해 새로운 것 배워보기`,
+      `친구들과 편하게 시간 보내기`,
+      `당신답게 집 정리하며 마음 정돈하기`,
+      `${firstStrength}을(를) 살려 개인 프로젝트 진행하기`,
+      `좋아하는 것에 푹 빠져보기`,
+      `운동하며 몸과 마음 리프레시하기`,
+      `${firstStrength}으(로) 가족과 특별한 시간 만들기`,
+      `자연 속에서 힐링하며 충전하기`
+    ],
+    '일요일': [
+      `충분히 쉬면서 재충전하기`,
+      `다음 주를 위한 에너지 충전하기`,
+      `${firstStrength}을(를) 점검하며 자신감 회복하기`,
+      `명상이나 요가하며 마음 정돈하기`,
+      `당신답게 좋아하는 책이나 영화 즐기기`,
+      `${firstStrength}을(를) 되새기며 일기 쓰기`,
+      `느긋하게 브런치 즐기기`,
+      `다음 주 간단히 미리보기`,
+      `${firstStrength}을(를) 떠올리며 감사 일기 쓰기`,
+      `완전히 디지털 디톡스하며 쉬기`
+    ]
+  };
+
+  const templates = weekdayTemplates[weekday];
+  return selectFromArray(templates, seed);
+}
+
+/**
+ * 카테고리별 개인화 액션 생성
+ */
+function generatePersonalizedCategoryAction(
+  iljuData: IljuPersonality,
+  category: EventCategory,
+  seed: number
+): string {
+  // 강점에서 첫 번째 단어만 추출
+  const firstStrength = iljuData.강점.split(',')[0].trim();
+
+  const categoryTemplates: { [key in EventCategory]: string[] } = {
+    인연: [
+      `오늘 만나는 사람들과 진심으로 소통하기`,
+      `당신답게 새로운 인연에 열린 마음으로 다가가기`,
+      `주변 사람들에게 먼저 연락해보기`,
+      `${firstStrength}을(를) 활용해 협업 기회 적극 참여하기`,
+      `관계에서 진정성 보여주기`,
+      `상대방 마음 헤아리며 깊이 대화하기`,
+      `${firstStrength}으(로) 팀워크 강화하기`,
+      `네트워킹 기회 적극 만들어보기`,
+      `오늘 만난 사람에게 긍정 에너지 전하기`,
+      `소중한 인연에게 감사 표현하기`
+    ],
+    재미: [
+      `평소 안 가던 새로운 곳 탐험해보기`,
+      `즐거운 활동 계획하고 실천하기`,
+      `${firstStrength}을(를) 살려 새로운 것 시도하며 즐거움 찾기`,
+      `당신답게 여유롭게 시간 보내기`,
+      `웃음 가득한 순간 만들기`,
+      `${firstStrength}으(로) 창의적인 놀이 즐기기`,
+      `주변 분위기 밝게 만들며 즐기기`,
+      `일상 속 작은 재미 발견하기`,
+      `유머 감각 발휘하며 즐겁게 보내기`,
+      `${firstStrength}을(를) 활용해 즐거운 추억 만들기`
+    ],
+    행운: [
+      `작은 행운에도 감사하는 마음 갖기`,
+      `당신답게 긍정적인 마인드로 하루 시작하기`,
+      `${firstStrength}을(를) 믿고 좋은 기회 주저 없이 잡기`,
+      `직감 따라 결정해보기`,
+      `행운을 끌어당기는 태도 유지하기`,
+      `${firstStrength}으(로) 기회의 순간 포착하기`,
+      `미뤄뒀던 일 오늘 처리하기`,
+      `우연한 만남도 소중히 여기기`,
+      `당신답게 행운의 신호 알아채기`,
+      `${firstStrength}을(를) 발휘할 타이밍 잡기`
+    ],
+    영감: [
+      `떠오르는 아이디어 바로 메모하기`,
+      `${firstStrength}을(를) 활용해 다른 관점에서 문제 바라보기`,
+      `산책하며 영감 얻기`,
+      `관심 분야 조금이라도 공부해보기`,
+      `예술 작품에서 영감 받기`,
+      `${firstStrength}으(로) 창의적 사고 확장하기`,
+      `창의적인 작업에 집중하기`,
+      `평소와 다른 루틴으로 자극 받기`,
+      `몽상하며 상상력 펼치기`,
+      `${firstStrength}을(를) 활용해 독창적인 해결책 찾기`
+    ],
+    도전: [
+      `평소 망설이던 제안 용기내서 말하기`,
+      `${firstStrength}을(를) 믿고 안전지대에서 벗어나 도전하기`,
+      `실패 두려워 말고 시도하기`,
+      `새로운 목표 설정하고 첫걸음 떼기`,
+      `${firstStrength}으(로) 어려운 과제에 도전하기`,
+      `두려움 극복하며 앞으로 나아가기`,
+      `새로운 방식으로 업무 처리해보기`,
+      `당신답게 한계 뛰어넘기`,
+      `${firstStrength}을(를) 발휘해 불가능해 보이는 것 시도하기`,
+      `도전하는 자신에게 응원 보내기`
+    ]
+  };
+
+  const templates = categoryTemplates[category];
+  return selectFromArray(templates, seed);
 }
 
 /**
@@ -347,10 +480,14 @@ function replacePlaceholdersSimple(
   template: string,
   iljuData: IljuPersonality
 ): string {
+  // 강점에서 첫 번째 단어만 추출 (쉼표로 구분)
+  const firstStrength = iljuData.강점.split(',')[0].trim();
+
   return template
     .replace(/\{ilju\.핵심특성\}/g, iljuData.핵심특성)
-    .replace(/\{ilju\.강점\}/g, iljuData.강점)
+    .replace(/\{ilju\.강점\}/g, firstStrength)
     .replace(/\{ilju\.소통스타일\}/g, iljuData.소통스타일)
     .replace(/\{ilju\.감정표현\}/g, iljuData.감정표현)
-    .replace(/\{ilju\.업무스타일\}/g, iljuData.업무스타일);
+    .replace(/\{ilju\.업무스타일\}/g, iljuData.업무스타일)
+    .replace(/\{ilju\.추가특징\}/g, iljuData.추가특징 || '');
 }

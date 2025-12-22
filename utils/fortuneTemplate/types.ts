@@ -96,6 +96,7 @@ export interface GeneratedFortune {
   actionPlans: string[];
   mentalEnergy: number;
   energyLevel: EnergyLevel;
+  activityLevel: ActivityLevel;
 }
 
 // 공휴일 정보
@@ -104,3 +105,62 @@ export interface HolidayInfo {
   type: 'fixed' | 'lunar' | 'weekly' | 'birthday';
   message: HolidayMessage;
 }
+
+// 일주별 일일 이벤트 데이터 타입
+export interface IljuDailyEvent {
+  일주: string;
+  한자: string;
+  오늘의이벤트: {
+    인연: string[];
+    재미: string[];
+    행운: string[];
+    영감: string[];
+    도전: string[];
+  };
+  시간대별예측: {
+    새벽?: string;
+    오전: string;
+    점심: string;
+    오후: string;
+    저녁: string;
+    밤?: string;
+  };
+  요일별테마: {
+    월요일: string;
+    화요일: string;
+    수요일: string;
+    목요일: string;
+    금요일: string;
+    토요일: string;
+    일요일: string;
+  };
+  에너지조합: {
+    활동높음_마음높음: string;
+    활동높음_마음보통: string;
+    활동높음_마음낮음: string;
+    활동보통_마음높음: string;
+    활동보통_마음보통: string;
+    활동보통_마음낮음: string;
+    활동낮음_마음높음: string;
+    활동낮음_마음보통: string;
+    활동낮음_마음낮음: string;
+  };
+}
+
+// 에너지 조합 타입
+export type EnergyCombo =
+  | '활동높음_마음높음'
+  | '활동높음_마음보통'
+  | '활동높음_마음낮음'
+  | '활동보통_마음높음'
+  | '활동보통_마음보통'
+  | '활동보통_마음낮음'
+  | '활동낮음_마음높음'
+  | '활동낮음_마음보통'
+  | '활동낮음_마음낮음';
+
+// 이벤트 카테고리 타입
+export type EventCategory = '인연' | '재미' | '행운' | '영감' | '도전';
+
+// 요일 타입
+export type Weekday = '월요일' | '화요일' | '수요일' | '목요일' | '금요일' | '토요일' | '일요일';
