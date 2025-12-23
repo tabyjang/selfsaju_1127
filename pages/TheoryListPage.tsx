@@ -2,31 +2,31 @@
 
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { TheoryMetadata } from '../utils/theory/types';
-import { loadTheoryIndex } from '../utils/theory/supabaseTheoryLoader';
+import { TheoryCourse } from '../utils/theory/types';
+import { loadCourseIndex } from '../utils/theory/supabaseTheoryLoader';
 import TheoryCard from '../components/theory/TheoryCard';
 
 const TheoryListPage: React.FC = () => {
   const navigate = useNavigate();
-  const [theories, setTheories] = useState<TheoryMetadata[]>([]);
+  const [courses, setCourses] = useState<TheoryCourse[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    loadTheoryIndex()
+    loadCourseIndex()
       .then(data => {
-        setTheories(data.theories);
+        setCourses(data.courses);
         setLoading(false);
       })
       .catch(err => {
-        console.error('이론 목록 로드 실패:', err);
-        setError('이론 목록을 불러올 수 없습니다.');
+        console.error('과목 목록 로드 실패:', err);
+        setError('과목 목록을 불러올 수 없습니다.');
         setLoading(false);
       });
   }, []);
 
-  const handleTheoryClick = (theoryId: string) => {
-    navigate(`/theory/${theoryId}`);
+  const handleCourseClick = (courseId: string) => {
+    navigate(`/theories/${courseId}`);
   };
 
   if (loading) {
@@ -85,80 +85,86 @@ const TheoryListPage: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
           <div className="glass-card p-4 text-center">
             <div className="text-3xl font-bold text-amber-700">
-              {theories.length}
+              {courses.length}
             </div>
-            <div className="text-sm text-gray-600">전체 이론</div>
+            <div className="text-sm text-gray-600">전체 과목</div>
           </div>
           <div className="glass-card p-4 text-center">
             <div className="text-3xl font-bold text-green-700">
-              {theories.filter(t => t.difficulty === 'beginner').length}
+              {courses.filter(c => c.difficulty === 'beginner').length}
             </div>
-            <div className="text-sm text-gray-600">입문 자료</div>
+            <div className="text-sm text-gray-600">입문 과목</div>
           </div>
           <div className="glass-card p-4 text-center">
             <div className="text-3xl font-bold text-blue-700">
-              {theories.filter(t => t.difficulty === 'intermediate').length}
+              {courses.filter(c => c.difficulty === 'intermediate').length}
             </div>
-            <div className="text-sm text-gray-600">중급 자료</div>
+            <div className="text-sm text-gray-600">중급 과목</div>
           </div>
           <div className="glass-card p-4 text-center">
             <div className="text-3xl font-bold text-purple-700">
-              {theories.filter(t => t.difficulty === 'advanced').length}
+              {courses.filter(c => c.difficulty === 'advanced').length}
             </div>
-            <div className="text-sm text-gray-600">고급 자료</div>
+            <div className="text-sm text-gray-600">고급 과목</div>
           </div>
         </div>
       </div>
 
-      {/* 이론 카드 그리드 */}
+      {/* 과목 카드 그리드 */}
       <div className="max-w-7xl mx-auto">
-        {/* Featured 이론 */}
-        {theories.some(t => t.featured) && (
+        {/* Featured 과목 */}
+        {courses.some(c => c.featured) && (
           <div className="mb-12">
             <h2 className="text-2xl font-bold text-amber-800 mb-6 flex items-center gap-2">
               <span>⭐</span>
-              <span>추천 이론</span>
+              <span>추천 과목</span>
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {theories
-                .filter(t => t.featured)
-                .map(theory => (
+              {courses
+                .filter(c => c.featured)
+                .map(course => (
                   <TheoryCard
-                    key={theory.id}
-                    theory={theory}
-                    onClick={() => handleTheoryClick(theory.id)}
+                    key={course.id}
+                    theory={{
+                      ...course,
+                      readTime: course.totalReadTime
+                    }}
+                    onClick={() => handleCourseClick(course.id)}
                   />
                 ))}
             </div>
           </div>
         )}
 
-        {/* 전체 이론 */}
+        {/* 전체 과목 */}
         <div>
           <h2 className="text-2xl font-bold text-amber-800 mb-6 flex items-center gap-2">
             <span>📖</span>
-            <span>전체 이론</span>
+            <span>전체 과목</span>
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {theories.map(theory => (
+            {courses.map(course => (
               <TheoryCard
-                key={theory.id}
-                theory={theory}
-                onClick={() => handleTheoryClick(theory.id)}
+                key={course.id}
+                theory={{
+                  ...course,
+                  readTime: course.totalReadTime
+                }}
+                onClick={() => handleCourseClick(course.id)}
               />
             ))}
           </div>
         </div>
 
         {/* 빈 상태 */}
-        {theories.length === 0 && (
+        {courses.length === 0 && (
           <div className="text-center py-20">
             <div className="text-6xl mb-4">📚</div>
             <h3 className="text-2xl font-bold text-gray-700 mb-2">
-              이론 자료가 없습니다
+              과목이 없습니다
             </h3>
             <p className="text-gray-600">
-              곧 다양한 명리학 이론 자료를 추가할 예정입니다.
+              곧 다양한 명리학 과목을 추가할 예정입니다.
             </p>
           </div>
         )}

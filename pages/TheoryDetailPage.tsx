@@ -1,37 +1,37 @@
-// 이론 상세 페이지
+// 강의 상세 페이지
 
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { TheoryContent } from '../utils/theory/types';
-import { loadTheoryContent } from '../utils/theory/supabaseTheoryLoader';
+import { TheoryLectureContent } from '../utils/theory/types';
+import { loadLectureContent } from '../utils/theory/supabaseTheoryLoader';
 import TableOfContents from '../components/theory/TableOfContents';
 import TheoryMarkdownRenderer from '../components/theory/TheoryMarkdownRenderer';
 
 const TheoryDetailPage: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
+  const { courseId, lectureId } = useParams<{ courseId: string; lectureId: string }>();
   const navigate = useNavigate();
-  const [content, setContent] = useState<TheoryContent | null>(null);
+  const [content, setContent] = useState<TheoryLectureContent | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!id) {
-      setError('이론 ID가 지정되지 않았습니다.');
+    if (!lectureId) {
+      setError('강의 ID가 지정되지 않았습니다.');
       setLoading(false);
       return;
     }
 
-    loadTheoryContent(id)
-      .then(theoryContent => {
-        setContent(theoryContent);
+    loadLectureContent(lectureId)
+      .then(lectureContent => {
+        setContent(lectureContent);
         setLoading(false);
       })
       .catch(err => {
-        console.error('이론 콘텐츠 로드 실패:', err);
-        setError('이론 콘텐츠를 불러올 수 없습니다.');
+        console.error('강의 콘텐츠 로드 실패:', err);
+        setError('강의 콘텐츠를 불러올 수 없습니다.');
         setLoading(false);
       });
-  }, [id]);
+  }, [lectureId]);
 
   if (loading) {
     return (
@@ -39,7 +39,7 @@ const TheoryDetailPage: React.FC = () => {
         <div className="glass-card p-8">
           <div className="flex items-center gap-4">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-600"></div>
-            <p className="text-gray-700">이론 자료를 불러오는 중...</p>
+            <p className="text-gray-700">강의 자료를 불러오는 중...</p>
           </div>
         </div>
       </div>
@@ -52,10 +52,10 @@ const TheoryDetailPage: React.FC = () => {
         <div className="glass-card p-8 max-w-md">
           <h2 className="text-2xl font-bold text-red-700 mb-4">오류</h2>
           <p className="text-gray-700 mb-4">
-            {error || '이론을 찾을 수 없습니다.'}
+            {error || '강의를 찾을 수 없습니다.'}
           </p>
           <button
-            onClick={() => navigate('/theories')}
+            onClick={() => navigate(courseId ? `/theories/${courseId}` : '/theories')}
             className="btn-primary px-6 py-2 rounded-lg"
           >
             ← 목록으로 돌아가기
@@ -71,22 +71,25 @@ const TheoryDetailPage: React.FC = () => {
     <div className="min-h-screen bg-gradient-to-br from-amber-50 to-yellow-50 p-8 page-transition">
       <div className="max-w-7xl mx-auto">
         {/* 상단 네비게이션 */}
-        <div className="mb-6 flex items-center justify-between">
+        <div className="mb-6 flex items-center justify-between flex-wrap gap-4">
           <button
-            onClick={() => navigate('/theories')}
+            onClick={() => navigate(courseId ? `/theories/${courseId}` : '/theories')}
             className="glass-card px-4 py-2 rounded-lg hover:shadow-lg transition-all flex items-center gap-2"
           >
             <span>←</span>
-            <span>목록으로</span>
+            <span>강의 목록으로</span>
           </button>
 
           <div className="flex gap-3 text-xs">
+            <span className="glass-card px-3 py-2 rounded-full font-bold text-amber-700">
+              {metadata.orderIndex}강
+            </span>
             <span className="glass-card px-3 py-2 rounded-full">
               ⏱️ {metadata.readTime}분
             </span>
             {metadata.updatedAt && (
               <span className="glass-card px-3 py-2 rounded-full text-gray-600">
-                업데이트: {metadata.updatedAt}
+                업데이트: {new Date(metadata.updatedAt).toLocaleDateString()}
               </span>
             )}
           </div>
@@ -114,36 +117,40 @@ const TheoryDetailPage: React.FC = () => {
                   </p>
                 )}
 
-                <p className="text-gray-700 mb-4">{metadata.description}</p>
+                {metadata.description && (
+                  <p className="text-gray-700 mb-4">{metadata.description}</p>
+                )}
 
                 {/* 태그 */}
-                <div className="flex gap-2 flex-wrap">
-                  {metadata.tags.map(tag => (
-                    <span
-                      key={tag}
-                      className="px-3 py-1 bg-amber-100 text-amber-800 rounded-full text-sm"
-                    >
-                      #{tag}
-                    </span>
-                  ))}
-                </div>
+                {metadata.tags && metadata.tags.length > 0 && (
+                  <div className="flex gap-2 flex-wrap">
+                    {metadata.tags.map(tag => (
+                      <span
+                        key={tag}
+                        className="px-3 py-1 bg-amber-100 text-amber-800 rounded-full text-sm"
+                      >
+                        #{tag}
+                      </span>
+                    ))}
+                  </div>
+                )}
               </header>
 
               {/* 마크다운 콘텐츠 */}
               <TheoryMarkdownRenderer htmlContent={content.htmlContent} />
 
-              {/* 관련 이론 */}
-              {metadata.relatedTheories &&
-                metadata.relatedTheories.length > 0 && (
+              {/* 관련 강의 */}
+              {metadata.relatedLectures &&
+                metadata.relatedLectures.length > 0 && (
                   <footer className="mt-12 pt-8 border-t border-gray-200">
                     <h3 className="text-xl font-bold text-amber-800 mb-4">
-                      🔗 관련 이론
+                      🔗 관련 강의
                     </h3>
                     <div className="flex gap-3 flex-wrap">
-                      {metadata.relatedTheories.map(relatedId => (
+                      {metadata.relatedLectures.map(relatedId => (
                         <button
                           key={relatedId}
-                          onClick={() => navigate(`/theory/${relatedId}`)}
+                          onClick={() => navigate(`/theories/${courseId}/lecture/${relatedId}`)}
                           className="glass-card px-4 py-2 rounded-lg hover:shadow-lg transition-all text-sm text-amber-700 hover:text-amber-900"
                         >
                           {relatedId} →

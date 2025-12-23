@@ -15,6 +15,7 @@ import FiveElementsOrbit from './pages/FiveElementsOrbit';
 import YongsinPage from './pages/YongsinPage';
 import MyEnergyPage from './pages/MyEnergyPage';
 import TheoryListPage from './pages/TheoryListPage';
+import TheoryLectureListPage from './pages/TheoryLectureListPage';
 import TheoryDetailPage from './pages/TheoryDetailPage';
 
 // Clerk Publishable Key 가져오기
@@ -47,7 +48,8 @@ root.render(
           <Route path="/yongsin" element={<YongsinPage />} />
           <Route path="/my-energy" element={<MyEnergyPage />} />
           <Route path="/theories" element={<TheoryListPage />} />
-          <Route path="/theory/:id" element={<TheoryDetailPage />} />
+          <Route path="/theories/:courseId" element={<TheoryLectureListPage />} />
+          <Route path="/theories/:courseId/lecture/:lectureId" element={<TheoryDetailPage />} />
         </Routes>
       </BrowserRouter>
     </ClerkProvider>
