@@ -392,3 +392,140 @@ body {
 .bg-gradient-radial {
   background: radial-gradient(circle, var(--tw-gradient-stops));
 }
+
+/*
+ * Theory Page Styles
+ * 이론 페이지 전용 스타일 (마크다운 콘텐츠, 링크, 이미지 등)
+ */
+
+/* 이론 내부 링크 스타일 */
+.theory-link {
+  color: #9333ea;
+  text-decoration: underline;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.theory-link:hover {
+  color: #7e22ce;
+  text-decoration-thickness: 2px;
+}
+
+/* 이론 이미지 스타일 */
+.theory-image {
+  max-width: 100%;
+  border-radius: 0.5rem;
+  margin: 1.5rem 0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* 이론 콘텐츠 Prose 스타일 */
+.theory-content h1 {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  color: #92400e;
+  border-bottom: 2px solid #fbbf24;
+  padding-bottom: 0.5rem;
+}
+
+.theory-content h2 {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+  color: #b45309;
+}
+
+.theory-content h3 {
+  font-size: 1.25rem;
+  font-weight: bold;
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+  color: #d97706;
+}
+
+.theory-content h4 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+  color: #ea580c;
+}
+
+.theory-content p {
+  margin: 1rem 0;
+  line-height: 1.75;
+  color: rgb(var(--text-secondary-rgb));
+}
+
+.theory-content strong {
+  color: #b45309;
+  font-weight: 600;
+}
+
+.theory-content em {
+  color: #d97706;
+  font-style: italic;
+}
+
+.theory-content ul,
+.theory-content ol {
+  margin: 1rem 0;
+  padding-left: 1.5rem;
+}
+
+.theory-content li {
+  margin: 0.5rem 0;
+  line-height: 1.75;
+  color: rgb(var(--text-secondary-rgb));
+}
+
+.theory-content blockquote {
+  border-left: 4px solid #fbbf24;
+  padding-left: 1rem;
+  margin: 1.5rem 0;
+  color: rgb(var(--text-tertiary-rgb));
+  font-style: italic;
+  background-color: rgba(251, 191, 36, 0.05);
+  padding: 1rem;
+  border-radius: 0.25rem;
+}
+
+.theory-content code {
+  background-color: rgba(0, 0, 0, 0.05);
+  padding: 0.2rem 0.4rem;
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
+  font-family: 'Courier New', monospace;
+  color: #9333ea;
+}
+
+.theory-content pre {
+  background-color: rgba(0, 0, 0, 0.05);
+  padding: 1rem;
+  border-radius: 0.5rem;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+}
+
+.theory-content pre code {
+  background-color: transparent;
+  padding: 0;
+  color: rgb(var(--text-primary-rgb));
+}
+
+.theory-content hr {
+  border: none;
+  border-top: 1px solid var(--border-color);
+  margin: 2rem 0;
+}
+
+/* line-clamp utility (최대 줄 수 제한) */
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}

@@ -1,0 +1,100 @@
+{
+  "theories": [
+    {
+      "id": "saju-basics",
+      "title": "사주명리 기초",
+      "subtitle": "명리학 입문을 위한 기본 개념",
+      "category": "basics",
+      "tags": ["입문", "기초", "사주팔자"],
+      "description": "사주명리학의 기본 개념과 음양오행, 천간지지를 쉽게 이해할 수 있도록 정리한 입문서입니다.",
+      "difficulty": "beginner",
+      "readTime": 10,
+      "imageUrl": "/theories/images/placeholder/theory-cover.png",
+      "updatedAt": "2024-12-23",
+      "featured": true,
+      "relatedTheories": ["ohaeng-theory", "sibsin-guide"]
+    },
+    {
+      "id": "yeonghaejapyeong",
+      "title": "연해자평",
+      "subtitle": "명리학의 고전 中 고전",
+      "category": "classic",
+      "tags": ["고전", "격국", "심화"],
+      "description": "명리학의 기초를 다지는 고전 텍스트로, 사주명리의 근간이 되는 이론을 담고 있습니다. 격국론의 핵심을 다룹니다.",
+      "difficulty": "intermediate",
+      "readTime": 25,
+      "imageUrl": "/theories/images/placeholder/theory-cover.png",
+      "updatedAt": "2024-12-23",
+      "featured": true,
+      "relatedTheories": ["jeokcheonsu", "saju-basics"]
+    },
+    {
+      "id": "jeokcheonsu",
+      "title": "적천수",
+      "subtitle": "명리학의 바이블",
+      "category": "classic",
+      "tags": ["고전", "적천수", "고급"],
+      "description": "명리학의 최고 고전으로 평가받는 적천수. 깊이 있는 이론과 실전 해석의 정수를 담고 있습니다.",
+      "difficulty": "advanced",
+      "readTime": 30,
+      "imageUrl": "/theories/images/placeholder/theory-cover.png",
+      "updatedAt": "2024-12-23",
+      "featured": true,
+      "relatedTheories": ["yeonghaejapyeong"]
+    },
+    {
+      "id": "ohaeng-theory",
+      "title": "오행 이론",
+      "subtitle": "음양오행의 원리와 응용",
+      "category": "basics",
+      "tags": ["오행", "상생", "상극"],
+      "description": "오행의 기본 원리부터 상생상극, 실전 응용까지 체계적으로 정리한 이론서입니다.",
+      "difficulty": "beginner",
+      "readTime": 15,
+      "imageUrl": "/theories/images/placeholder/theory-cover.png",
+      "updatedAt": "2024-12-23",
+      "featured": false,
+      "relatedTheories": ["saju-basics"]
+    },
+    {
+      "id": "sibsin-guide",
+      "title": "십신 활용 가이드",
+      "subtitle": "십신으로 보는 사주 해석",
+      "category": "practical",
+      "tags": ["십신", "실전", "해석"],
+      "description": "십신의 의미와 실전 사주 해석에서의 활용법을 구체적인 사례와 함께 설명합니다.",
+      "difficulty": "intermediate",
+      "readTime": 20,
+      "imageUrl": "/theories/images/placeholder/theory-cover.png",
+      "updatedAt": "2024-12-23",
+      "featured": false,
+      "relatedTheories": ["saju-basics", "yeonghaejapyeong"]
+    }
+  ],
+  "categories": [
+    {
+      "id": "classic",
+      "name": "고전 명리",
+      "description": "전통 명리학 고전 텍스트",
+      "icon": "📜"
+    },
+    {
+      "id": "basics",
+      "name": "기초 이론",
+      "description": "명리학 입문자를 위한 기초 개념",
+      "icon": "📖"
+    },
+    {
+      "id": "advanced",
+      "name": "심화 이론",
+      "description": "고급 명리학 이론과 분석",
+      "icon": "🎓"
+    },
+    {
+      "id": "practical",
+      "name": "실전 활용",
+      "description": "실제 사주 해석 사례 및 활용법",
+      "icon": "⚡"
+    }
+  ]
+}

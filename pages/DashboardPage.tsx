@@ -274,6 +274,14 @@ const DashboardPage: React.FC = () => {
       gradient: 'from-orange-500 to-red-500',
       bgGradient: 'from-orange-50 to-red-50',
     },
+    {
+      title: '명리학 이론 자료',
+      description: '사주명리학의 기초부터 고전까지 체계적으로 학습하세요',
+      icon: '📚',
+      path: '/theories',
+      gradient: 'from-amber-500 to-yellow-500',
+      bgGradient: 'from-amber-50 to-yellow-50',
+    },
   ];
 
   // 격국 분석 결과

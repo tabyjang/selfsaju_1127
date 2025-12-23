@@ -38,7 +38,8 @@
       "Bash(wc:*)",
       "Bash(del:*)",
       "Bash(exit 0)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Bash(npx tsx:*)"
     ],
     "deny": [],
     "ask": []
