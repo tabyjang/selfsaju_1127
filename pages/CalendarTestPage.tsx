@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { SajuInfo } from '../types';
-import { getDayGanjiByYMD, getUnseongByIlganAndJiji, getSibsinByIlganAndTarget } from '../utils/manse';
-import { getTodayStoryFortune } from '../utils/todayUnse';
-import type { GeneratedFortune } from '../utils/fortuneTemplate';
+import { getDayGanjiByYMD, getUnseongByIlganAndJiji } from '../utils/manse';
+import { getSimpleFortune, type SimpleFortune } from '../utils/simpleFortuneGenerator';
 
 /**
  * 캘린더 테스트 페이지
@@ -24,7 +23,7 @@ const CalendarTestPage: React.FC = () => {
 
   const [selectedIlju, setSelectedIlju] = useState<string>('己丑');
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-  const [fortune, setFortune] = useState<GeneratedFortune | null>(null);
+  const [fortune, setFortune] = useState<SimpleFortune | null>(null);
   const [loading, setLoading] = useState(false);
 
   // 테스트용 샘플 사주 데이터 생성
@@ -102,17 +101,11 @@ const CalendarTestPage: React.FC = () => {
       console.log('🔍 운세 생성 정보:', {
         ilju: selectedIlju,
         date: `${year}-${month}-${day}`,
-        todayJiji: ji,
         unseong: unseong.name,
       });
 
-      const generatedFortune = await getTodayStoryFortune(
-        sajuData,
-        ji,
-        unseong.name,
-        undefined,  // userBirthday
-        selectedDate  // targetDate - 선택한 날짜로 운세 생성
-      );
+      // 심플 운세 생성 (일주 + 십이운성만 사용)
+      const generatedFortune = await getSimpleFortune(sajuData, unseong.name, selectedDate);
 
       console.log('✅ 생성된 운세:', generatedFortune);
       setFortune(generatedFortune);
@@ -262,17 +255,10 @@ const CalendarTestPage: React.FC = () => {
             />
 
             {/* 액션 플랜 */}
-            {fortune.actionPlans && fortune.actionPlans.length > 0 && (
+            {fortune.actionPlan && (
               <div className="bg-white/70 p-6 rounded-lg border border-purple-200">
-                <h4 className="text-xl font-bold text-purple-800 mb-4">⚡ 오늘의 액션 플랜</h4>
-                <ul className="space-y-3">
-                  {fortune.actionPlans.map((plan, idx) => (
-                    <li key={idx} className="flex items-start gap-3 text-gray-700 text-lg">
-                      <span className="text-purple-600 font-bold flex-shrink-0 text-xl">{idx + 1}.</span>
-                      <span className="font-medium">{plan}</span>
-                    </li>
-                  ))}
-                </ul>
+                <h4 className="text-xl font-bold text-purple-800 mb-4">⚡ 오늘의 액션</h4>
+                <p className="text-gray-700 text-lg font-medium">{fortune.actionPlan}</p>
               </div>
             )}
           </div>

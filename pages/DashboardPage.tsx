@@ -10,8 +10,7 @@ import { loadIljuBundle } from '../utils/ilju/loadIljuBundle';
 import type { IljuBundle } from '../utils/ilju/types';
 import { sibsinPositionDescriptions } from '../utils/sibsinPositionDescriptions';
 import { unseongDescriptions } from '../utils/unseongDescriptions';
-import { getTodayStoryFortune } from '../utils/todayUnse';
-import type { GeneratedFortune } from '../utils/fortuneTemplate';
+import { getSimpleFortune, type SimpleFortune } from '../utils/simpleFortuneGenerator';
 import { SajuPillarsDisplay, SajuInfoSummary, OhaengEnergyDisplay, IlganPersonalityDisplay } from '../components/AnalysisResult';
 import { InteractionsDisplay } from '../components/InteractionsDisplay';
 import { SinsalDisplay } from '../components/SinsalDisplay';
@@ -82,7 +81,7 @@ const DashboardPage: React.FC = () => {
   const [showSajuWongukModal, setShowSajuWongukModal] = useState<boolean>(false);
   const [showJinjjaModal, setShowJinjjaModal] = useState<boolean>(false);
   const [checkedPlans, setCheckedPlans] = useState<boolean[]>([false, false, false]);
-  const [todayFortune, setTodayFortune] = useState<GeneratedFortune | null>(null); // 템플릿 기반 운세
+  const [todayFortune, setTodayFortune] = useState<SimpleFortune | null>(null); // 심플 운세
 
   // 페이지 로드 시 스크롤을 최상단으로 이동
   useEffect(() => {
@@ -212,9 +211,9 @@ const DashboardPage: React.FC = () => {
   useEffect(() => {
     const loadTodayUnse = async () => {
       if (sajuData && todayInfo && todayInfo.unseong) {
-        // 스토리 기반 운세 생성
+        // 심플 운세 생성 (일주 + 십이운성만 사용)
         try {
-          const fortune = await getTodayStoryFortune(sajuData, todayInfo.ji, todayInfo.unseong.name);
+          const fortune = await getSimpleFortune(sajuData, todayInfo.unseong.name);
           setTodayFortune(fortune);
         } catch (error) {
           console.error('스토리 기반 운세 생성 실패:', error);
@@ -688,7 +687,7 @@ const DashboardPage: React.FC = () => {
                       <div className="flex-1">
                         <h4 className="font-bold text-purple-900 mb-3 text-lg">오늘의 액션</h4>
                         <p className="text-gray-800 leading-relaxed whitespace-pre-line">
-                          {todayFortune?.actionPlans?.[0] || "오늘 하루를 의미 있게 보내세요."}
+                          {todayFortune?.actionPlan || "오늘 하루를 의미 있게 보내세요."}
                         </p>
                       </div>
                     </div>
@@ -718,7 +717,7 @@ const DashboardPage: React.FC = () => {
                           dangerouslySetInnerHTML={{
                             __html: (
                               todayFortune?.content ||
-                              "차분하고 신중한 당신에게 새로운 한 주가 시작되었습니다. 월요일은 누구에게나 부담스러울 수 있지만, 목묵히 자기 길을 가는 당신이라면 자기만의 리듬을 찾을 수 있을 거예요.<br /><br />오늘은 너무 많은 것을 하려고 하지 말고, 책임감, 꾸기, 신뢰성, 인내심을 활용해서 이번 주의 방향을 잡는 데 집중해 보세요. 한번 시작하면 끝까지 가며, 조용히 책임을 다하고, 신뢰를 쌓아가는 성향 당신이라면 충분히 잘 해낼 겁니다.<br /><br />당신다운 페이스로 한 주를 시작하세요!"
+                              "오늘의 운세를 불러오는 중입니다..."
                             )
                           }}
                         />

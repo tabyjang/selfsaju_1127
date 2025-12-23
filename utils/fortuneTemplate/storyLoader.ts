@@ -55,7 +55,7 @@ const iljuFileMap: { [key: string]: string } = {
   '무신': '29_무신', '무술': '30_무술', '기축': '31_기축', '기묘': '32_기묘',
   '기사': '33_기사', '기미': '34_기미', '기유': '35_기유', '기해': '36_기해',
   '경자': '37_경자', '경인': '38_경인', '경진': '39_경진', '경오': '40_경오',
-  '경신': '41_경신', '경술': '42_경술', '경해': '43_경해', '신축': '43_신축',
+  '경신': '41_경신', '경술': '42_경술', '신축': '43_신축',
   '신묘': '44_신묘', '신사': '45_신사', '신미': '46_신미', '신유': '47_신유',
   '신해': '48_신해', '임자': '49_임자', '임인': '50_임인', '임진': '51_임진',
   '임오': '52_임오', '임신': '53_임신', '임술': '54_임술', '계축': '55_계축',
@@ -141,8 +141,10 @@ function normalizeStoryData(rawData: any): IljuStoryData {
   };
 
   // 각 운성별로 스토리 정규화
-  if (rawData.운세) {
-    for (const [unseong, stories] of Object.entries(rawData.운세)) {
+  // 기존 파일은 "십이운성" 키 사용, 새 파일은 "운세" 키 사용
+  const unseongData = rawData.운세 || rawData.십이운성;
+  if (unseongData) {
+    for (const [unseong, stories] of Object.entries(unseongData)) {
       if (Array.isArray(stories)) {
         normalized.운세[unseong] = stories.map((story, idx) =>
           normalizeStoryVersion(story as OldStoryVersion | NewStoryVersion, idx)
