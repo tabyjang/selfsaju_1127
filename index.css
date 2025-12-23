@@ -419,6 +419,51 @@ body {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
+/* 이론 표 스타일 */
+.theory-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5rem 0;
+  font-size: 0.95rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.theory-table thead {
+  background: linear-gradient(135deg, #d97706 0%, #f59e0b 100%);
+  color: white;
+}
+
+.theory-table th {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  font-weight: 600;
+  border-bottom: 2px solid #b45309;
+}
+
+.theory-table tbody tr {
+  border-bottom: 1px solid #e5e7eb;
+  transition: background-color 0.2s;
+}
+
+.theory-table tbody tr:hover {
+  background-color: #fef3c7;
+}
+
+.theory-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.theory-table td {
+  padding: 0.75rem 1rem;
+  color: #374151;
+}
+
+.theory-table tbody tr:nth-child(even) {
+  background-color: #fffbeb;
+}
+
 /* 이론 콘텐츠 Prose 스타일 */
 .theory-content h1 {
   font-size: 2rem;

@@ -151,7 +151,10 @@ export function parseMarkdown(markdown: string): string {
   // 11. 블록쿼트 (> text)
   html = html.replace(/^> (.+)$/gm, '<blockquote>$1</blockquote>');
 
-  // 12. 단락 (연속된 텍스트를 <p>로 감싸기)
+  // 12. 표 (table)
+  html = parseTable(html);
+
+  // 13. 단락 (연속된 텍스트를 <p>로 감싸기)
   html = html
     .split('\n\n')
     .map(block => {
@@ -169,6 +172,95 @@ export function parseMarkdown(markdown: string): string {
       return `<p>${block}</p>`;
     })
     .join('\n');
+
+  return html;
+}
+
+/**
+ * 마크다운 표를 HTML table로 변환
+ */
+function parseTable(html: string): string {
+  const lines = html.split('\n');
+  const result: string[] = [];
+  let i = 0;
+
+  while (i < lines.length) {
+    const line = lines[i];
+
+    // 표 시작 감지 (| col1 | col2 | 형식)
+    if (line.trim().startsWith('|') && line.trim().endsWith('|')) {
+      const tableLines: string[] = [];
+      tableLines.push(line);
+
+      // 다음 줄이 구분선인지 확인 (|-----|-----|)
+      if (i + 1 < lines.length) {
+        const nextLine = lines[i + 1];
+        if (nextLine.includes('---')) {
+          tableLines.push(nextLine);
+          i += 2;
+
+          // 나머지 표 본문 수집
+          while (i < lines.length && lines[i].trim().startsWith('|') && lines[i].trim().endsWith('|')) {
+            tableLines.push(lines[i]);
+            i++;
+          }
+
+          // 표를 HTML로 변환
+          result.push(convertTableToHtml(tableLines));
+          continue;
+        }
+      }
+    }
+
+    result.push(line);
+    i++;
+  }
+
+  return result.join('\n');
+}
+
+/**
+ * 마크다운 표 라인들을 HTML table로 변환
+ */
+function convertTableToHtml(lines: string[]): string {
+  if (lines.length < 2) return lines.join('\n');
+
+  // 헤더 행
+  const headerLine = lines[0];
+  const headers = headerLine
+    .split('|')
+    .map(cell => cell.trim())
+    .filter(cell => cell);
+
+  // 본문 행들
+  const bodyLines = lines.slice(2); // 0: 헤더, 1: 구분선, 2~: 본문
+
+  let html = '<table class="theory-table">\n';
+
+  // thead
+  html += '  <thead>\n    <tr>\n';
+  headers.forEach(header => {
+    html += `      <th>${header}</th>\n`;
+  });
+  html += '    </tr>\n  </thead>\n';
+
+  // tbody
+  html += '  <tbody>\n';
+  bodyLines.forEach(line => {
+    const cells = line
+      .split('|')
+      .map(cell => cell.trim())
+      .filter(cell => cell);
+
+    html += '    <tr>\n';
+    cells.forEach(cell => {
+      html += `      <td>${cell}</td>\n`;
+    });
+    html += '    </tr>\n';
+  });
+  html += '  </tbody>\n';
+
+  html += '</table>';
 
   return html;
 }
