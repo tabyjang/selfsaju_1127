@@ -97,3 +97,58 @@ export function replaceActionPlanPlaceholders(
 ): string[] {
   return actionPlans.map(plan => replacePlaceholders(plan, ilju, unseong));
 }
+
+/**
+ * 스토리 운세의 플레이스홀더 치환 (시드값 기반)
+ * {핵심특성}, {소통스타일}, {감정표현}, {업무스타일} 등을 치환
+ *
+ * @param text - 치환할 텍스트
+ * @param iljuPersonalityData - 일주 성격 전체 데이터 (배열 포함)
+ * @param seed - 선택을 위한 시드값
+ * @returns 치환된 텍스트
+ */
+export function replaceStoryPlaceholders(
+  text: string,
+  iljuPersonalityData: any,
+  seed: number
+): string {
+  let result = text;
+
+  // {핵심특성} 치환
+  if (result.includes('{핵심특성}')) {
+    const traits = iljuPersonalityData.핵심특성 || [];
+    if (traits.length > 0) {
+      const selectedTrait = traits[seed % traits.length];
+      result = result.replace(/\{핵심특성\}/g, selectedTrait);
+    }
+  }
+
+  // {소통스타일} 치환
+  if (result.includes('{소통스타일}')) {
+    const styles = iljuPersonalityData.소통스타일 || [];
+    if (styles.length > 0) {
+      const selectedStyle = styles[seed % styles.length];
+      result = result.replace(/\{소통스타일\}/g, selectedStyle);
+    }
+  }
+
+  // {감정표현} 치환
+  if (result.includes('{감정표현}')) {
+    const expressions = iljuPersonalityData.감정표현 || [];
+    if (expressions.length > 0) {
+      const selectedExpression = expressions[seed % expressions.length];
+      result = result.replace(/\{감정표현\}/g, selectedExpression);
+    }
+  }
+
+  // {업무스타일} 치환
+  if (result.includes('{업무스타일}')) {
+    const workStyles = iljuPersonalityData.업무스타일 || [];
+    if (workStyles.length > 0) {
+      const selectedWorkStyle = workStyles[seed % workStyles.length];
+      result = result.replace(/\{업무스타일\}/g, selectedWorkStyle);
+    }
+  }
+
+  return result;
+}

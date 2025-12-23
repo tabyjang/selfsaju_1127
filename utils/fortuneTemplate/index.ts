@@ -23,6 +23,16 @@ export type {
 // 메인 함수
 export { generateFortune, formatFortune } from './fortuneGenerator';
 export { generateEventBasedFortune } from './eventFortuneGenerator';
+export { generateStoryFortune, formatStoryFortune } from './storyFortuneGenerator';
+
+// 스토리 로더
+export {
+  loadStoryForIlju,
+  selectStoryVersion,
+  clearStoryCache,
+  getStoryCacheStatus,
+} from './storyLoader';
+export type { StoryVersion, IljuStoryData } from './storyLoader';
 
 // 데이터 로더
 export {
@@ -45,6 +55,7 @@ export {
   replacePlaceholdersInArray,
   replaceHolidayPlaceholders,
   replaceActionPlanPlaceholders,
+  replaceStoryPlaceholders,
 } from './placeholderReplacer';
 
 export {

@@ -10,7 +10,7 @@ import { loadIljuBundle } from '../utils/ilju/loadIljuBundle';
 import type { IljuBundle } from '../utils/ilju/types';
 import { sibsinPositionDescriptions } from '../utils/sibsinPositionDescriptions';
 import { unseongDescriptions } from '../utils/unseongDescriptions';
-import { getTodayUnseWithTemplate } from '../utils/todayUnse';
+import { getTodayStoryFortune } from '../utils/todayUnse';
 import type { GeneratedFortune } from '../utils/fortuneTemplate';
 import { SajuPillarsDisplay, SajuInfoSummary, OhaengEnergyDisplay, IlganPersonalityDisplay } from '../components/AnalysisResult';
 import { InteractionsDisplay } from '../components/InteractionsDisplay';
@@ -212,12 +212,12 @@ const DashboardPage: React.FC = () => {
   useEffect(() => {
     const loadTodayUnse = async () => {
       if (sajuData && todayInfo && todayInfo.unseong) {
-        // 템플릿 기반 운세 생성
+        // 스토리 기반 운세 생성
         try {
-          const fortune = await getTodayUnseWithTemplate(sajuData, todayInfo.ji, todayInfo.unseong.name);
+          const fortune = await getTodayStoryFortune(sajuData, todayInfo.ji, todayInfo.unseong.name);
           setTodayFortune(fortune);
         } catch (error) {
-          console.error('템플릿 기반 운세 생성 실패:', error);
+          console.error('스토리 기반 운세 생성 실패:', error);
         }
       }
     };
@@ -681,64 +681,16 @@ const DashboardPage: React.FC = () => {
               <div className="p-4">
                 {/* 액션플랜 + 운세전반 */}
                 <div className="space-y-6">
-                  {/* 액션플랜 3개 박스 */}
-                  <div>
-                    <div className="flex items-center gap-2 mb-4">
-                      <span className="text-2xl">⚡</span>
-                      <h3 className="text-xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                        오늘의 액션 플랜
-                      </h3>
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      {(todayFortune?.actionPlans || ["이번 주 중요한 일정 3가지 확인하기", "월요병 이겨내는 나만의 루틴 만들기", "한 주를 잘 시작하기 위한 작은 의식 갖기"]).map((plan, idx) => {
-                        const isChecked = checkedPlans[idx];
-                        return (
-                          <div
-                            key={idx}
-                            onClick={() => {
-                              const newChecked = [...checkedPlans];
-                              newChecked[idx] = !newChecked[idx];
-                              setCheckedPlans(newChecked);
-                            }}
-                            className={`group relative rounded-xl p-5 border-2 transition-all duration-300 cursor-pointer ${
-                              isChecked
-                                ? 'bg-gradient-to-br from-emerald-50 via-green-50 to-teal-50 border-emerald-400 shadow-lg shadow-emerald-200/50'
-                                : 'bg-gradient-to-br from-white to-purple-50 border-purple-200 hover:border-purple-400 hover:shadow-xl hover:-translate-y-1'
-                            }`}
-                          >
-                            {/* 번호 배지 */}
-                            <div className={`absolute -top-3 -left-3 w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg shadow-lg transition-all ${
-                              isChecked
-                                ? 'bg-gradient-to-br from-emerald-500 to-green-500 scale-110'
-                                : 'bg-gradient-to-br from-purple-500 to-pink-500 group-hover:scale-110'
-                            } text-white`}>
-                              {idx + 1}
-                            </div>
-
-                            {/* 액션 내용 */}
-                            <div className="mt-2">
-                              <p className={`text-sm md:text-base leading-relaxed font-medium transition-colors ${
-                                isChecked ? 'text-emerald-900' : 'text-gray-700'
-                              }`}>
-                                {plan}
-                              </p>
-                            </div>
-
-                            {/* 체크 아이콘 */}
-                            <div className={`absolute bottom-3 right-3 transition-all duration-300 ${
-                              isChecked ? 'opacity-100 scale-110' : 'opacity-0 group-hover:opacity-100'
-                            }`}>
-                              <div className={`w-7 h-7 rounded-full flex items-center justify-center shadow-lg ${
-                                isChecked ? 'bg-emerald-500' : 'bg-green-500'
-                              }`}>
-                                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                                </svg>
-                              </div>
-                            </div>
-                          </div>
-                        );
-                      })}
+                  {/* 오늘의 액션 - 1개 긴 박스 */}
+                  <div className="bg-gradient-to-r from-purple-50 via-pink-50 to-indigo-50 rounded-xl p-6 border-2 border-purple-200 shadow-lg">
+                    <div className="flex items-start gap-3">
+                      <div className="text-3xl flex-shrink-0">✨</div>
+                      <div className="flex-1">
+                        <h4 className="font-bold text-purple-900 mb-3 text-lg">오늘의 액션</h4>
+                        <p className="text-gray-800 leading-relaxed whitespace-pre-line">
+                          {todayFortune?.actionPlans?.[0] || "오늘 하루를 의미 있게 보내세요."}
+                        </p>
+                      </div>
                     </div>
                   </div>
 
