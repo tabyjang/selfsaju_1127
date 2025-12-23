@@ -40,11 +40,7 @@
       "Bash(exit 0)",
       "Bash(grep:*)",
       "Bash(npx tsx:*)",
-      "Bash(git pull:*)",
-      "Bash(move \"갑자.json\" \"01_갑자.json\")",
-      "Bash(move \"을축.json\" \"02_을축.json\")",
-      "Bash(move \"병인.json\" \"03_병인.json\")",
-      "Bash(move \"정묘.json\" \"04_정묘.json\")"
+      "Bash(git pull:*)"
     ],
     "deny": [],
     "ask": []
