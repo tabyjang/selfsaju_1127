@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { SajuInfo } from '../types';
 import { getDayGanjiByYMD, getUnseongByIlganAndJiji, getSibsinByIlganAndTarget } from '../utils/manse';
-import { getTodayUnseWithTemplate } from '../utils/todayUnse';
+import { getTodayStoryFortune } from '../utils/todayUnse';
 import type { GeneratedFortune } from '../utils/fortuneTemplate';
 
 /**
@@ -106,10 +106,12 @@ const CalendarTestPage: React.FC = () => {
         unseong: unseong.name,
       });
 
-      const generatedFortune = await getTodayUnseWithTemplate(
+      const generatedFortune = await getTodayStoryFortune(
         sajuData,
         ji,
-        unseong.name
+        unseong.name,
+        undefined,  // userBirthday
+        selectedDate  // targetDate - 선택한 날짜로 운세 생성
       );
 
       console.log('✅ 생성된 운세:', generatedFortune);

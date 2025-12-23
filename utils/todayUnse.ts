@@ -218,13 +218,15 @@ export const getTodayUnseMarkdown = async (
  * @param todayJiji - 오늘 지지
  * @param todayUnseong - 오늘 십이운성
  * @param userBirthday - 사용자 생일 (선택, 'MM-DD' 형식)
+ * @param targetDate - 운세 생성 기준 날짜 (선택, 기본값: 오늘)
  * @returns 생성된 운세
  */
 export const getTodayStoryFortune = async (
   sajuData: SajuInfo,
   todayJiji: string,
   todayUnseong: string,
-  userBirthday?: string
+  userBirthday?: string,
+  targetDate?: Date
 ): Promise<GeneratedFortune | null> => {
   try {
     // 1. 일간 가져오기
@@ -254,7 +256,7 @@ export const getTodayStoryFortune = async (
       unseong: todayUnseong,
       deukryeong,
       gwiin: hasGwiin,
-      date: new Date(),
+      date: targetDate || new Date(),
     };
 
     // 8. 스토리 기반 운세 생성
