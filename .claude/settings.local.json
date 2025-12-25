@@ -40,7 +40,9 @@
       "Bash(exit 0)",
       "Bash(grep:*)",
       "Bash(npx tsx:*)",
-      "Bash(git pull:*)"
+      "Bash(git pull:*)",
+      "WebFetch(domain:localhost)",
+      "Bash(curl:*)"
     ],
     "deny": [],
     "ask": []
