@@ -4,6 +4,7 @@ import { SignedIn, SignedOut, SignInButton, UserButton, useUser } from '@clerk/c
 import type { SajuInfo, Ohaeng } from '../types';
 import { MonthlyIljuCalendar } from '../components/MonthlyIljuCalendar';
 import { upsertMySaju } from '../utils/sajuStorage';
+import Footer from '../components/Footer';
 
 // 오행 색상 맵 (달력과 동일)
 const ohaengColorMap: Record<Ohaeng, { bg: string; text: string; border?: string }> = {
@@ -896,12 +897,7 @@ const CalendarPage: React.FC = () => {
         </div>
       </main>
 
-      <footer className="text-center mt-16 text-sm text-gray-500 pb-8">
-        <p>아사주달의 분석을 통해 건강과 행복이 함께 하시길 기원합니다.</p>
-        <p>
-          &copy; {new Date().getFullYear()} asajudal.com. All rights reserved.
-        </p>
-      </footer>
+      <Footer />
     </div>
   );
 };

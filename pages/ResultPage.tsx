@@ -5,6 +5,7 @@ import type { SajuInfo, SajuAnalysisResult, ChatMessage } from "../types";
 import type { Chat } from "@google/genai";
 import { AnalysisResult } from "../components/AnalysisResult";
 import { upsertMySaju } from "../utils/sajuStorage";
+import Footer from '../components/Footer';
 
 const ResultPage: React.FC = () => {
   const navigate = useNavigate();
@@ -274,12 +275,7 @@ const ResultPage: React.FC = () => {
         </div>
       </main>
 
-      <footer className="text-center mt-16 text-sm text-gray-500 pb-8">
-        <p>아사주달의 분석을 통해 건강과 행복이 함께 하시길 기원합니다.</p>
-        <p>
-          &copy; {new Date().getFullYear()} asajudal.com. All rights reserved.
-        </p>
-      </footer>
+      <Footer />
     </div>
   );
 };

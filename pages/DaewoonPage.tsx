@@ -4,6 +4,7 @@ import type { SajuInfo, Ohaeng, DaewoonPillar, SewoonPillar, WolwoonPillar } fro
 import { ohaengColorMap } from '../components/AnalysisResult';
 import { getSewoonPillars, getWolwoonPillars } from '../utils/manse';
 import { ChevronDownIcon } from '../components/icons';
+import Footer from '../components/Footer';
 
 const DaewoonPage: React.FC = () => {
   const navigate = useNavigate();
@@ -514,6 +515,8 @@ const DaewoonPage: React.FC = () => {
           </div>
         )}
       </div>
+
+      <Footer />
     </div>
   );
 };

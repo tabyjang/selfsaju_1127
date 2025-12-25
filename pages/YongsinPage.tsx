@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/clerk-react';
+import Footer from '../components/Footer';
 
 const YongsinPage: React.FC = () => {
   const navigate = useNavigate();
@@ -143,19 +144,7 @@ const YongsinPage: React.FC = () => {
         </div>
       </main>
 
-      {/* 푸터 */}
-      <footer className="border-t border-gray-200 bg-white/50 backdrop-blur-sm mt-auto">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="text-center space-y-2">
-            <p className="text-sm text-gray-600">
-              아사주달의 분석을 통해 건강과 행복이 함께 하시길 기원합니다.
-            </p>
-            <p className="text-xs text-gray-500">
-              &copy; {new Date().getFullYear()} asajudal.com. All rights reserved.
-            </p>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 };

@@ -9,6 +9,7 @@ import { sibsinDescriptions } from '../utils/sibsinDescriptions';
 import { sibsinPositionDescriptions } from '../utils/sibsinPositionDescriptions';
 import { unseongDescriptions } from '../utils/unseongDescriptions';
 import { ChevronDownIcon } from '../components/icons';
+import Footer from '../components/Footer';
 
 // 사주 원국 표시 컴포넌트 (AnalysisResult에서 복사)
 const ohaengColorMap: Record<Ohaeng, { bg: string; text: string; border?: string }> = {
@@ -538,6 +539,8 @@ const DeepAnalysis: React.FC = () => {
 
 
       </div>
+
+      <Footer />
     </div>
   );
 };

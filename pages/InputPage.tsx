@@ -5,6 +5,7 @@ import type { SajuInfo } from "../types";
 import { SajuInputForm } from "../components/SajuInputForm";
 import { OhaengLoading } from "../components/OhaengLoading";
 import { getUserSajuRecords } from "../utils/sajuStorage";
+import Footer from "../components/Footer";
 
 const InputPage: React.FC = () => {
   const navigate = useNavigate();
@@ -135,12 +136,7 @@ const InputPage: React.FC = () => {
         {error && <div className="text-red-600 text-center mt-4">{error}</div>}
       </main>
 
-      <footer className="text-center mt-16 text-sm text-gray-500 pb-8">
-        <p>아사주달의 분석을 통해 건강과 행복이 함께 하시길 기원합니다.</p>
-        <p>
-          &copy; {new Date().getFullYear()} asajudal.com. All rights reserved.
-        </p>
-      </footer>
+      <Footer />
     </div>
   );
 };

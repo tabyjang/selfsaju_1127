@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { LectureIndex, TheoryLectureMetadata } from '../utils/theory/types';
 import { loadLectureIndex } from '../utils/theory/supabaseTheoryLoader';
+import Footer from '../components/Footer';
 
 const TheoryLectureListPage: React.FC = () => {
   const navigate = useNavigate();
@@ -223,6 +224,8 @@ const TheoryLectureListPage: React.FC = () => {
           </div>
         )}
       </div>
+
+      <Footer />
     </div>
   );
 };

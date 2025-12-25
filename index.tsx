@@ -17,6 +17,8 @@ import MyEnergyPage from './pages/MyEnergyPage';
 import TheoryListPage from './pages/TheoryListPage';
 import TheoryLectureListPage from './pages/TheoryLectureListPage';
 import TheoryDetailPage from './pages/TheoryDetailPage';
+import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
+import TermsOfServicePage from './pages/TermsOfServicePage';
 
 // Clerk Publishable Key 가져오기
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
@@ -50,6 +52,8 @@ root.render(
           <Route path="/theories" element={<TheoryListPage />} />
           <Route path="/theories/:courseId" element={<TheoryLectureListPage />} />
           <Route path="/theories/:courseId/lecture/:lectureId" element={<TheoryDetailPage />} />
+          <Route path="/privacy" element={<PrivacyPolicyPage />} />
+          <Route path="/terms" element={<TermsOfServicePage />} />
         </Routes>
       </BrowserRouter>
     </ClerkProvider>

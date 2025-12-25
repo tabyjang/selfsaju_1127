@@ -14,6 +14,7 @@ import { getSimpleFortune, type SimpleFortune } from '../utils/simpleFortuneGene
 import { SajuPillarsDisplay, SajuInfoSummary, OhaengEnergyDisplay, IlganPersonalityDisplay } from '../components/AnalysisResult';
 import { InteractionsDisplay } from '../components/InteractionsDisplay';
 import { SinsalDisplay } from '../components/SinsalDisplay';
+import Footer from '../components/Footer';
 
 // 오행 색상 맵 (캘린더와 동일)
 const ohaengColorMap: Record<Ohaeng, { bg: string; text: string; border: string }> = {
@@ -1578,14 +1579,7 @@ const DashboardPage: React.FC = () => {
       )}
 
       {/* 푸터 */}
-      <footer className="text-center py-8 border-t border-gray-200 bg-white/50">
-        <p className="text-sm text-gray-500 mb-2">
-          아사주달의 분석을 통해 건강과 행복이 함께 하시길 기원합니다.
-        </p>
-        <p className="text-xs text-gray-400">
-          &copy; {new Date().getFullYear()} asajudal.com. All rights reserved.
-        </p>
-      </footer>
+      <Footer />
     </div>
   );
 };

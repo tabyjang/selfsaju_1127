@@ -6,6 +6,7 @@ import { TheoryLectureContent } from '../utils/theory/types';
 import { loadLectureContent } from '../utils/theory/supabaseTheoryLoader';
 import TableOfContents from '../components/theory/TableOfContents';
 import TheoryMarkdownRenderer from '../components/theory/TheoryMarkdownRenderer';
+import Footer from '../components/Footer';
 
 const TheoryDetailPage: React.FC = () => {
   const { courseId, lectureId } = useParams<{ courseId: string; lectureId: string }>();
@@ -168,6 +169,8 @@ const TheoryDetailPage: React.FC = () => {
           </main>
         </div>
       </div>
+
+      <Footer />
     </div>
   );
 };

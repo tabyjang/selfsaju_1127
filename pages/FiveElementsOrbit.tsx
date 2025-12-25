@@ -1300,7 +1300,7 @@ export default function FiveElementsOrbit() {
               <strong style={{ color: "#60a5fa" }}>• 배경 궤도 (4~5번):</strong>{" "}
               <span style={{ opacity: 0.9 }}>
                 시간과 시지입니다. 나의 미래 방향과 당신의 속마음, 당신의 노후와 자식을 상징합니다.
-                <br />년지와 세운은 생략했습니다.
+                <br />
               </span>
             </div>
           </div>
