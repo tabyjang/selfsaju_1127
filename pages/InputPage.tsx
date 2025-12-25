@@ -1,10 +1,11 @@
 import React, { useState, useCallback, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { SignedIn, SignedOut, SignInButton, UserButton, useUser } from "@clerk/clerk-react";
+import { useUser } from "@clerk/clerk-react";
 import type { SajuInfo } from "../types";
 import { SajuInputForm } from "../components/SajuInputForm";
 import { OhaengLoading } from "../components/OhaengLoading";
 import { getUserSajuRecords } from "../utils/sajuStorage";
+import Header from "../components/Header";
 import Footer from "../components/Footer";
 
 const InputPage: React.FC = () => {
@@ -97,38 +98,16 @@ const InputPage: React.FC = () => {
 
   return (
     <div className="min-h-screen font-sans p-4 sm:p-6 lg:p-8 bg-white page-transition">
-      {/* 우측 상단 로그인 버튼 */}
-      <div className="fixed top-4 right-4 z-50 flex gap-2">
-        <SignedOut>
-          <SignInButton mode="modal">
-            <button className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition text-sm font-bold shadow-md cursor-pointer">
-              로그인
-            </button>
-          </SignInButton>
-        </SignedOut>
-        <SignedIn>
-          <UserButton afterSignOutUrl="/input" />
-        </SignedIn>
-      </div>
+      <Header />
 
       {isLoading && <OhaengLoading />}
 
-      <main className="max-w-7xl mx-auto relative pt-12">
-        <header className="text-center mb-12 relative flex flex-col items-center">
-          <img
-            src="/logo.png"
-            alt="아사주달 로고"
-            className="h-28 sm:h-36 md:h-44 w-auto object-contain cursor-pointer"
-            onClick={() => navigate("/")}
-          />
-          <div className="flex items-center gap-2 mt-3 cursor-pointer" onClick={() => navigate("/dashboard")}>
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">
-              아사주달
-            </h1>
-            <span className="text-sm font-semibold text-purple-500 animate-pulse">
-              (아! 사주 보여달라고?)
-            </span>
-          </div>
+      <main className="max-w-7xl mx-auto relative pt-16">
+        <header className="text-center mb-12">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent mb-2">
+            사주팔자 분석
+          </h1>
+          <p className="text-gray-600 text-sm sm:text-base">정확한 생년월일시를 입력해주세요</p>
         </header>
 
         <SajuInputForm onAnalyze={handleAnalysis} isLoading={isLoading} />

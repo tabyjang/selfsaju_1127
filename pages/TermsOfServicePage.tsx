@@ -1,39 +1,26 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import Header from '../components/Header';
+import Footer from '../components/Footer';
 import '../LandingPage.css';
 
 const TermsOfServicePage: React.FC = () => {
-  const navigate = useNavigate();
-
   return (
     <div style={{
       minHeight: '100vh',
       background: 'linear-gradient(135deg, #fdfbf7, #ffe4e1)',
       padding: '2rem',
     }}>
+      <Header />
+
       <div style={{
         maxWidth: '1000px',
         margin: '0 auto',
         background: 'rgba(255, 255, 255, 0.9)',
         padding: '3rem',
+        paddingTop: '5rem',
         borderRadius: '20px',
         boxShadow: '0 8px 32px rgba(31, 38, 135, 0.15)',
       }}>
-        <button
-          onClick={() => navigate('/')}
-          style={{
-            marginBottom: '2rem',
-            padding: '0.5rem 1.5rem',
-            background: 'linear-gradient(45deg, #ffb7b2, #d4af37)',
-            border: 'none',
-            borderRadius: '25px',
-            color: 'white',
-            cursor: 'pointer',
-            fontWeight: '600',
-          }}
-        >
-          홈으로 돌아가기
-        </button>
 
         <h1 style={{ fontSize: '2.5rem', marginBottom: '2rem', color: '#4a4a4a' }}>
           이용약관
@@ -256,6 +243,8 @@ const TermsOfServicePage: React.FC = () => {
           </section>
         </div>
       </div>
+
+      <Footer />
     </div>
   );
 };

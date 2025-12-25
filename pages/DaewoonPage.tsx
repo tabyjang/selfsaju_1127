@@ -4,6 +4,7 @@ import type { SajuInfo, Ohaeng, DaewoonPillar, SewoonPillar, WolwoonPillar } fro
 import { ohaengColorMap } from '../components/AnalysisResult';
 import { getSewoonPillars, getWolwoonPillars } from '../utils/manse';
 import { ChevronDownIcon } from '../components/icons';
+import Header from '../components/Header';
 import Footer from '../components/Footer';
 
 const DaewoonPage: React.FC = () => {
@@ -212,35 +213,7 @@ const DaewoonPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-yellow-50 page-transition">
-      {/* 상단 고정 헤더 */}
-      <div className="fixed top-0 left-0 right-0 bg-white/80 backdrop-blur-md border-b border-gray-200 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-12">
-            <div className="flex items-center gap-3">
-              <img
-                src="/logo.png"
-                alt="아사주달 로고"
-                className="h-10 w-auto object-contain cursor-pointer"
-                onClick={() => navigate('/')}
-              />
-              <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate('/dashboard')}>
-                <h1 className="text-xl font-bold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">
-                  아사주달
-                </h1>
-                <span className="text-xs font-semibold text-purple-500 animate-pulse">
-                  (아! 사주 보여달라고?)
-                </span>
-              </div>
-            </div>
-            <button
-              onClick={() => navigate('/result')}
-              className="px-4 py-2 text-purple-600 bg-purple-50 hover:bg-purple-100 rounded-lg transition text-sm font-bold border border-purple-200"
-            >
-              ← 돌아가기
-            </button>
-          </div>
-        </div>
-      </div>
+      <Header />
 
       <div className="max-w-6xl mx-auto px-4 pt-16 pb-8">
         {/* 페이지 제목 */}

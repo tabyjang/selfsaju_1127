@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { LectureIndex, TheoryLectureMetadata } from '../utils/theory/types';
 import { loadLectureIndex } from '../utils/theory/supabaseTheoryLoader';
+import Header from '../components/Header';
 import Footer from '../components/Footer';
 
 const TheoryLectureListPage: React.FC = () => {
@@ -83,15 +84,10 @@ const TheoryLectureListPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 to-yellow-50 p-8 page-transition">
+      <Header />
+
       {/* 헤더 */}
-      <div className="max-w-5xl mx-auto mb-8">
-        <button
-          onClick={handleBackClick}
-          className="glass-card px-4 py-2 rounded-lg hover:shadow-lg transition-all mb-6 flex items-center gap-2"
-        >
-          <span>←</span>
-          <span>과목 목록으로</span>
-        </button>
+      <div className="max-w-5xl mx-auto mb-8 pt-16">
 
         {/* 과목 정보 */}
         <div className="glass-card p-8 mb-8">

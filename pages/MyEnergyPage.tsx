@@ -12,12 +12,13 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { SignedIn, SignedOut, SignInButton, UserButton, useUser } from '@clerk/clerk-react';
+import { useUser } from '@clerk/clerk-react';
 import type { SajuInfo, Ohaeng } from '../types';
 import { analyzeOhaengEnergy } from '../utils/ohyaeng/energyCalculator';
 import type { OhaengScores, OhaengEnergyAnalysis, EnergyMatrixCell, PositionKey } from '../utils/ohyaeng/types';
-import { getUserSajuRecords } from '../utils/sajuStorage';
+import { getUserSajuRecords, upsertMySaju } from '../utils/sajuStorage';
 import { SajuPillarsDisplay } from '../components/AnalysisResult';
+import Header from '../components/Header';
 import Footer from '../components/Footer';
 
 // ============================================
@@ -848,11 +849,47 @@ const MyEnergyPage: React.FC = () => {
   const [sajuData, setSajuData] = useState<SajuInfo | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isHourUnknown, setIsHourUnknown] = useState(false);
+  const [isSaving, setIsSaving] = useState<boolean>(false);
+  const [saveMessage, setSaveMessage] = useState<string>('');
 
   // 페이지 로드 시 스크롤을 최상단으로 이동
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
+  // "내 사주로 저장" 핸들러
+  const handleSaveMySaju = async () => {
+    if (!isSignedIn || !user || !sajuData) {
+      alert('로그인이 필요합니다.');
+      return;
+    }
+
+    try {
+      setIsSaving(true);
+      setSaveMessage('');
+
+      const result = await upsertMySaju(user.id, sajuData);
+
+      if (result.success) {
+        const name = sajuData.name || '사주 정보';
+        const message = result.isUpdate
+          ? `✅ ${name}님의 사주가 업데이트되었습니다!`
+          : `✅ ${name}님의 사주가 저장되었습니다!`;
+        setSaveMessage(message);
+
+        // 3초 후 메시지 제거
+        setTimeout(() => setSaveMessage(''), 3000);
+      } else {
+        setSaveMessage('❌ 저장 중 오류가 발생했습니다.');
+        console.error('저장 실패:', result.error);
+      }
+    } catch (error) {
+      setSaveMessage('❌ 저장 중 오류가 발생했습니다.');
+      console.error('저장 오류:', error);
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   // localStorage 및 DB에서 사주 데이터 불러오기
   useEffect(() => {
@@ -992,75 +1029,14 @@ const MyEnergyPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50 page-transition">
-      {/* 헤더 - 데스크톱 */}
-      <div className="fixed top-0 left-0 right-0 bg-white/80 backdrop-blur-md border-b border-gray-200 z-50 hidden md:block">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-12">
-            <div className="flex items-center gap-3">
-              <img
-                src="/logo.png"
-                alt="아사주달 로고"
-                className="h-10 w-auto object-contain cursor-pointer"
-                onClick={() => navigate('/')}
-              />
-              <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate('/dashboard')}>
-                <h1 className="text-xl font-bold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">
-                  아사주달
-                </h1>
-              </div>
-            </div>
-            <div className="flex gap-2 items-center">
-              <button
-                onClick={() => navigate('/input', { state: { skipAutoLoad: true } })}
-                className="hidden md:block px-4 py-2 text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition text-sm font-bold border border-indigo-200"
-              >
-                다른 사주 입력
-              </button>
-              <SignedOut>
-                <SignInButton mode="modal">
-                  <button className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition text-sm font-bold shadow-md cursor-pointer">
-                    로그인
-                  </button>
-                </SignInButton>
-              </SignedOut>
-              <SignedIn>
-                <UserButton afterSignOutUrl="/input" />
-              </SignedIn>
-            </div>
-          </div>
-        </div>
-      </div>
+      <Header showSaveButton={true} onSave={handleSaveMySaju} isSaving={isSaving} />
 
-      {/* 헤더 - 모바일 */}
-      <div className="fixed top-0 left-0 right-0 bg-white/80 backdrop-blur-md border-b border-gray-200 z-50 md:hidden">
-        <div className="flex justify-between items-center px-4 h-12">
-          <div className="flex items-center gap-2">
-            <img
-              src="/logo.png"
-              alt="아사주달 로고"
-              className="h-8 w-auto object-contain cursor-pointer"
-              onClick={() => navigate('/')}
-            />
-            <div className="flex items-center gap-1 cursor-pointer" onClick={() => navigate('/dashboard')}>
-              <h1 className="text-base font-bold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">
-                아사주달
-              </h1>
-            </div>
-          </div>
-          <div className="flex gap-2 items-center">
-            <SignedOut>
-              <SignInButton mode="modal">
-                <button className="px-3 py-1.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition text-xs font-bold shadow-md cursor-pointer">
-                  로그인
-                </button>
-              </SignInButton>
-            </SignedOut>
-            <SignedIn>
-              <UserButton afterSignOutUrl="/input" />
-            </SignedIn>
-          </div>
+      {/* 저장 메시지 표시 */}
+      {saveMessage && (
+        <div className="fixed top-20 right-4 z-[60] px-4 py-2 bg-white border-2 border-green-500 text-green-700 rounded-lg shadow-lg text-sm font-bold animate-fade-in">
+          {saveMessage}
         </div>
-      </div>
+      )}
 
       {/* 메인 콘텐츠 */}
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-16">

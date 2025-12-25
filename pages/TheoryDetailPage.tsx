@@ -6,6 +6,7 @@ import { TheoryLectureContent } from '../utils/theory/types';
 import { loadLectureContent } from '../utils/theory/supabaseTheoryLoader';
 import TableOfContents from '../components/theory/TableOfContents';
 import TheoryMarkdownRenderer from '../components/theory/TheoryMarkdownRenderer';
+import Header from '../components/Header';
 import Footer from '../components/Footer';
 
 const TheoryDetailPage: React.FC = () => {
@@ -70,17 +71,11 @@ const TheoryDetailPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 to-yellow-50 p-8 page-transition">
-      <div className="max-w-7xl mx-auto">
-        {/* 상단 네비게이션 */}
-        <div className="mb-6 flex items-center justify-between flex-wrap gap-4">
-          <button
-            onClick={() => navigate(courseId ? `/theories/${courseId}` : '/theories')}
-            className="glass-card px-4 py-2 rounded-lg hover:shadow-lg transition-all flex items-center gap-2"
-          >
-            <span>←</span>
-            <span>강의 목록으로</span>
-          </button>
+      <Header />
 
+      <div className="max-w-7xl mx-auto pt-16">
+        {/* 상단 정보 */}
+        <div className="mb-6 flex items-center justify-end flex-wrap gap-4">
           <div className="flex gap-3 text-xs">
             <span className="glass-card px-3 py-2 rounded-full font-bold text-amber-700">
               {metadata.orderIndex}강
