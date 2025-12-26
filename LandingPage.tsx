@@ -377,7 +377,7 @@ const LandingPage: React.FC = () => {
             개인정보처리방침
           </a>
           <a href="/terms" style={{ margin: '0 1rem', color: 'var(--text-secondary)', textDecoration: 'underline' }}>
-            이용약관
+            서비스 이용약관
           </a>
         </div>
         <p>

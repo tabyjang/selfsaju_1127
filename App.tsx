@@ -213,7 +213,7 @@ const App: React.FC = () => {
             개인정보처리방침
           </a>
           <a href="/terms" className="mx-3 hover:text-gray-700 underline">
-            이용약관
+            서비스 이용약관
           </a>
         </div>
         <p>
