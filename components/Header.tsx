@@ -29,7 +29,7 @@ const Header: React.FC<HeaderProps> = ({ showSaveButton = false, onSave, isSavin
                   아사주달
                 </h1>
                 <span className="text-xs font-semibold text-purple-500 animate-pulse">
-                  (아! 사주 보여달라고?)
+                  아! 사주<span className="text-purple-400">(의)</span> 달인!
                 </span>
               </div>
             </div>

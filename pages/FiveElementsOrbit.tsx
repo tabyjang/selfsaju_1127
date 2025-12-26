@@ -1186,7 +1186,7 @@ export default function FiveElementsOrbit() {
                   animation: "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
                 }}
               >
-                (아! 사주 보여달라고?)
+                아! 사주(의) 달인!
               </span>
             </div>
             <h1
