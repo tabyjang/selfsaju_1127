@@ -30,6 +30,7 @@ import {
   calculateActivityLevel,
 } from './templateSelector';
 import { convertMarkdownToHtml } from './markdownToHtml';
+import { fixKoreanParticles } from './placeholderReplacer';
 
 /**
  * 에너지 조합 계산
@@ -490,4 +491,117 @@ function replacePlaceholdersSimple(
     .replace(/\{ilju\.감정표현\}/g, iljuData.감정표현)
     .replace(/\{ilju\.업무스타일\}/g, iljuData.업무스타일)
     .replace(/\{ilju\.추가특징\}/g, iljuData.추가특징 || '');
+}
+
+/**
+ * 콘텐츠 소스 타입
+ */
+export type ContentSource =
+  | '인연' | '재미' | '행운' | '영감' | '도전'  // 오늘의이벤트
+  | '요일테마'
+  | '에너지조합';
+
+/**
+ * 간단한 운세 출력 타입 (랜덤 1개 콘텐츠 + 액션플랜 1개)
+ */
+export interface SimpleFortune {
+  content: string;        // 랜덤 선택된 1개 콘텐츠
+  actionPlan: string;     // 액션플랜 1개
+  source: ContentSource;  // 콘텐츠 출처
+  energyLevel: EnergyLevel;
+  activityLevel: ActivityLevel;
+}
+
+/**
+ * 간단한 랜덤 운세 생성 (콘텐츠 1개 + 액션플랜 1개)
+ * 시간대별예측 제외, 나머지 풀에서 랜덤 선택
+ */
+export async function generateSimpleFortune(
+  input: FortuneInput
+): Promise<SimpleFortune> {
+  const seed = dateToSeed(input.date);
+  const weekday = getWeekday(input.date);
+
+  // 데이터 로드
+  const iljuData = await getIljuPersonality(input.ilju, seed);
+  const iljuEvents = await getIljuDailyEvent(input.ilju);
+  const unseongData = await getUnseongTheme(input.unseong);
+
+  // 에너지 계산
+  const mentalEnergy = calculateMentalEnergy(
+    unseongData.AE,
+    input.deukryeong,
+    input.gwiin,
+    input.sibsin
+  );
+  const energyLevel = calculateEnergyLevel(mentalEnergy);
+  const activityLevel = calculateActivityLevel(mentalEnergy);
+  const energyCombo = calculateEnergyCombo(activityLevel, energyLevel);
+
+  // 모든 콘텐츠 풀 구성 (시간대별예측 제외)
+  const contentPool: { content: string; source: ContentSource }[] = [];
+
+  // 1. 오늘의이벤트 5개 카테고리
+  const eventCategories: EventCategory[] = ['인연', '재미', '행운', '영감', '도전'];
+  eventCategories.forEach(category => {
+    iljuEvents.오늘의이벤트[category].forEach(item => {
+      contentPool.push({
+        content: replacePlaceholdersSimple(item, iljuData),
+        source: category
+      });
+    });
+  });
+
+  // 2. 요일별테마 (해당 요일만)
+  contentPool.push({
+    content: replacePlaceholdersSimple(iljuEvents.요일별테마[weekday], iljuData),
+    source: '요일테마'
+  });
+
+  // 3. 에너지조합 (해당 조합만)
+  contentPool.push({
+    content: replacePlaceholdersSimple(iljuEvents.에너지조합[energyCombo], iljuData),
+    source: '에너지조합'
+  });
+
+  // 랜덤 선택 (seed 기반)
+  const selectedIndex = seed % contentPool.length;
+  const selected = contentPool[selectedIndex];
+
+  // 액션플랜 1개 생성
+  const actionPlan = generateSingleActionPlan(
+    iljuData,
+    selected.source === '요일테마' ? '행운' :
+    selected.source === '에너지조합' ? '영감' :
+    selected.source as EventCategory,
+    weekday,
+    seed
+  );
+
+  return {
+    content: fixKoreanParticles(selected.content),
+    actionPlan: fixKoreanParticles(actionPlan),
+    source: selected.source,
+    energyLevel,
+    activityLevel,
+  };
+}
+
+/**
+ * 단일 액션플랜 생성
+ */
+function generateSingleActionPlan(
+  iljuData: IljuPersonality,
+  category: EventCategory,
+  weekday: Weekday,
+  seed: number
+): string {
+  // 50% 확률로 요일별 액션 or 카테고리별 액션
+  const useWeekday = seed % 2 === 0;
+
+  if (useWeekday) {
+    return generatePersonalizedWeekdayAction(iljuData, weekday, 'medium', seed);
+  } else {
+    return generatePersonalizedCategoryAction(iljuData, category, seed);
+  }
 }

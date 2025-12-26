@@ -6,6 +6,51 @@
 import { IljuPersonality, UnseongTheme } from './types';
 
 /**
+ * 한글 마지막 글자의 받침 유무를 확인
+ * @param char - 검사할 글자
+ * @returns 받침이 있으면 true, 없으면 false
+ */
+function hasBatchim(char: string): boolean {
+  if (!char) return false;
+  const code = char.charCodeAt(0);
+  // 한글 유니코드 범위: 가(0xAC00) ~ 힣(0xD7A3)
+  if (code < 0xAC00 || code > 0xD7A3) return false;
+  // 받침 유무: (code - 0xAC00) % 28 === 0 이면 받침 없음
+  return (code - 0xAC00) % 28 !== 0;
+}
+
+/**
+ * 한국어 조사를 자동으로 교정
+ * "을(를)", "이(가)", "은(는)", "과(와)" 등을 앞 글자에 맞게 변환
+ * @param text - 교정할 텍스트
+ * @returns 조사가 교정된 텍스트
+ */
+export function fixKoreanParticles(text: string): string {
+  // 받침 있을 때 / 받침 없을 때
+  const particlePairs: [string, string, string][] = [
+    ['을(를)', '을', '를'],
+    ['이(가)', '이', '가'],
+    ['은(는)', '은', '는'],
+    ['과(와)', '과', '와'],
+    ['아(야)', '아', '야'],
+    ['으로(로)', '으로', '로'],
+    ['으(로)', '으로', '로'],  // 추가
+  ];
+
+  let result = text;
+
+  for (const [pattern, withBatchim, withoutBatchim] of particlePairs) {
+    const regex = new RegExp(`(.)(${pattern.replace(/[()]/g, '\\$&')})`, 'g');
+    result = result.replace(regex, (_, prevChar, __) => {
+      const particle = hasBatchim(prevChar) ? withBatchim : withoutBatchim;
+      return prevChar + particle;
+    });
+  }
+
+  return result;
+}
+
+/**
  * 템플릿 문자열의 플레이스홀더를 실제 값으로 치환
  *
  * @param template - 플레이스홀더가 포함된 템플릿 문자열

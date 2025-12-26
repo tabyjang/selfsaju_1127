@@ -8,8 +8,8 @@ import {
   getSibsinByIlganAndTarget,
 } from "../utils/manse";
 import { cheonEulGwiInMap, getGongmangByGanji } from "../utils/sinsal";
-import { getTodayUnseWithTemplate } from "../utils/todayUnse";
-import type { GeneratedFortune } from "../utils/fortuneTemplate/types";
+import { generateSimpleFortune } from "../utils/fortuneTemplate";
+import type { SimpleFortune } from "../utils/fortuneTemplate";
 
 const weekdayLabels = ["일", "월", "화", "수", "목", "금", "토"] as const;
 const weekdayFullLabels = [
@@ -108,17 +108,24 @@ const CalendarCharBox: React.FC<{ char: string }> = ({ char }) => {
 
   return (
     <div
-      className={`w-8 h-8 md:w-10 md:h-10 flex items-center justify-center text-lg md:text-2xl font-bold rounded-md shadow-md ${color.bg} ${color.text} ${
+      className={`saju-char-outline-small w-8 h-8 md:w-10 md:h-10 flex items-center justify-center text-lg md:text-2xl font-bold rounded-md shadow-md ${color.bg} ${color.text} ${
         color.border ?? ""
       }`}
-      style={{ WebkitTextStroke: '0.5px #000', paintOrder: 'stroke fill' }}
     >
       {char}
     </div>
   );
 };
-export const MonthlyIljuCalendar: React.FC<{ sajuInfo: SajuInfo }> = ({
+interface MonthlyIljuCalendarProps {
+  sajuInfo: SajuInfo;
+  onFortuneChange?: (fortune: SimpleFortune | null, dateInfo: { month: number; day: number; weekday: string } | null) => void;
+  hideFortuneSection?: boolean;
+}
+
+export const MonthlyIljuCalendar: React.FC<MonthlyIljuCalendarProps> = ({
   sajuInfo,
+  onFortuneChange,
+  hideFortuneSection = false,
 }) => {
   const ilgan = sajuInfo.pillars.day.cheonGan.char;
   const ilganji = sajuInfo.pillars.day.ganji;
@@ -130,7 +137,7 @@ export const MonthlyIljuCalendar: React.FC<{ sajuInfo: SajuInfo }> = ({
   const [viewYear, setViewYear] = useState<number>(initialYM.year);
   const [viewMonth, setViewMonth] = useState<number>(initialYM.month); // 1-12
   const [selectedDay, setSelectedDay] = useState<number>(today.getDate());
-  const [todayUnseData, setTodayUnseData] = useState<GeneratedFortune | null>(null);
+  const [todayUnseData, setTodayUnseData] = useState<SimpleFortune | null>(null);
 
   // 체크박스 상태 관리 (localStorage 연동)
   // localStorage에서 초기값 직접 로드 (기본값: 천을귀인 true, 용신 false)
@@ -203,16 +210,35 @@ export const MonthlyIljuCalendar: React.FC<{ sajuInfo: SajuInfo }> = ({
     return { d, gan, ji, ganji, unseong, sibsinGan, sibsinJi };
   }, [ilgan, viewYear, viewMonth, selectedDay, daysInMonth]);
 
-  // 선택된 날짜의 운세 데이터 로드
+  // 선택된 날짜의 운세 데이터 로드 (SimpleFortune 사용)
   useEffect(() => {
     const loadUnseData = async () => {
       if (sajuInfo && selectedDayInfo && selectedDayInfo.unseong) {
-        const unseData = await getTodayUnseWithTemplate(sajuInfo, selectedDayInfo.ji, selectedDayInfo.unseong.name);
+        const isGwiin = cheonEulJijis.includes(selectedDayInfo.ji);
+        const unseData = await generateSimpleFortune({
+          ilju: sajuInfo.pillars.day.ganji,
+          todayJiji: selectedDayInfo.ji,
+          sibsin: selectedDayInfo.sibsinJi.name,
+          unseong: selectedDayInfo.unseong.name,
+          deukryeong: false,
+          gwiin: isGwiin,
+          date: selectedDate,
+        });
         setTodayUnseData(unseData);
+
+        // 콜백으로 운세 데이터 전달
+        if (onFortuneChange) {
+          const dow = selectedDate.getDay();
+          onFortuneChange(unseData, {
+            month: viewMonth,
+            day: selectedDayInfo.d,
+            weekday: weekdayFullLabels[dow],
+          });
+        }
       }
     };
     loadUnseData();
-  }, [sajuInfo, selectedDayInfo]);
+  }, [sajuInfo, selectedDayInfo, selectedDate, cheonEulJijis, onFortuneChange, viewMonth]);
 
   const selectedMonthInfo = useMemo(() => {
     try {
@@ -440,12 +466,12 @@ export const MonthlyIljuCalendar: React.FC<{ sajuInfo: SajuInfo }> = ({
         })}
       </div>
 
-      {/* 선택된 날짜의 운세 정보 */}
-      {todayUnseData && (
+      {/* 선택된 날짜의 운세 정보 (SimpleFortune) - hideFortuneSection이 false일 때만 표시 */}
+      {!hideFortuneSection && todayUnseData && (
         <div className="mt-6 p-4 md:p-6 bg-gradient-to-br from-purple-50 via-pink-50 to-rose-50 rounded-2xl border-2 border-purple-200 shadow-lg">
           <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
-            <h3 className="text-xl md:text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600">
-              {todayUnseData.title}
+            <h3 className="text-lg md:text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600">
+              오늘 에너지
             </h3>
             <div className="flex items-center gap-4">
               {/* 활동 에너지 */}
@@ -481,24 +507,18 @@ export const MonthlyIljuCalendar: React.FC<{ sajuInfo: SajuInfo }> = ({
             </div>
           </div>
 
-          {/* 운세 내용 */}
-          <div
-            className="prose prose-sm md:prose-base max-w-none mb-4 bg-white/50 p-4 rounded-lg"
-            dangerouslySetInnerHTML={{ __html: todayUnseData.content }}
-          />
+          {/* 운세 내용 (1개) */}
+          <div className="bg-white/50 p-4 rounded-lg mb-4">
+            <p className="text-gray-800 text-base md:text-lg leading-relaxed">
+              {todayUnseData.content}
+            </p>
+          </div>
 
-          {/* 액션 플랜 */}
-          {todayUnseData.actionPlans && todayUnseData.actionPlans.length > 0 && (
+          {/* 액션 플랜 (1개) */}
+          {todayUnseData.actionPlan && (
             <div className="bg-white/70 p-4 rounded-lg border border-purple-200">
-              <h4 className="text-lg font-bold text-purple-800 mb-3">오늘의 액션 플랜</h4>
-              <ul className="space-y-2">
-                {todayUnseData.actionPlans.map((plan, idx) => (
-                  <li key={idx} className="flex items-start gap-2 text-gray-700">
-                    <span className="text-purple-600 font-bold flex-shrink-0">{idx + 1}.</span>
-                    <span>{plan}</span>
-                  </li>
-                ))}
-              </ul>
+              <h4 className="text-base font-bold text-purple-800 mb-2">오늘할일</h4>
+              <p className="text-gray-700">{todayUnseData.actionPlan}</p>
             </div>
           )}
         </div>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useUser } from '@clerk/clerk-react';
 import type { SajuInfo, Ohaeng } from '../types';
@@ -6,6 +6,7 @@ import { MonthlyIljuCalendar } from '../components/MonthlyIljuCalendar';
 import { upsertMySaju } from '../utils/sajuStorage';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import type { SimpleFortune } from '../utils/fortuneTemplate';
 
 // 오행 색상 맵 (달력과 동일)
 const ohaengColorMap: Record<Ohaeng, { bg: string; text: string; border?: string }> = {
@@ -72,6 +73,12 @@ const JijiCharBox: React.FC<{ char: string }> = ({ char }) => {
   );
 };
 
+interface DateInfo {
+  month: number;
+  day: number;
+  weekday: string;
+}
+
 const CalendarPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -79,6 +86,14 @@ const CalendarPage: React.FC = () => {
   const [sajuData, setSajuData] = useState<SajuInfo | null>(null);
   const [isSaving, setIsSaving] = useState<boolean>(false);
   const [saveMessage, setSaveMessage] = useState<string>('');
+  const [fortuneData, setFortuneData] = useState<SimpleFortune | null>(null);
+  const [dateInfo, setDateInfo] = useState<DateInfo | null>(null);
+
+  // 운세 데이터 콜백
+  const handleFortuneChange = useCallback((fortune: SimpleFortune | null, info: DateInfo | null) => {
+    setFortuneData(fortune);
+    setDateInfo(info);
+  }, []);
 
   useEffect(() => {
     // location state에서 먼저 가져오기
@@ -164,9 +179,150 @@ const CalendarPage: React.FC = () => {
 
       <main className="max-w-7xl mx-auto relative pt-16 px-4 sm:px-6 lg:px-8 pb-8">
 
+        {/* 페이지 헤더: 만세력달력 (왼쪽) + 오늘 에너지 (오른쪽) */}
+        <div className="mb-6 mt-4">
+          {/* 데스크톱: 가로 배치 (3열 구조: 빈공간 - 타이틀 - 박스) */}
+          <div className="hidden md:flex items-center">
+            {/* 왼쪽 빈 공간 (박스와 동일한 너비로 균형) */}
+            <div className="w-80"></div>
+
+            {/* 중앙: 타이틀 */}
+            <div className="flex-1 flex flex-col items-center text-center">
+              <h1 className="text-3xl lg:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 drop-shadow-sm">
+                만세력캘린더
+              </h1>
+              <p className="mt-2 text-sm text-gray-600">
+                오늘 <span className="font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-500">에너지</span>를 확인하세요!
+              </p>
+            </div>
+
+            {/* 오른쪽: 오늘 에너지 박스 (컴팩트) */}
+            {fortuneData && dateInfo && (
+              <div className="w-80 bg-gradient-to-br from-purple-50 via-pink-50 to-rose-50 rounded-xl border-2 border-purple-200 shadow-lg px-3 py-1.5">
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-sm font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600">
+                    오늘 에너지
+                  </span>
+                  <div className="flex items-center gap-2">
+                    {/* 활동 에너지 */}
+                    <div className="flex items-center gap-0.5 bg-white/70 px-1.5 py-0.5 rounded border border-red-200">
+                      <span className="text-xs text-gray-600">활동</span>
+                      <div className="flex">
+                        {Array.from({ length: 3 }, (_, i) => (
+                          <span key={i} className={`text-sm ${
+                            fortuneData.activityLevel === 'active' ? (i < 3 ? 'opacity-100' : 'opacity-30') :
+                            fortuneData.activityLevel === 'moderate' ? (i < 2 ? 'opacity-100' : 'opacity-30') :
+                            (i < 1 ? 'opacity-100' : 'opacity-30')
+                          }`}>
+                            🔥
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                    {/* 마음 에너지 */}
+                    <div className="flex items-center gap-0.5 bg-white/70 px-1.5 py-0.5 rounded border border-blue-200">
+                      <span className="text-xs text-gray-600">마음</span>
+                      <div className="flex">
+                        {Array.from({ length: 3 }, (_, i) => (
+                          <span key={i} className={`text-sm ${
+                            fortuneData.energyLevel === 'high' ? (i < 3 ? 'opacity-100' : 'opacity-30') :
+                            fortuneData.energyLevel === 'medium' ? (i < 2 ? 'opacity-100' : 'opacity-30') :
+                            (i < 1 ? 'opacity-100' : 'opacity-30')
+                          }`}>
+                            💎
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                {/* 운세 내용 */}
+                <p className="text-gray-800 text-xs leading-tight bg-white/50 p-1.5 rounded-lg mb-1 line-clamp-2">
+                  {fortuneData.content}
+                </p>
+                {/* 액션 플랜 */}
+                {fortuneData.actionPlan && (
+                  <div className="bg-white/70 p-1 rounded border border-purple-200">
+                    <span className="text-xs font-bold text-purple-800 mr-1">오늘할일:</span>
+                    <span className="text-xs text-gray-700 line-clamp-1">{fortuneData.actionPlan}</span>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* 모바일: 세로 배치 */}
+          <div className="md:hidden">
+            <h1 className="text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-center">
+              만세력캘린더
+            </h1>
+            <p className="mt-1 text-sm text-gray-600 text-center">
+              오늘 <span className="font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-500">에너지</span>를 확인하세요!
+            </p>
+
+            {/* 모바일용 오늘 에너지 박스 */}
+            {fortuneData && dateInfo && (
+              <div className="mt-3 bg-gradient-to-br from-purple-50 via-pink-50 to-rose-50 rounded-xl border-2 border-purple-200 shadow-lg px-3 py-1.5">
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-sm font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600">
+                    오늘 에너지
+                  </span>
+                  <div className="flex items-center gap-2">
+                    {/* 활동 에너지 */}
+                    <div className="flex items-center gap-0.5 bg-white/70 px-1.5 py-0.5 rounded border border-red-200">
+                      <span className="text-xs text-gray-600">활동</span>
+                      <div className="flex">
+                        {Array.from({ length: 3 }, (_, i) => (
+                          <span key={i} className={`text-sm ${
+                            fortuneData.activityLevel === 'active' ? (i < 3 ? 'opacity-100' : 'opacity-30') :
+                            fortuneData.activityLevel === 'moderate' ? (i < 2 ? 'opacity-100' : 'opacity-30') :
+                            (i < 1 ? 'opacity-100' : 'opacity-30')
+                          }`}>
+                            🔥
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                    {/* 마음 에너지 */}
+                    <div className="flex items-center gap-0.5 bg-white/70 px-1.5 py-0.5 rounded border border-blue-200">
+                      <span className="text-xs text-gray-600">마음</span>
+                      <div className="flex">
+                        {Array.from({ length: 3 }, (_, i) => (
+                          <span key={i} className={`text-sm ${
+                            fortuneData.energyLevel === 'high' ? (i < 3 ? 'opacity-100' : 'opacity-30') :
+                            fortuneData.energyLevel === 'medium' ? (i < 2 ? 'opacity-100' : 'opacity-30') :
+                            (i < 1 ? 'opacity-100' : 'opacity-30')
+                          }`}>
+                            💎
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                {/* 운세 내용 */}
+                <p className="text-gray-800 text-xs leading-tight bg-white/50 p-1.5 rounded-lg mb-1 line-clamp-2">
+                  {fortuneData.content}
+                </p>
+                {/* 액션 플랜 */}
+                {fortuneData.actionPlan && (
+                  <div className="bg-white/70 p-1 rounded border border-purple-200">
+                    <span className="text-xs font-bold text-purple-800 mr-1">오늘할일:</span>
+                    <span className="text-xs text-gray-700 line-clamp-1">{fortuneData.actionPlan}</span>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+
         {/* 캘린더 */}
         <div className="max-w-6xl mx-auto">
-          <MonthlyIljuCalendar sajuInfo={sajuData} />
+          <MonthlyIljuCalendar
+            sajuInfo={sajuData}
+            onFortuneChange={handleFortuneChange}
+            hideFortuneSection={true}
+          />
         </div>
 
         {/* 안내 문구 */}

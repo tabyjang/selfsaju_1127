@@ -22,7 +22,8 @@ export type {
 
 // 메인 함수
 export { generateFortune, formatFortune } from './fortuneGenerator';
-export { generateEventBasedFortune } from './eventFortuneGenerator';
+export { generateEventBasedFortune, generateSimpleFortune } from './eventFortuneGenerator';
+export type { SimpleFortune, ContentSource } from './eventFortuneGenerator';
 export { generateStoryFortune, formatStoryFortune } from './storyFortuneGenerator';
 
 // 스토리 로더
@@ -56,6 +57,7 @@ export {
   replaceHolidayPlaceholders,
   replaceActionPlanPlaceholders,
   replaceStoryPlaceholders,
+  fixKoreanParticles,
 } from './placeholderReplacer';
 
 export {
