@@ -17,6 +17,9 @@ import MyEnergyPage from './pages/MyEnergyPage';
 import TheoryListPage from './pages/TheoryListPage';
 import TheoryLectureListPage from './pages/TheoryLectureListPage';
 import TheoryDetailPage from './pages/TheoryDetailPage';
+import IljuMainPage from './pages/IljuMainPage';
+import IljuSelectPage from './pages/IljuSelectPage';
+import IljuDetailPage from './pages/IljuDetailPage';
 import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
 import TermsOfServicePage from './pages/TermsOfServicePage';
 
@@ -52,6 +55,9 @@ root.render(
           <Route path="/theories" element={<TheoryListPage />} />
           <Route path="/theories/:courseId" element={<TheoryLectureListPage />} />
           <Route path="/theories/:courseId/lecture/:lectureId" element={<TheoryDetailPage />} />
+          <Route path="/60ilju" element={<IljuMainPage />} />
+          <Route path="/60ilju/:cheongan" element={<IljuSelectPage />} />
+          <Route path="/60ilju/:cheongan/:ilju" element={<IljuDetailPage />} />
           <Route path="/privacy" element={<PrivacyPolicyPage />} />
           <Route path="/terms" element={<TermsOfServicePage />} />
         </Routes>

@@ -284,6 +284,14 @@ const DashboardPage: React.FC = () => {
       bgGradient: 'from-amber-50 to-yellow-50',
     },
     {
+      title: '60일주 자세히 보기',
+      description: '60가지 일주의 특성과 운명을 깊이 있게 알아보세요',
+      icon: '🔮',
+      path: '/60ilju',
+      gradient: 'from-violet-500 to-purple-600',
+      bgGradient: 'from-violet-50 to-purple-50',
+    },
+    {
       title: '나의 용신 찾기',
       description: '나를 도와주는 오행의 힘을 찾아보세요',
       icon: '🌿',

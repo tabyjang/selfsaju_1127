@@ -48,7 +48,12 @@
       "Bash(pip show:*)",
       "Bash(pip install:*)",
       "Bash(pnpm dev)",
-      "Bash(git fetch:*)"
+      "Bash(git fetch:*)",
+      "Bash(for:*)",
+      "Bash(done)",
+      "Bash(cd:*)",
+      "Bash(chcp 65001)",
+      "Bash(git reset:*)"
     ],
     "deny": [],
     "ask": []
