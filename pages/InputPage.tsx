@@ -102,12 +102,25 @@ const InputPage: React.FC = () => {
 
       {isLoading && <OhaengLoading />}
 
-      <main className="max-w-7xl mx-auto relative pt-16">
-        <header className="text-center mb-12">
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent mb-2">
-            사주팔자 분석
-          </h1>
-          <p className="text-gray-600 text-sm sm:text-base">정확한 생년월일시를 입력해주세요</p>
+      <main className="max-w-7xl mx-auto relative pt-8">
+        <header className="text-center mb-8">
+          {/* 아사주달 로고 */}
+          <div className="flex flex-col items-center justify-center mb-4">
+            <img
+              src="/logo.png"
+              alt="아사주달"
+              className="w-48 sm:w-56 md:w-64 h-auto mb-3"
+            />
+          </div>
+
+          <div>
+            <p className="text-gray-600 text-base sm:text-lg">
+              정확한 <span className="text-red-600 font-bold">양력</span> 생년월일시를 입력해주세요
+            </p>
+            <p className="text-gray-500 text-xs sm:text-sm mt-1">
+              시간을 모를 경우, 시간에 <span className="text-blue-600 font-bold">"모름"</span>으로 입력해주세요
+            </p>
+          </div>
         </header>
 
         <SajuInputForm onAnalyze={handleAnalysis} isLoading={isLoading} />

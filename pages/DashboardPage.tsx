@@ -283,6 +283,14 @@ const DashboardPage: React.FC = () => {
       gradient: 'from-amber-500 to-yellow-500',
       bgGradient: 'from-amber-50 to-yellow-50',
     },
+    {
+      title: '나의 용신 찾기',
+      description: '나를 도와주는 오행의 힘을 찾아보세요',
+      icon: '🌿',
+      path: '/yongsin',
+      gradient: 'from-emerald-400 to-green-400',
+      bgGradient: 'from-emerald-50 to-green-50',
+    },
   ];
 
   // 격국 분석 결과
@@ -453,44 +461,6 @@ const DashboardPage: React.FC = () => {
               </p>
             </div>
 
-            {/* 오른쪽: 나의 용신 찾기 카드 */}
-            <div
-              onClick={() => navigate('/yongsin')}
-              className="group relative bg-gradient-to-br from-green-100 via-emerald-100 to-teal-100 rounded-2xl p-6 cursor-pointer hover:shadow-xl transition-all duration-300 hover:scale-105 border-2 border-green-200 hover:border-emerald-300 w-full md:w-80 opacity-75"
-            >
-              {/* 배경 장식 */}
-              <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-green-200/50 to-emerald-200/50 rounded-full blur-2xl transition-all"></div>
-              <div className="absolute bottom-0 left-0 w-16 h-16 bg-gradient-to-tr from-teal-200/50 to-green-200/50 rounded-full blur-2xl transition-all"></div>
-
-              <div className="relative z-10">
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="text-4xl">🌿</div>
-                  <h3 className="text-xl font-bold bg-gradient-to-r from-green-600 via-emerald-600 to-teal-600 bg-clip-text text-transparent">
-                    나의 용신 찾기
-                  </h3>
-                </div>
-                <p className="text-sm text-gray-700 mb-4 leading-relaxed">
-                  나를 도와주는<br />
-                  <span className="font-semibold text-green-700">오행의 힘</span>을 찾아보세요 ✨
-                </p>
-
-                <div className="flex items-center justify-between">
-                  <div className="px-4 py-2 bg-green-100 text-green-700 rounded-full text-sm font-semibold">
-                    준비중입니다
-                  </div>
-                  <div className="flex items-center gap-1 text-green-600 font-semibold text-sm group-hover:gap-2 transition-all">
-                    <span>보러가기</span>
-                    <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </svg>
-                  </div>
-                </div>
-              </div>
-
-              {/* 반짝이는 효과 */}
-              <div className="absolute top-4 right-4 w-2 h-2 bg-green-300 rounded-full animate-ping"></div>
-              <div className="absolute bottom-6 left-6 w-1.5 h-1.5 bg-emerald-300 rounded-full animate-pulse"></div>
-            </div>
           </div>
         </div>
 
@@ -779,6 +749,7 @@ const DashboardPage: React.FC = () => {
             </p>
           </div>
         </div>
+
       </div>
 
       {/* 일주 모달 */}

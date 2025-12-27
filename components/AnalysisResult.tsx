@@ -253,12 +253,11 @@ export const SajuPillarsDisplay: React.FC<{ sajuInfo: SajuInfo }> = ({ sajuInfo 
 
         <div className="flex justify-center items-center py-1.5 px-2 h-24 md:h-28">
           <div
-            className={`flex items-center justify-center font-bold rounded-lg ${
+            className={`saju-char-outline flex items-center justify-center font-bold rounded-lg ${
               pillar.cheonGan.sibsin.name === "일간"
                 ? "w-20 h-20 md:w-24 md:h-24 text-5xl md:text-6xl animate-heartbeat border-4 border-yellow-400 shadow-[0_0_20px_rgba(250,204,21,0.6)]"
                 : "w-16 h-16 md:w-20 md:h-20 text-4xl md:text-5xl shadow-lg"
             } ${ganColor.bg} text-white ${pillar.cheonGan.sibsin.name === "일간" ? "" : ganColor.border ?? ""}`}
-            style={{ WebkitTextStroke: '1px #000', paintOrder: 'stroke fill' }}
           >
             {pillar.cheonGan.char}
           </div>
@@ -266,10 +265,9 @@ export const SajuPillarsDisplay: React.FC<{ sajuInfo: SajuInfo }> = ({ sajuInfo 
 
         <div className="flex justify-center items-center py-1.5 px-2 h-24 md:h-28">
           <div
-            className={`w-16 h-16 md:w-20 md:h-20 flex items-center justify-center text-4xl md:text-5xl font-bold rounded-lg shadow-lg ${
+            className={`saju-char-outline w-16 h-16 md:w-20 md:h-20 flex items-center justify-center text-4xl md:text-5xl font-bold rounded-lg shadow-lg ${
               jiColor.bg
             } text-white ${jiColor.border ?? ""}`}
-            style={{ WebkitTextStroke: '1px #000', paintOrder: 'stroke fill' }}
           >
             {pillar.jiJi.char}
           </div>

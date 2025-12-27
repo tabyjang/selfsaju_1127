@@ -42,7 +42,13 @@
       "Bash(npx tsx:*)",
       "Bash(git pull:*)",
       "WebFetch(domain:localhost)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Bash(taskkill:*)",
+      "Bash(tasklist:*)",
+      "Bash(pip show:*)",
+      "Bash(pip install:*)",
+      "Bash(pnpm dev)",
+      "Bash(git fetch:*)"
     ],
     "deny": [],
     "ask": []

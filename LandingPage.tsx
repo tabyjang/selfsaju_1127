@@ -11,13 +11,8 @@ const LandingPage: React.FC = () => {
 
   // 무료 사주 분석하기 버튼 클릭 핸들러
   const handleStartAnalysis = async () => {
-    // Clerk 로딩 중이면 대기
-    if (!isLoaded) {
-      return;
-    }
-
-    // 로그인하지 않은 경우 → 입력 페이지로 이동
-    if (!isSignedIn || !user) {
+    // Clerk 로딩 중이거나 로그인하지 않은 경우 → 입력 페이지로 이동
+    if (!isLoaded || !isSignedIn || !user) {
       navigate('/input');
       return;
     }
