@@ -107,6 +107,41 @@ const TheoryListPage: React.FC = () => {
 
       {/* 과목 카드 그리드 */}
       <div className="max-w-7xl mx-auto">
+        {/* 60일주 특별 섹션 */}
+        <div className="mb-12">
+          <h2 className="text-2xl font-bold text-amber-800 mb-6 flex items-center gap-2">
+            <span>🔮</span>
+            <span>60일주 완벽 가이드</span>
+          </h2>
+          <div
+            onClick={() => navigate('/60ilju')}
+            className="glass-card p-6 cursor-pointer hover:shadow-xl transition-all duration-300 hover:scale-[1.02] bg-gradient-to-r from-amber-100 to-orange-100 border-2 border-amber-300"
+          >
+            <div className="flex items-center gap-6">
+              <div className="text-6xl">📅</div>
+              <div className="flex-1">
+                <h3 className="text-2xl font-bold text-amber-900 mb-2">
+                  60일주 자세히 보기
+                </h3>
+                <p className="text-gray-700 mb-3">
+                  갑자부터 계해까지, 60가지 일주의 성격과 운명을 알아보세요.
+                  천간과 지지의 조합으로 이루어진 각 일주별 상세 해설을 제공합니다.
+                </p>
+                <div className="flex items-center gap-4 text-sm">
+                  <span className="px-3 py-1 bg-amber-200 text-amber-800 rounded-full font-medium">60개 일주</span>
+                  <span className="px-3 py-1 bg-orange-200 text-orange-800 rounded-full font-medium">10개 천간</span>
+                  <span className="px-3 py-1 bg-yellow-200 text-yellow-800 rounded-full font-medium">이미지 포함</span>
+                </div>
+              </div>
+              <div className="text-amber-600">
+                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Featured 과목 */}
         {courses.some(c => c.featured) && (
           <div className="mb-12">
