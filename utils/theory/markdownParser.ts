@@ -11,8 +11,10 @@ export function parseFrontMatter(markdown: string): {
   metadata: TheoryMetadata;
   content: string;
 } {
+  // Windows(\r\n)와 Unix(\n) 줄바꿈 모두 지원
+  const normalizedMarkdown = markdown.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
   const frontMatterRegex = /^---\n([\s\S]*?)\n---\n([\s\S]*)$/;
-  const match = markdown.match(frontMatterRegex);
+  const match = normalizedMarkdown.match(frontMatterRegex);
 
   if (!match) {
     throw new Error('프론트매터를 찾을 수 없습니다.');
